@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
 project(StationSim
-        VERSION 1.0.0
         DESCRIPTION "Station simulator library.")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -27,7 +26,8 @@ add_compile_options("$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
 add_library(StationSim SHARED)
 target_sources(StationSim PRIVATE
         source/Model.cpp
-        source/ModelParameters.cpp)
+        source/ModelParameters.cpp
+        source/Agent.cpp)
 target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
@@ -47,7 +47,7 @@ write_basic_package_version_file(
         COMPATIBILITY SameMajorVersion
 )
 
-#add_subdirectory(examples)
+add_subdirectory(examples)
 enable_testing()
 add_subdirectory(tests)
 
