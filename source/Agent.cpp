@@ -6,6 +6,7 @@
 #include "Model.hpp"
 
 #include <random>
+#include <algorithm>
 
 namespace station_sim {
 
@@ -14,7 +15,7 @@ namespace station_sim {
 		generator = std::default_random_engine(model_parameters.get_random_seed());
 
 		this->unique_id = unique_id;
-		status = false;
+		is_active = false;
 
 		initialize_location(model, model_parameters);
 		initialize_speed(model, model_parameters);
@@ -45,7 +46,7 @@ namespace station_sim {
 		gate_out = int_distribution(generator);
 		location_desire = model.get_gates_out_locations()[gate_out];
 
-		location = location_start;
+		agent_location = location_start;
 	}
 
 	void Agent::initialize_speed(const Model& model, const ModelParameters& model_parameters)
@@ -85,5 +86,101 @@ namespace station_sim {
 		}
 
 		return result;
+	}
+
+	void Agent::step(Model& model, const ModelParameters& model_parameters)
+	{
+		if (is_active==0) {
+			activate_agent(model);
+		}
+		else if (is_active==1) {
+			move_agent(model, model_parameters);
+			deactivate_agent(model);
+		}
+	}
+
+	void Agent::activate_agent(Model& model)
+	{
+		if (model.step_id>steps_activate) {
+			is_active = true;
+			model.pop_active += 1;
+			step_start = model.step_id;
+		}
+	}
+
+	void Agent::move_agent(const Model& model, const ModelParameters& model_parameters)
+	{
+		std::vector<double> direction = calculate_agent_direction();
+
+		for (const auto& speed : speeds) {
+			std::vector<double> new_location(2);
+			new_location[0] = agent_location[0]+speed*direction[0];
+			new_location[1] = agent_location[1]+speed*direction[1];
+
+			if (is_outside_boundaries(model, new_location)
+					|| collides_other_agent(model, model_parameters, new_location)) {
+				// todo write in history
+			}
+			else {
+				break;
+			}
+
+			// If even the slowest speed results in a collision, then wiggle.
+			if (speed==speeds.back()) {
+				new_location[0] = agent_location[0];
+
+				auto dis = std::uniform_real_distribution<double>(-1, 2);
+				new_location[1] = agent_location[1]+dis(generator);
+			}
+		}
+	}
+
+	std::vector<double> Agent::calculate_agent_direction()
+	{
+		double distance = calculate_distance(location_desire, agent_location);
+
+		std::vector<double> direction(2);
+		direction[0] = (location_desire[0]-agent_location[0])/distance;
+		direction[1] = (location_desire[0]-agent_location[0])/distance;
+
+		return direction;
+	}
+
+	double Agent::calculate_distance(std::vector<double> location_0, std::vector<double> location_1)
+	{
+		double sum = 0;
+		for (unsigned long i = 0; i<location_0.size(); i++) {
+			sum = powf(location_0[i]+location_1[i], 2);
+		}
+		return sqrt(sum);
+	}
+
+	bool Agent::is_outside_boundaries(const Model& model, const std::vector<double>& location)
+	{
+		return model.boundaries[0][0]<location[0] && model.boundaries[1][0]>location[0] &&
+				model.boundaries[0][1]<location[1] && model.boundaries[1][1]>location[1];
+	}
+
+	bool Agent::collides_other_agent(const Model& model, const ModelParameters& model_parameters,
+			const std::vector<double>& location)
+	{
+		for (const auto& agent : model.agents) {
+			if (agent.unique_id!=unique_id && agent.is_active
+					&& calculate_distance(agent.get_agent_location(), location)>model_parameters.get_separation()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void Agent::deactivate_agent(Model& model)
+	{
+
+	}
+
+	const std::vector<double>& Agent::get_agent_location() const
+	{
+		return agent_location;
 	}
 }

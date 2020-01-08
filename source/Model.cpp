@@ -70,7 +70,7 @@ namespace station_sim {
 		result.erase(result.begin());
 		result.pop_back();
 
-		for (int i = 0; i<result.size(); i++) {
+		for (unsigned long i = 0; i<result.size(); i++) {
 			gates[i].push_back(x);
 			gates[i].push_back(result[i]);
 		}
