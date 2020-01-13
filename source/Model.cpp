@@ -2,6 +2,8 @@
 // Created by ea461 on 25/11/2019.
 //
 
+#include <iostream>
+
 #include "Model.hpp"
 
 namespace station_sim {
@@ -44,6 +46,9 @@ namespace station_sim {
 		pop_finished = 0;
 
 		generate_agents(model_parameters);
+
+		history_collisions_number = 0;
+		wiggle_collisions_number = 0;
 	}
 
 	void Model::set_boundaries(const ModelParameters& model_parameters)
@@ -101,5 +106,52 @@ namespace station_sim {
 	const std::vector<std::vector<double>>& Model::get_gates_out_locations() const
 	{
 		return gates_out_locations;
+	}
+
+	void Model::step(const ModelParameters& model_parameters)
+	{
+		if (pop_finished<model_parameters.get_population_total() && step_id<model_parameters.get_step_limit()
+				&& status==1) {
+			if (model_parameters.is_do_print() && step_id%100==0) {
+				std::cout << "\tIteration: " << (double) (step_id)/(double) (model_parameters.get_step_limit())
+						  << std::endl;
+			}
+
+			step_id += 1;
+		}
+		else {
+			if (model_parameters.is_do_print() && status==1) {
+				std::cout << "StationSim " << unique_id << " - Everyone made it!" << std::endl;
+			}
+		}
+	}
+
+	int Model::get_history_collisions_number() const
+	{
+		return history_collisions_number;
+	}
+	void Model::set_history_collisions_number(int history_collisions_number)
+	{
+		this->history_collisions_number = history_collisions_number;
+	}
+
+	void Model::increase_history_collisions_number_by_value(int value_increase)
+	{
+		history_collisions_number += value_increase;
+	}
+
+	void Model::add_to_history_collision_locations(std::vector<double> new_location)
+	{
+		history_collision_locations.push_back(new_location);
+	}
+
+	void Model::increase_wiggle_collisions_number_by_value(int value_increase)
+	{
+		wiggle_collisions_number += value_increase;
+	}
+
+	void Model::add_to_history_wiggle_locations(std::vector<double> new_location)
+	{
+		history_wiggle_locations.push_back(new_location);
 	}
 }

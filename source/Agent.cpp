@@ -108,18 +108,23 @@ namespace station_sim {
 		}
 	}
 
-	void Agent::move_agent(const Model& model, const ModelParameters& model_parameters)
+	void Agent::move_agent(Model& model, const ModelParameters& model_parameters)
 	{
 		std::vector<double> direction = calculate_agent_direction();
+		std::vector<double> new_agent_location(2);
+		double new_speed = 0;
 
 		for (const auto& speed : speeds) {
-			std::vector<double> new_location(2);
-			new_location[0] = agent_location[0]+speed*direction[0];
-			new_location[1] = agent_location[1]+speed*direction[1];
+			new_speed = speed;
+			new_agent_location[0] = agent_location[0]+speed*direction[0];
+			new_agent_location[1] = agent_location[1]+speed*direction[1];
 
-			if (is_outside_boundaries(model, new_location)
-					|| collides_other_agent(model, model_parameters, new_location)) {
-				// todo write in history
+			if (is_outside_boundaries(model, new_agent_location)
+					|| collides_other_agent(model, model_parameters, new_agent_location)) {
+				if (model_parameters.is_do_history()) {
+					model.increase_history_collisions_number_by_value(1);
+					model.add_to_history_collision_locations(new_agent_location);
+				}
 			}
 			else {
 				break;
@@ -127,11 +132,41 @@ namespace station_sim {
 
 			// If even the slowest speed results in a collision, then wiggle.
 			if (speed==speeds.back()) {
-				new_location[0] = agent_location[0];
+				new_agent_location[0] = agent_location[0];
 
 				auto dis = std::uniform_real_distribution<double>(-1, 2);
-				new_location[1] = agent_location[1]+dis(generator);
+				new_agent_location[1] = agent_location[1]+dis(generator);
+
+				if (model_parameters.is_do_history()) {
+					model.increase_wiggle_collisions_number_by_value(1);
+					model.add_to_history_wiggle_locations(new_agent_location);
+				}
 			}
+		}
+
+		if (is_outside_boundaries(model, new_agent_location)) {
+			clip_vector_values_to_boundaries(new_agent_location, model.boundaries);
+		}
+
+		agent_location = new_agent_location;
+		agent_speed = new_speed;
+	}
+
+	void
+	Agent::clip_vector_values_to_boundaries(std::vector<double>& vec, std::array<std::array<double, 2>, 2> boundaries)
+	{
+		if (vec[0]<boundaries[0][0]) {
+			vec[0] = boundaries[0][0];
+		}
+		if (vec[1]<boundaries[1][0]) {
+			vec[1] = boundaries[1][0];
+		}
+
+		if (vec[0]>boundaries[1][0]) {
+			vec[0] = boundaries[1][0];
+		}
+		if (vec[1]>boundaries[1][1]) {
+			vec[1] = boundaries[1][1];
 		}
 	}
 

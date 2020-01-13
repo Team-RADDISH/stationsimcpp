@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <random>
+#include <array>
 
 namespace station_sim {
 
@@ -36,6 +37,7 @@ namespace station_sim {
 
 		double speed_max;
 		std::vector<double> speeds;
+		double agent_speed;
 
 		double steps_activate;
 		double wiggle;
@@ -46,7 +48,7 @@ namespace station_sim {
 		Agent(int unique_id, const Model& model, const ModelParameters& model_parameters);
 		~Agent();
 
-		void move_agent(const Model& model, const ModelParameters& model_parameters);
+		void move_agent(Model& model, const ModelParameters& model_parameters);
 
 	private:
 		void initialize_location(const Model& model, const ModelParameters& model_parameters);
@@ -58,7 +60,10 @@ namespace station_sim {
 		double calculate_distance(std::vector<double> location_0, std::vector<double> location_1);
 		std::vector<double> calculate_agent_direction();
 		bool is_outside_boundaries(const Model& model, const std::vector<double>& location);
-		bool collides_other_agent(const Model& model, const ModelParameters& model_parameters, const std::vector<double>& location);
+		bool collides_other_agent(const Model& model, const ModelParameters& model_parameters,
+				const std::vector<double>& location);
+		void
+		clip_vector_values_to_boundaries(std::vector<double>& vec, std::array<std::array<double, 2>, 2> boundaries);
 	};
 }
 #endif //STATIONSIM_AGENT_HPP
