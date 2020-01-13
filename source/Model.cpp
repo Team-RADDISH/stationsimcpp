@@ -108,7 +108,7 @@ namespace station_sim {
 		return gates_out_locations;
 	}
 
-	void Model::step(const ModelParameters& model_parameters)
+	void Model::step(Model& model, const ModelParameters& model_parameters)
 	{
 		if (pop_finished<model_parameters.get_population_total() && step_id<model_parameters.get_step_limit()
 				&& status==1) {
@@ -116,6 +116,12 @@ namespace station_sim {
 				std::cout << "\tIteration: " << (double) (step_id)/(double) (model_parameters.get_step_limit())
 						  << std::endl;
 			}
+
+			// get agents and move them
+			move_agents(model, model_parameters);
+
+			// do the history for the state
+
 
 			step_id += 1;
 		}
@@ -153,5 +159,12 @@ namespace station_sim {
 	void Model::add_to_history_wiggle_locations(std::vector<double> new_location)
 	{
 		history_wiggle_locations.push_back(new_location);
+	}
+
+	void Model::move_agents(Model& model, const ModelParameters& model_parameters)
+	{
+		for (auto& agent:agents) {
+			agent.move_agent(model, model_parameters);
+		}
 	}
 }

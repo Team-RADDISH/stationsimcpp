@@ -45,7 +45,7 @@ namespace station_sim {
 		[[nodiscard]] const std::vector<std::vector<double>>& get_gates_in_locations() const;
 		[[nodiscard]] const std::vector<std::vector<double>>& get_gates_out_locations() const;
 
-		void step(const ModelParameters& model_parameters);
+		void step(Model& model, const ModelParameters& model_parameters);
 
 		int get_history_collisions_number() const;
 		void set_history_collisions_number(int history_collisions_number);
@@ -63,6 +63,7 @@ namespace station_sim {
 		std::vector<double> linear_spaced_vector(double start, double end, int points_number);
 		void generate_agents(const ModelParameters& model_parameters);
 
+		void move_agents(Model& model, const ModelParameters& model_parameters);
 	};
 }
 
