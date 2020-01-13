@@ -4,6 +4,7 @@
 
 #include "Agent.hpp"
 #include "Model.hpp"
+#include "help_functions.hpp"
 
 #include <random>
 #include <algorithm>
@@ -13,16 +14,16 @@ namespace station_sim {
 	Agent::Agent(int unique_id, const Model& model, const ModelParameters& model_parameters)
 	{
 		generator = std::default_random_engine(model_parameters.get_random_seed());
+		initialize_random_distributions(model_parameters);
 
-		this->unique_id = unique_id;
+		agent_id = unique_id;
 		is_active = false;
 
 		initialize_location(model, model_parameters);
 		initialize_speed(model, model_parameters);
 
-		exponential_distribution = std::exponential_distribution<double>(model_parameters.get_gates_speed());
-		steps_activate = exponential_distribution(generator);
-		wiggle = fmin(model_parameters.get_max_wiggle(), speed_max);
+//		steps_activate = gates_speed_exponential_distribution(generator);
+//		wiggle = fmin(model_parameters.get_max_wiggle(), agent_max_speed);
 	}
 
 	Agent::~Agent()
@@ -30,20 +31,26 @@ namespace station_sim {
 
 	}
 
+	void Agent::initialize_random_distributions(const ModelParameters& model_parameters)
+	{
+		float_distribution = std::uniform_real_distribution<float>(-1, 1);
+		gates_in_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_in()-1);
+		gates_out_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_out()-1);
+		gates_speed_exponential_distribution = std::exponential_distribution<float>(model_parameters.get_gates_speed());
+		speed_normal_distribution = std::normal_distribution<float>(model_parameters.get_speed_mean(),
+				model_parameters.get_speed_std());
+	}
+
 	void Agent::initialize_location(const Model& model, const ModelParameters& model_parameters)
 	{
+		float perturb = float_distribution(generator)*model_parameters.get_gates_space();
 
-		double_distribution = std::uniform_real_distribution<double>(-1, 1);
-		int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_in()-1);
-
-		double perturb = double_distribution(generator)*model_parameters.get_gates_space();
-
-		gate_in = int_distribution(generator);
+		gate_in = gates_in_int_distribution(generator);
 
 		location_start = model.get_gates_in_locations()[gate_in];
 		location_start[1] += perturb;
 
-		gate_out = int_distribution(generator);
+		gate_out = gates_out_int_distribution(generator);
 		location_desire = model.get_gates_out_locations()[gate_out];
 
 		agent_location = location_start;
@@ -51,42 +58,18 @@ namespace station_sim {
 
 	void Agent::initialize_speed(const Model& model, const ModelParameters& model_parameters)
 	{
-		std::normal_distribution<double> normal_distribution(model_parameters.get_speed_mean(),
-				model_parameters.get_speed_std());
+		agent_speed = 0;
+		agent_max_speed = 0;
 
-		speed_max = 0;
-
-		while (speed_max<=model_parameters.get_speed_min()) {
-			speed_max = normal_distribution(generator);
+		while (agent_max_speed<=model_parameters.get_speed_min()) {
+			agent_max_speed = speed_normal_distribution(generator);
 		}
 
-		speeds = evenly_spaced_values_within_interval(speed_max,
-				model_parameters.get_speed_min(), -model_parameters.get_speed_steps());
+		agent_available_speeds = evenly_spaced_values_within_interval(agent_max_speed,
+				model_parameters.get_speed_min(), -model.get_speed_step());
 	}
 
-	// @todo write tests, check if is the same as numpy.arange, (3,1,10) input is different to numpy version
-	std::vector<double> Agent::evenly_spaced_values_within_interval(double start, double stop, double step)
-	{
-		std::vector<double> result;
-		double new_value = start;
 
-		if (start<stop) {
-			while (new_value<stop) {
-				result.push_back(new_value);
-				new_value = start+step;
-				result.push_back(new_value);
-			}
-		}
-		else {
-			while (new_value>stop) {
-				result.push_back(new_value);
-				new_value = start+step;
-				result.push_back(new_value);
-			}
-		}
-
-		return result;
-	}
 
 	void Agent::step(Model& model, const ModelParameters& model_parameters)
 	{
@@ -110,11 +93,11 @@ namespace station_sim {
 
 	void Agent::move_agent(Model& model, const ModelParameters& model_parameters)
 	{
-		std::vector<double> direction = calculate_agent_direction();
-		std::vector<double> new_agent_location(2);
-		double new_speed = 0;
+		std::vector<float> direction = calculate_agent_direction();
+		std::vector<float> new_agent_location(2);
+		float new_speed = 0;
 
-		for (const auto& speed : speeds) {
+		for (const auto& speed : agent_available_speeds) {
 			new_speed = speed;
 			new_agent_location[0] = agent_location[0]+speed*direction[0];
 			new_agent_location[1] = agent_location[1]+speed*direction[1];
@@ -131,10 +114,10 @@ namespace station_sim {
 			}
 
 			// If even the slowest speed results in a collision, then wiggle.
-			if (speed==speeds.back()) {
+			if (speed==agent_available_speeds.back()) {
 				new_agent_location[0] = agent_location[0];
 
-				auto dis = std::uniform_real_distribution<double>(-1, 2);
+				auto dis = std::uniform_real_distribution<float>(-1, 2);
 				new_agent_location[1] = agent_location[1]+dis(generator);
 
 				if (model_parameters.is_do_history()) {
@@ -153,7 +136,7 @@ namespace station_sim {
 	}
 
 	void
-	Agent::clip_vector_values_to_boundaries(std::vector<double>& vec, std::array<std::array<double, 2>, 2> boundaries)
+	Agent::clip_vector_values_to_boundaries(std::vector<float>& vec, std::array<std::array<float, 2>, 2> boundaries)
 	{
 		if (vec[0]<boundaries[0][0]) {
 			vec[0] = boundaries[0][0];
@@ -170,37 +153,37 @@ namespace station_sim {
 		}
 	}
 
-	std::vector<double> Agent::calculate_agent_direction()
+	std::vector<float> Agent::calculate_agent_direction()
 	{
-		double distance = calculate_distance(location_desire, agent_location);
+		float distance = calculate_distance(location_desire, agent_location);
 
-		std::vector<double> direction(2);
+		std::vector<float> direction(2);
 		direction[0] = (location_desire[0]-agent_location[0])/distance;
 		direction[1] = (location_desire[0]-agent_location[0])/distance;
 
 		return direction;
 	}
 
-	double Agent::calculate_distance(std::vector<double> location_0, std::vector<double> location_1)
+	float Agent::calculate_distance(std::vector<float> location_0, std::vector<float> location_1)
 	{
-		double sum = 0;
+		float sum = 0;
 		for (unsigned long i = 0; i<location_0.size(); i++) {
 			sum = powf(location_0[i]+location_1[i], 2);
 		}
 		return sqrt(sum);
 	}
 
-	bool Agent::is_outside_boundaries(const Model& model, const std::vector<double>& location)
+	bool Agent::is_outside_boundaries(const Model& model, const std::vector<float>& location)
 	{
 		return model.boundaries[0][0]<location[0] && model.boundaries[1][0]>location[0] &&
 				model.boundaries[0][1]<location[1] && model.boundaries[1][1]>location[1];
 	}
 
 	bool Agent::collides_other_agent(const Model& model, const ModelParameters& model_parameters,
-			const std::vector<double>& location)
+			const std::vector<float>& location)
 	{
 		for (const auto& agent : model.agents) {
-			if (agent.unique_id!=unique_id && agent.is_active
+			if (agent.agent_id!=agent_id && agent.is_active
 					&& calculate_distance(agent.get_agent_location(), location)>model_parameters.get_separation()) {
 				return true;
 			}
@@ -214,8 +197,13 @@ namespace station_sim {
 
 	}
 
-	const std::vector<double>& Agent::get_agent_location() const
+	const std::vector<float>& Agent::get_agent_location() const
 	{
 		return agent_location;
+	}
+
+	float Agent::get_agent_speed() const
+	{
+		return agent_speed;
 	}
 }

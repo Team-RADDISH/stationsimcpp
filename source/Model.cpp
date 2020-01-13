@@ -8,22 +8,7 @@
 
 namespace station_sim {
 
-	Model::Model()
-	{
-		initialize_model(0, ModelParameters());
-	}
-
 	Model::~Model() = default;
-
-	Model::Model(int unique_id)
-	{
-		initialize_model(unique_id, ModelParameters());
-	}
-
-	Model::Model(const ModelParameters& model_parameters)
-	{
-		initialize_model(0, model_parameters);
-	}
 
 	Model::Model(int unique_id, const ModelParameters& model_parameters)
 	{
@@ -32,8 +17,13 @@ namespace station_sim {
 
 	void Model::initialize_model(int unique_id, const ModelParameters& model_parameters)
 	{
+		model_id = unique_id;
 		status = 1;
-		this->unique_id = unique_id;
+		step_id = 0;
+		pop_active = 0;
+		pop_finished = 0;
+		history_collisions_number = 0;
+		wiggle_collisions_number = 0;
 
 		speed_step =
 				(model_parameters.get_speed_mean()-model_parameters.get_speed_min())/model_parameters.get_speed_steps();
@@ -41,14 +31,7 @@ namespace station_sim {
 		set_boundaries(model_parameters);
 		set_gates_locations(model_parameters);
 
-		step_id = 0;
-		pop_active = 0;
-		pop_finished = 0;
-
 		generate_agents(model_parameters);
-
-		history_collisions_number = 0;
-		wiggle_collisions_number = 0;
 	}
 
 	void Model::set_boundaries(const ModelParameters& model_parameters)
@@ -69,9 +52,9 @@ namespace station_sim {
 				model_parameters.get_gates_out()+2);
 	}
 
-	void Model::create_gates(std::vector<std::vector<double>>& gates, float x, float y, int gates_number)
+	void Model::create_gates(std::vector<std::vector<float>>& gates, float x, float y, int gates_number)
 	{
-		std::vector<double> result = linear_spaced_vector(0, y, gates_number);
+		std::vector<float> result = linear_spaced_vector(0, y, gates_number);
 		result.erase(result.begin());
 		result.pop_back();
 
@@ -81,10 +64,10 @@ namespace station_sim {
 		}
 	}
 
-	std::vector<double> Model::linear_spaced_vector(double start, double end, int points_number)
+	std::vector<float> Model::linear_spaced_vector(float start, float end, int points_number)
 	{
-		std::vector<double> result;
-		double delta = (end-start)/double(points_number-1);
+		std::vector<float> result;
+		float delta = (end-start)/float(points_number-1);
 		for (int i = 0; i<points_number; i++) {
 			result.push_back(start+i*delta);
 		}
@@ -98,12 +81,12 @@ namespace station_sim {
 		}
 	}
 
-	const std::vector<std::vector<double>>& Model::get_gates_in_locations() const
+	const std::vector<std::vector<float>>& Model::get_gates_in_locations() const
 	{
 		return gates_in_locations;
 	}
 
-	const std::vector<std::vector<double>>& Model::get_gates_out_locations() const
+	const std::vector<std::vector<float>>& Model::get_gates_out_locations() const
 	{
 		return gates_out_locations;
 	}
@@ -113,7 +96,7 @@ namespace station_sim {
 		if (pop_finished<model_parameters.get_population_total() && step_id<model_parameters.get_step_limit()
 				&& status==1) {
 			if (model_parameters.is_do_print() && step_id%100==0) {
-				std::cout << "\tIteration: " << (double) (step_id)/(double) (model_parameters.get_step_limit())
+				std::cout << "\tIteration: " << (float) (step_id)/(float) (model_parameters.get_step_limit())
 						  << std::endl;
 			}
 
@@ -127,7 +110,7 @@ namespace station_sim {
 		}
 		else {
 			if (model_parameters.is_do_print() && status==1) {
-				std::cout << "StationSim " << unique_id << " - Everyone made it!" << std::endl;
+				std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
 			}
 		}
 	}
@@ -146,7 +129,7 @@ namespace station_sim {
 		history_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_collision_locations(std::vector<double> new_location)
+	void Model::add_to_history_collision_locations(std::vector<float> new_location)
 	{
 		history_collision_locations.push_back(new_location);
 	}
@@ -156,7 +139,7 @@ namespace station_sim {
 		wiggle_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_wiggle_locations(std::vector<double> new_location)
+	void Model::add_to_history_wiggle_locations(std::vector<float> new_location)
 	{
 		history_wiggle_locations.push_back(new_location);
 	}
@@ -166,5 +149,15 @@ namespace station_sim {
 		for (auto& agent:agents) {
 			agent.move_agent(model, model_parameters);
 		}
+	}
+
+	int Model::get_unique_id() const
+	{
+		return model_id;
+	}
+
+	float Model::get_speed_step() const
+	{
+		return speed_step;
 	}
 }
