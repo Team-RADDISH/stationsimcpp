@@ -15,16 +15,23 @@ namespace station_sim {
 		float new_value = start;
 
 		if (start<stop) {
+			if(start+step<start) {
+				return std::vector<float>();
+			}
+
 			while (new_value<stop) {
 				result.push_back(new_value);
 				new_value += step;
 			}
 		}
 		else {
+			if(start+step>start) {
+				return std::vector<float>();
+			}
+
 			while (new_value>stop) {
 				result.push_back(new_value);
-				new_value = start+step;
-				result.push_back(new_value);
+				new_value += step;
 			}
 		}
 
