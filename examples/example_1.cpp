@@ -15,13 +15,13 @@ int main()
 	station_sim::ModelParameters model_parameters;
 	station_sim::Model model(0, model_parameters);
 
-	station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
-	station_sim::ModelPlotting::plot_gates_locations(model.gates_out_locations);
+//	station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
+//	station_sim::ModelPlotting::plot_gates_locations(model.gates_out_locations);
 
-//	for (int i = 0; i<model_parameters.get_step_limit(); i++) {
-//		model.step(model, model_parameters);
-//	}
+	for (int i = 0; i<model_parameters.get_step_limit(); i++) {
+		model.step(model, model_parameters);
 
-	model.step(model, model_parameters);
+	}
+
 	station_sim::ModelPlotting::plot_agents_locations(model);
 }

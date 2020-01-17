@@ -6,20 +6,17 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_HELP_FUNCTIONS_HPP
-#define STATIONSIM_HELP_FUNCTIONS_HPP
-
-#include <vector>
+#include "HelpFunctions.hpp"
 
 namespace station_sim {
-	// @todo write tests, check if is the same as numpy.arange, (3,1,10) input is different to numpy version
-	std::vector<float> evenly_spaced_values_within_interval(float start, float stop, float step)
+
+	std::vector<float> HelpFunctions::evenly_spaced_values_within_interval(float start, float stop, float step)
 	{
 		std::vector<float> result;
 		float new_value = start;
 
 		if (start<stop) {
-			if(start+step<start) {
+			if (start+step<start) {
 				return std::vector<float>();
 			}
 
@@ -29,7 +26,7 @@ namespace station_sim {
 			}
 		}
 		else {
-			if(start+step>start) {
+			if (start+step>start) {
 				return std::vector<float>();
 			}
 
@@ -41,6 +38,15 @@ namespace station_sim {
 
 		return result;
 	}
+
+	std::vector<float> HelpFunctions::linear_spaced_vector(float start, float end, int points_number)
+	{
+		std::vector<float> result;
+		float delta = (end-start)/float(points_number-1);
+		for (int i = 0; i<points_number; i++) {
+			result.push_back(start+i*delta);
+		}
+		return result;
+	}
 }
 
-#endif //STATIONSIM_HELP_FUNCTIONS_HPP

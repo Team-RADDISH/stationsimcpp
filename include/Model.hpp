@@ -10,13 +10,15 @@
 #define STATIONSIM_MODEL_HPP
 
 #include "stationsim_export.h"
-#include "ModelParameters.hpp"
-#include "Agent.hpp"
 
 #include <vector>
 #include <array>
 
 namespace station_sim {
+
+	class ModelParameters;
+	class Agent;
+
 	class STATIONSIM_EXPORT Model {
 	private:
 		int model_id;
@@ -62,7 +64,6 @@ namespace station_sim {
 		void set_boundaries(const ModelParameters& model_parameters);
 		void set_gates_locations(const ModelParameters& model_parameters);
 		void create_gates(std::vector<std::array<float, 2>>& gates, float x, float y, int gates_number);
-		std::vector<float> linear_spaced_vector(float start, float end, int points_number);
 		void generate_agents(const ModelParameters& model_parameters);
 		void move_agents(Model& model, const ModelParameters& model_parameters);
 	};

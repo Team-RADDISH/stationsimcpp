@@ -32,24 +32,22 @@ endif ()
 add_compile_options("$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
 add_compile_options("$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
 
-add_subdirectory(external)
-
 add_library(StationSim SHARED)
-add_dependencies(StationSim cxxplot-install)
 
 target_sources(StationSim PRIVATE
         source/Model.cpp
         source/ModelParameters.cpp
         source/Agent.cpp
-        source/ModelPlotting.cpp)
+        source/ModelPlotting.cpp
+        source/HelpFunctions.cpp)
 target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
 
 find_package(Python3 COMPONENTS Development NumPy)
 target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
-find_package(cxxplot REQUIRED
-        HINTS ${CMAKE_BINARY_DIR})
+
+find_package(cxxplot REQUIRED)
 target_link_libraries(StationSim PRIVATE cxxplot::cxxplot)
 
 include(GenerateExportHeader)

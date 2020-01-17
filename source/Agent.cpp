@@ -8,7 +8,7 @@
 
 #include "Agent.hpp"
 #include "Model.hpp"
-#include "help_functions.hpp"
+#include "HelpFunctions.hpp"
 
 #include <random>
 #include <algorithm>
@@ -67,7 +67,7 @@ namespace station_sim {
 			agent_max_speed = speed_normal_distribution(generator);
 		}
 
-		agent_available_speeds = evenly_spaced_values_within_interval(agent_max_speed,
+		agent_available_speeds = HelpFunctions::evenly_spaced_values_within_interval(agent_max_speed,
 				model_parameters.get_speed_min(), -model.get_speed_step());
 	}
 
@@ -93,7 +93,7 @@ namespace station_sim {
 
 	void Agent::move_agent(Model& model, const ModelParameters& model_parameters)
 	{
-		std::vector<float> direction = calculate_agent_direction();
+		std::array<float, 2> direction = calculate_agent_direction();
 		std::array<float, 2> new_agent_location = {0, 0};
 		float new_speed = 0;
 
@@ -155,13 +155,13 @@ namespace station_sim {
 		}
 	}
 
-	std::vector<float> Agent::calculate_agent_direction()
+	std::array<float, 2> Agent::calculate_agent_direction()
 	{
 		float distance = calculate_distance(desired_location, agent_location);
 
-		std::vector<float> direction(2);
+		std::array<float, 2> direction = {0, 0};
 		direction[0] = (desired_location[0]-agent_location[0])/distance;
-		direction[1] = (desired_location[0]-agent_location[0])/distance;
+		direction[1] = (desired_location[1]-agent_location[1])/distance;
 
 		return direction;
 	}

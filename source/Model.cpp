@@ -8,7 +8,10 @@
 
 #include <iostream>
 
+#include "ModelParameters.hpp"
 #include "Model.hpp"
+#include "Agent.hpp"
+#include "HelpFunctions.hpp"
 
 namespace station_sim {
 
@@ -58,7 +61,7 @@ namespace station_sim {
 
 	void Model::create_gates(std::vector<std::array<float, 2>>& gates, float x, float y, int gates_number)
 	{
-		std::vector<float> result = linear_spaced_vector(0, y, gates_number);
+		std::vector<float> result = HelpFunctions::linear_spaced_vector(0, y, gates_number);
 		result.erase(result.begin());
 		result.pop_back();
 
@@ -66,16 +69,6 @@ namespace station_sim {
 			gates[i][0] = x;
 			gates[i][1] = result[i];
 		}
-	}
-
-	std::vector<float> Model::linear_spaced_vector(float start, float end, int points_number)
-	{
-		std::vector<float> result;
-		float delta = (end-start)/float(points_number-1);
-		for (int i = 0; i<points_number; i++) {
-			result.push_back(start+i*delta);
-		}
-		return result;
 	}
 
 	void Model::generate_agents(const ModelParameters& model_parameters)
@@ -107,8 +100,7 @@ namespace station_sim {
 			// get agents and move them
 			move_agents(model, model_parameters);
 
-			// do the history for the state
-
+			// todo do the history for the state
 
 			step_id += 1;
 		}

@@ -69,7 +69,7 @@ namespace station_sim {
 		void activate_agent(Model& model);
 		void deactivate_agent_if_reached_exit_gate(Model& model, const ModelParameters& model_parameters);
 		float calculate_distance(std::array<float, 2> location_0, std::array<float, 2> location_1);
-		std::vector<float> calculate_agent_direction();
+		[[nodiscard]] std::array<float, 2> calculate_agent_direction();
 		bool is_outside_boundaries(const Model& model, const std::array<float, 2>& location);
 		bool collides_other_agent(const Model& model, const ModelParameters& model_parameters,
 				const std::array<float, 2>& location);
