@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 13/01/2020.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #ifndef STATIONSIM_HELP_FUNCTIONS_HPP
 #define STATIONSIM_HELP_FUNCTIONS_HPP

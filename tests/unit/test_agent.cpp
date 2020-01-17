@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 25/11/2019.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #define CATCH_CONFIG_MAIN
 

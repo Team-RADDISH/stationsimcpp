@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 07/01/2020.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #include "Agent.hpp"
 #include "Model.hpp"
@@ -13,22 +17,17 @@ namespace station_sim {
 
 	Agent::Agent(int unique_id, const Model& model, const ModelParameters& model_parameters)
 	{
+		status = AgentStatus::not_started;  // 0 Not Started, 1 Active, 2 Finished
+		agent_id = unique_id;
+
 		generator = std::default_random_engine(model_parameters.get_random_seed());
 		initialize_random_distributions(model_parameters);
-
-		agent_id = unique_id;
-		is_active = false;
 
 		initialize_location(model, model_parameters);
 		initialize_speed(model, model_parameters);
 
-//		steps_activate = gates_speed_exponential_distribution(generator);
-//		wiggle = fmin(model_parameters.get_max_wiggle(), agent_max_speed);
-	}
-
-	Agent::~Agent()
-	{
-
+		steps_activate = gates_speed_exponential_distribution(generator);
+		wiggle = fmin(model_parameters.get_max_wiggle(), agent_max_speed);
 	}
 
 	void Agent::initialize_random_distributions(const ModelParameters& model_parameters)
@@ -47,13 +46,16 @@ namespace station_sim {
 
 		gate_in = gates_in_int_distribution(generator);
 
-		location_start = model.get_gates_in_locations()[gate_in];
-		location_start[1] += perturb;
+		std::copy(model.get_gates_in_locations()[gate_in].begin(), model.get_gates_in_locations()[gate_in].end(),
+				start_location.begin());
+		start_location[1] += perturb;
 
 		gate_out = gates_out_int_distribution(generator);
-		location_desire = model.get_gates_out_locations()[gate_out];
 
-		agent_location = location_start;
+		std::copy(model.get_gates_out_locations()[gate_in].begin(), model.get_gates_out_locations()[gate_in].end(),
+				desired_location.begin());
+
+		agent_location = start_location;
 	}
 
 	void Agent::initialize_speed(const Model& model, const ModelParameters& model_parameters)
@@ -69,23 +71,21 @@ namespace station_sim {
 				model_parameters.get_speed_min(), -model.get_speed_step());
 	}
 
-
-
 	void Agent::step(Model& model, const ModelParameters& model_parameters)
 	{
-		if (is_active==0) {
+		if (status==AgentStatus::not_started) {
 			activate_agent(model);
 		}
-		else if (is_active==1) {
+		else if (status==AgentStatus::active) {
 			move_agent(model, model_parameters);
-			deactivate_agent(model);
+			deactivate_agent_if_reached_exit_gate(model, model_parameters);
 		}
 	}
 
 	void Agent::activate_agent(Model& model)
 	{
 		if (model.step_id>steps_activate) {
-			is_active = true;
+			status = AgentStatus::active;
 			model.pop_active += 1;
 			step_start = model.step_id;
 		}
@@ -94,7 +94,7 @@ namespace station_sim {
 	void Agent::move_agent(Model& model, const ModelParameters& model_parameters)
 	{
 		std::vector<float> direction = calculate_agent_direction();
-		std::vector<float> new_agent_location(2);
+		std::array<float, 2> new_agent_location = {0, 0};
 		float new_speed = 0;
 
 		for (const auto& speed : agent_available_speeds) {
@@ -105,7 +105,9 @@ namespace station_sim {
 			if (is_outside_boundaries(model, new_agent_location)
 					|| collides_other_agent(model, model_parameters, new_agent_location)) {
 				if (model_parameters.is_do_history()) {
-					model.increase_history_collisions_number_by_value(1);
+
+					history_collisions += 1;
+
 					model.add_to_history_collision_locations(new_agent_location);
 				}
 			}
@@ -121,7 +123,7 @@ namespace station_sim {
 				new_agent_location[1] = agent_location[1]+dis(generator);
 
 				if (model_parameters.is_do_history()) {
-					model.increase_wiggle_collisions_number_by_value(1);
+					history_wiggles += 1;
 					model.add_to_history_wiggle_locations(new_agent_location);
 				}
 			}
@@ -136,7 +138,7 @@ namespace station_sim {
 	}
 
 	void
-	Agent::clip_vector_values_to_boundaries(std::vector<float>& vec, std::array<std::array<float, 2>, 2> boundaries)
+	Agent::clip_vector_values_to_boundaries(std::array<float, 2>& vec, std::array<std::array<float, 2>, 2> boundaries)
 	{
 		if (vec[0]<boundaries[0][0]) {
 			vec[0] = boundaries[0][0];
@@ -155,16 +157,16 @@ namespace station_sim {
 
 	std::vector<float> Agent::calculate_agent_direction()
 	{
-		float distance = calculate_distance(location_desire, agent_location);
+		float distance = calculate_distance(desired_location, agent_location);
 
 		std::vector<float> direction(2);
-		direction[0] = (location_desire[0]-agent_location[0])/distance;
-		direction[1] = (location_desire[0]-agent_location[0])/distance;
+		direction[0] = (desired_location[0]-agent_location[0])/distance;
+		direction[1] = (desired_location[0]-agent_location[0])/distance;
 
 		return direction;
 	}
 
-	float Agent::calculate_distance(std::vector<float> location_0, std::vector<float> location_1)
+	float Agent::calculate_distance(std::array<float, 2> location_0, std::array<float, 2> location_1)
 	{
 		float sum = 0;
 		for (unsigned long i = 0; i<location_0.size(); i++) {
@@ -173,17 +175,17 @@ namespace station_sim {
 		return sqrt(sum);
 	}
 
-	bool Agent::is_outside_boundaries(const Model& model, const std::vector<float>& location)
+	bool Agent::is_outside_boundaries(const Model& model, const std::array<float, 2>& location)
 	{
 		return model.boundaries[0][0]<location[0] && model.boundaries[1][0]>location[0] &&
 				model.boundaries[0][1]<location[1] && model.boundaries[1][1]>location[1];
 	}
 
 	bool Agent::collides_other_agent(const Model& model, const ModelParameters& model_parameters,
-			const std::vector<float>& location)
+			const std::array<float, 2>& location)
 	{
 		for (const auto& agent : model.agents) {
-			if (agent.agent_id!=agent_id && agent.is_active
+			if (agent.agent_id!=agent_id && agent.status==AgentStatus::active
 					&& calculate_distance(agent.get_agent_location(), location)>model_parameters.get_separation()) {
 				return true;
 			}
@@ -192,12 +194,27 @@ namespace station_sim {
 		return false;
 	}
 
-	void Agent::deactivate_agent(Model& model)
+	void Agent::deactivate_agent_if_reached_exit_gate(Model& model, const ModelParameters& model_parameters)
 	{
+		if (calculate_distance(agent_location, desired_location)<model_parameters.get_gates_space()) {
+			status = AgentStatus::finished;
+			model.pop_active -= 1;
+			model.pop_finished += 1;
 
+			if (model_parameters.is_do_history()) {
+				int steps_expected = (calculate_distance(start_location, desired_location)
+						-model_parameters.get_gates_space())/agent_available_speeds[0];
+				// todo complete this part
+//				model.steps_exped.append(steps_exped)
+//				steps_taken = model.step_id - self.step_start
+//				model.steps_taken.append(steps_taken)
+//				steps_delay = steps_taken - steps_exped
+//				model.steps_delay.append(steps_delay)
+			}
+		}
 	}
 
-	const std::vector<float>& Agent::get_agent_location() const
+	const std::array<float, 2>& Agent::get_agent_location() const
 	{
 		return agent_location;
 	}

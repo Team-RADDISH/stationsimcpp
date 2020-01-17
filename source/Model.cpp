@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 25/11/2019.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #include <iostream>
 
@@ -52,15 +56,15 @@ namespace station_sim {
 				model_parameters.get_gates_out()+2);
 	}
 
-	void Model::create_gates(std::vector<std::vector<float>>& gates, float x, float y, int gates_number)
+	void Model::create_gates(std::vector<std::array<float, 2>>& gates, float x, float y, int gates_number)
 	{
 		std::vector<float> result = linear_spaced_vector(0, y, gates_number);
 		result.erase(result.begin());
 		result.pop_back();
 
 		for (unsigned long i = 0; i<result.size(); i++) {
-			gates[i].push_back(x);
-			gates[i].push_back(result[i]);
+			gates[i][0] = x;
+			gates[i][1] = result[i];
 		}
 	}
 
@@ -81,12 +85,12 @@ namespace station_sim {
 		}
 	}
 
-	const std::vector<std::vector<float>>& Model::get_gates_in_locations() const
+	const std::vector<std::array<float, 2>>& Model::get_gates_in_locations() const
 	{
 		return gates_in_locations;
 	}
 
-	const std::vector<std::vector<float>>& Model::get_gates_out_locations() const
+	const std::vector<std::array<float, 2>>& Model::get_gates_out_locations() const
 	{
 		return gates_out_locations;
 	}
@@ -129,7 +133,7 @@ namespace station_sim {
 		history_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_collision_locations(std::vector<float> new_location)
+	void Model::add_to_history_collision_locations(std::array<float, 2> new_location)
 	{
 		history_collision_locations.push_back(new_location);
 	}
@@ -139,7 +143,7 @@ namespace station_sim {
 		wiggle_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_wiggle_locations(std::vector<float> new_location)
+	void Model::add_to_history_wiggle_locations(std::array<float, 2> new_location)
 	{
 		history_wiggle_locations.push_back(new_location);
 	}
@@ -147,7 +151,7 @@ namespace station_sim {
 	void Model::move_agents(Model& model, const ModelParameters& model_parameters)
 	{
 		for (auto& agent:agents) {
-			agent.move_agent(model, model_parameters);
+			agent.step(model, model_parameters);
 		}
 	}
 

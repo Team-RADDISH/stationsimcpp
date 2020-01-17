@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 07/01/2020.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #ifndef STATIONSIM_AGENT_HPP
 #define STATIONSIM_AGENT_HPP
@@ -16,6 +20,12 @@ namespace station_sim {
 
 	class Model;
 
+	enum class AgentStatus : int {
+		not_started = 0,
+		active = 1,
+		finished = 2
+	};
+
 	class STATIONSIM_EXPORT Agent {
 	private:
 		std::default_random_engine generator;
@@ -27,48 +37,47 @@ namespace station_sim {
 
 		int agent_id;
 		bool is_active;
-
 		int gate_in;
-		std::vector<float> location_start;
+		std::array<float, 2> start_location;
 		int gate_out;
-		std::vector<float> location_desire;
-		std::vector<float> agent_location;
-	public:
-		const std::vector<float>& get_agent_location() const;
-	private:
-
+		std::array<float, 2> desired_location;
+		std::array<float, 2> agent_location;
+		float steps_activate;
+		float wiggle;
 		float agent_max_speed;
 		std::vector<float> agent_available_speeds;
 		float agent_speed;
-	public:
-		float get_agent_speed() const;
-	private:
-
-		float steps_activate;
-		float wiggle;
-
+		std::vector<std::array<float, 2>> history_locations;
+		std::vector<float> history_speeds;
+		int history_wiggles = 0;
+		int history_collisions = 0;
 		int step_start;
+		AgentStatus status;
 
 	public:
+		Agent() = delete;
 		Agent(int unique_id, const Model& model, const ModelParameters& model_parameters);
-		~Agent();
+		~Agent() = default;
 
-		void move_agent(Model& model, const ModelParameters& model_parameters);
+		void step(Model& model, const ModelParameters& model_parameters);
+		[[nodiscard]] const std::array<float, 2>& get_agent_location() const;
+		[[nodiscard]] float get_agent_speed() const;
 
 	private:
 		void initialize_location(const Model& model, const ModelParameters& model_parameters);
 		void initialize_speed(const Model& model, const ModelParameters& model_parameters);
-		void step(Model& model, const ModelParameters& model_parameters);
 		void activate_agent(Model& model);
-		void deactivate_agent(Model& model);
-		float calculate_distance(std::vector<float> location_0, std::vector<float> location_1);
+		void deactivate_agent_if_reached_exit_gate(Model& model, const ModelParameters& model_parameters);
+		float calculate_distance(std::array<float, 2> location_0, std::array<float, 2> location_1);
 		std::vector<float> calculate_agent_direction();
-		bool is_outside_boundaries(const Model& model, const std::vector<float>& location);
+		bool is_outside_boundaries(const Model& model, const std::array<float, 2>& location);
 		bool collides_other_agent(const Model& model, const ModelParameters& model_parameters,
-				const std::vector<float>& location);
+				const std::array<float, 2>& location);
 		void
-		clip_vector_values_to_boundaries(std::vector<float>& vec, std::array<std::array<float, 2>, 2> boundaries);
+		clip_vector_values_to_boundaries(std::array<float, 2>& vec, std::array<std::array<float, 2>, 2> boundaries);
 		void initialize_random_distributions(const ModelParameters& model_parameters);
+
+		void move_agent(Model& model, const ModelParameters& model_parameters);
 	};
 }
 #endif //STATIONSIM_AGENT_HPP
