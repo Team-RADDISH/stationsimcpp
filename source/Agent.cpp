@@ -10,6 +10,7 @@
 #include "Model.hpp"
 #include "HelpFunctions.hpp"
 
+#include <cmath>
 #include <random>
 #include <algorithm>
 
@@ -20,14 +21,14 @@ namespace station_sim {
 		status = AgentStatus::not_started;  // 0 Not Started, 1 Active, 2 Finished
 		agent_id = unique_id;
 
-		generator = std::default_random_engine(model_parameters.get_random_seed());
+		generator = model.get_generator();
 		initialize_random_distributions(model_parameters);
 
 		initialize_location(model, model_parameters);
 		initialize_speed(model, model_parameters);
 
-		steps_activate = gates_speed_exponential_distribution(generator);
-		wiggle = fmin(model_parameters.get_max_wiggle(), agent_max_speed);
+		steps_activate = gates_speed_exponential_distribution(*generator);
+		wiggle = std::fmin(model_parameters.get_max_wiggle(), agent_max_speed);
 	}
 
 	void Agent::initialize_random_distributions(const ModelParameters& model_parameters)
@@ -38,22 +39,21 @@ namespace station_sim {
 		gates_speed_exponential_distribution = std::exponential_distribution<float>(model_parameters.get_gates_speed());
 		speed_normal_distribution = std::normal_distribution<float>(model_parameters.get_speed_mean(),
 				model_parameters.get_speed_std());
+		wiggle_int_distribution = std::uniform_real_distribution<float>(-1, 2);
 	}
 
 	void Agent::initialize_location(const Model& model, const ModelParameters& model_parameters)
 	{
-		float perturb = float_distribution(generator)*model_parameters.get_gates_space();
+		float perturb = float_distribution(*generator)*model_parameters.get_gates_space();
 
-		gate_in = gates_in_int_distribution(generator);
+		gate_in = gates_in_int_distribution(*generator);
+		start_location.x = model.get_gates_in_locations()[gate_in].x;
+		start_location.y = model.get_gates_in_locations()[gate_in].y;
+		start_location.y += perturb;
 
-		std::copy(model.get_gates_in_locations()[gate_in].begin(), model.get_gates_in_locations()[gate_in].end(),
-				start_location.begin());
-		start_location[1] += perturb;
-
-		gate_out = gates_out_int_distribution(generator);
-
-		std::copy(model.get_gates_out_locations()[gate_in].begin(), model.get_gates_out_locations()[gate_in].end(),
-				desired_location.begin());
+		gate_out = gates_out_int_distribution(*generator);
+		desired_location.x = model.get_gates_out_locations()[gate_out].x;
+		desired_location.y = model.get_gates_out_locations()[gate_out].y;
 
 		agent_location = start_location;
 	}
@@ -64,7 +64,7 @@ namespace station_sim {
 		agent_max_speed = 0;
 
 		while (agent_max_speed<=model_parameters.get_speed_min()) {
-			agent_max_speed = speed_normal_distribution(generator);
+			agent_max_speed = speed_normal_distribution(*generator);
 		}
 
 		agent_available_speeds = HelpFunctions::evenly_spaced_values_within_interval(agent_max_speed,
@@ -93,16 +93,16 @@ namespace station_sim {
 
 	void Agent::move_agent(Model& model, const ModelParameters& model_parameters)
 	{
-		std::array<float, 2> direction = calculate_agent_direction();
-		std::array<float, 2> new_agent_location = {0, 0};
+		Point2D direction = calculate_agent_direction();
+		Point2D new_agent_location(0, 0);
 		float new_speed = 0;
 
 		for (const auto& speed : agent_available_speeds) {
 			new_speed = speed;
-			new_agent_location[0] = agent_location[0]+speed*direction[0];
-			new_agent_location[1] = agent_location[1]+speed*direction[1];
+			new_agent_location.x = agent_location.x+speed*direction.x;
+			new_agent_location.y = agent_location.y+speed*direction.y;
 
-			if (is_outside_boundaries(model, new_agent_location)
+			if (is_outside_boundaries(model.boundaries, new_agent_location)
 					|| collides_other_agent(model, model_parameters, new_agent_location)) {
 				if (model_parameters.is_do_history()) {
 
@@ -117,10 +117,8 @@ namespace station_sim {
 
 			// If even the slowest speed results in a collision, then wiggle.
 			if (speed==agent_available_speeds.back()) {
-				new_agent_location[0] = agent_location[0];
-
-				auto dis = std::uniform_real_distribution<float>(-1, 2);
-				new_agent_location[1] = agent_location[1]+dis(generator);
+				new_agent_location.x = agent_location.x;
+				new_agent_location.y = agent_location.y+wiggle_int_distribution(*generator);
 
 				if (model_parameters.is_do_history()) {
 					history_wiggles += 1;
@@ -129,7 +127,7 @@ namespace station_sim {
 			}
 		}
 
-		if (is_outside_boundaries(model, new_agent_location)) {
+		if (is_outside_boundaries(model.boundaries, new_agent_location)) {
 			clip_vector_values_to_boundaries(new_agent_location, model.boundaries);
 		}
 
@@ -138,51 +136,51 @@ namespace station_sim {
 	}
 
 	void
-	Agent::clip_vector_values_to_boundaries(std::array<float, 2>& vec, std::array<std::array<float, 2>, 2> boundaries)
+	Agent::clip_vector_values_to_boundaries(Point2D& location,
+			std::array<Point2D, 2> boundaries)
 	{
-		if (vec[0]<boundaries[0][0]) {
-			vec[0] = boundaries[0][0];
+		if (location.x<boundaries[0].x) {
+			location.x = boundaries[0].x;
 		}
-		if (vec[1]<boundaries[1][0]) {
-			vec[1] = boundaries[1][0];
+		if (location.x>boundaries[1].x) {
+			location.x = boundaries[1].x;
 		}
 
-		if (vec[0]>boundaries[1][0]) {
-			vec[0] = boundaries[1][0];
+		if (location.y<boundaries[0].y) {
+			location.y = boundaries[0].y;
 		}
-		if (vec[1]>boundaries[1][1]) {
-			vec[1] = boundaries[1][1];
+		if (location.y>boundaries[1].y) {
+			location.y = boundaries[1].y;
 		}
 	}
 
-	std::array<float, 2> Agent::calculate_agent_direction()
+	Point2D Agent::calculate_agent_direction()
 	{
 		float distance = calculate_distance(desired_location, agent_location);
 
-		std::array<float, 2> direction = {0, 0};
-		direction[0] = (desired_location[0]-agent_location[0])/distance;
-		direction[1] = (desired_location[1]-agent_location[1])/distance;
-
-		return direction;
+		return Point2D((desired_location.x-agent_location.x)/distance,
+				(desired_location.y-agent_location.y)/distance);;
 	}
 
-	float Agent::calculate_distance(std::array<float, 2> location_0, std::array<float, 2> location_1)
+	float Agent::calculate_distance(Point2D location_0, Point2D location_1)
 	{
-		float sum = 0;
-		for (unsigned long i = 0; i<location_0.size(); i++) {
-			sum = powf(location_0[i]+location_1[i], 2);
-		}
-		return sqrt(sum);
+		float sum = powf(location_0.x+location_1.x, 2);
+		sum += powf(location_0.y+location_1.y, 2);
+
+		return std::sqrt(sum);
 	}
 
-	bool Agent::is_outside_boundaries(const Model& model, const std::array<float, 2>& location)
+	bool Agent::is_outside_boundaries(const std::array<Point2D, 2> boundaries,
+			const Point2D& location)
 	{
-		return model.boundaries[0][0]<location[0] && model.boundaries[1][0]>location[0] &&
-				model.boundaries[0][1]<location[1] && model.boundaries[1][1]>location[1];
+		return location.x<boundaries[0].x ||
+				location.x>boundaries[1].x ||
+				location.y<boundaries[0].y ||
+				location.y>boundaries[1].y;
 	}
 
 	bool Agent::collides_other_agent(const Model& model, const ModelParameters& model_parameters,
-			const std::array<float, 2>& location)
+			const Point2D& location)
 	{
 		for (const auto& agent : model.agents) {
 			if (agent.agent_id!=agent_id && agent.status==AgentStatus::active
@@ -214,7 +212,7 @@ namespace station_sim {
 		}
 	}
 
-	const std::array<float, 2>& Agent::get_agent_location() const
+	const Point2D& Agent::get_agent_location() const
 	{
 		return agent_location;
 	}

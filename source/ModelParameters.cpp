@@ -42,10 +42,7 @@ namespace station_sim {
 		this->do_print = true;
 
 		std::random_device r;
-		std::default_random_engine generator(r());
-		std::uniform_int_distribution<int> distribution(std::numeric_limits<int>::min(),
-				std::numeric_limits<int>::max());
-		this->random_seed = distribution(generator);
+		this->random_seed = r();
 	}
 
 	ModelParameters::~ModelParameters() = default;

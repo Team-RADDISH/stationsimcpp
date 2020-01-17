@@ -18,9 +18,9 @@ namespace station_sim {
 		std::vector<float> y_int;
 
 		for (const auto& agent : model.agents) {
-			const std::array<float, 2> agent_location = agent.get_agent_location();
-			x_int.emplace_back(agent_location[0]);
-			y_int.emplace_back(agent_location[1]);
+			const Point2D agent_location = agent.get_agent_location();
+			x_int.emplace_back(agent_location.x);
+			y_int.emplace_back(agent_location.y);
 		}
 
 		std::vector<std::pair<std::string, std::string>> args;

@@ -24,6 +24,8 @@ namespace station_sim {
 
 	void Model::initialize_model(int unique_id, const ModelParameters& model_parameters)
 	{
+		generator = new std::mt19937(model_parameters.get_random_seed());
+
 		model_id = unique_id;
 		status = 1;
 		step_id = 0;
@@ -43,10 +45,10 @@ namespace station_sim {
 
 	void Model::set_boundaries(const ModelParameters& model_parameters)
 	{
-		boundaries[0][0] = 0;
-		boundaries[0][1] = 0;
-		boundaries[1][0] = model_parameters.get_space_width();
-		boundaries[1][1] = model_parameters.get_space_height();
+		boundaries[0].x = 0; // x1
+		boundaries[0].y = 0; // y1
+		boundaries[1].x = model_parameters.get_space_width();  // x2
+		boundaries[1].y = model_parameters.get_space_height(); // y2
 	}
 
 	void Model::set_gates_locations(const ModelParameters& model_parameters)
@@ -59,15 +61,15 @@ namespace station_sim {
 				model_parameters.get_gates_out()+2);
 	}
 
-	void Model::create_gates(std::vector<std::array<float, 2>>& gates, float x, float y, int gates_number)
+	void Model::create_gates(std::vector<Point2D>& gates, float x, float y, int gates_number)
 	{
 		std::vector<float> result = HelpFunctions::linear_spaced_vector(0, y, gates_number);
 		result.erase(result.begin());
 		result.pop_back();
 
 		for (unsigned long i = 0; i<result.size(); i++) {
-			gates[i][0] = x;
-			gates[i][1] = result[i];
+			gates[i].x= x;
+			gates[i].y = result[i];
 		}
 	}
 
@@ -78,12 +80,12 @@ namespace station_sim {
 		}
 	}
 
-	const std::vector<std::array<float, 2>>& Model::get_gates_in_locations() const
+	const std::vector<Point2D>& Model::get_gates_in_locations() const
 	{
 		return gates_in_locations;
 	}
 
-	const std::vector<std::array<float, 2>>& Model::get_gates_out_locations() const
+	const std::vector<Point2D>& Model::get_gates_out_locations() const
 	{
 		return gates_out_locations;
 	}
@@ -125,7 +127,7 @@ namespace station_sim {
 		history_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_collision_locations(std::array<float, 2> new_location)
+	void Model::add_to_history_collision_locations(Point2D new_location)
 	{
 		history_collision_locations.push_back(new_location);
 	}
@@ -135,7 +137,7 @@ namespace station_sim {
 		wiggle_collisions_number += value_increase;
 	}
 
-	void Model::add_to_history_wiggle_locations(std::array<float, 2> new_location)
+	void Model::add_to_history_wiggle_locations(Point2D new_location)
 	{
 		history_wiggle_locations.push_back(new_location);
 	}
@@ -155,5 +157,10 @@ namespace station_sim {
 	float Model::get_speed_step() const
 	{
 		return speed_step;
+	}
+
+	std::mt19937* Model::get_generator() const
+	{
+		return generator;
 	}
 }
