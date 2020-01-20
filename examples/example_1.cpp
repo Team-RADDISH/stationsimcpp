@@ -9,6 +9,7 @@
 #include "ModelParameters.hpp"
 #include "Model.hpp"
 #include "ModelPlotting.hpp"
+#include "Timer.hpp"
 
 int main()
 {
@@ -19,12 +20,17 @@ int main()
 //	station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
 //	station_sim::ModelPlotting::plot_gates_locations(model.gates_out_locations);
 
+	Chronos::Timer timer("timer1");
+	timer.start();
+
 	for (int i = 0; i<model_parameters.get_step_limit(); i++) {
 		model.step(model, model_parameters);
 
-		if (i%100==0) {
+		if (i%300==0) {
 			station_sim::ModelPlotting::plot_agents_locations(model);
 		}
 	}
+
+	timer.stop_timer(true);
 
 }
