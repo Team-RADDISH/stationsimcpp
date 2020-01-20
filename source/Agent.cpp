@@ -39,7 +39,7 @@ namespace station_sim {
 		gates_speed_exponential_distribution = std::exponential_distribution<float>(model_parameters.get_gates_speed());
 		speed_normal_distribution = std::normal_distribution<float>(model_parameters.get_speed_mean(),
 				model_parameters.get_speed_std());
-		wiggle_int_distribution = std::uniform_real_distribution<float>(-1, 2);
+		wiggle_int_distribution = std::uniform_int_distribution<int>(-1, 1);
 	}
 
 	void Agent::initialize_location(const Model& model, const ModelParameters& model_parameters)
@@ -118,7 +118,7 @@ namespace station_sim {
 			// If even the slowest speed results in a collision, then wiggle.
 			if (speed==agent_available_speeds.back()) {
 				new_agent_location.x = agent_location.x;
-				new_agent_location.y = agent_location.y+wiggle_int_distribution(*generator);
+				new_agent_location.y = agent_location.y+wiggle*wiggle_int_distribution(*generator);
 
 				if (model_parameters.is_do_history()) {
 					history_wiggles += 1;
@@ -184,7 +184,8 @@ namespace station_sim {
 	{
 		for (const auto& agent : model.agents) {
 			if (agent.agent_id!=agent_id && agent.status==AgentStatus::active
-					&& calculate_distance(agent.get_agent_location(), location)>model_parameters.get_separation()) {
+					&& calculate_distance(agent.get_agent_location(), location)<=model_parameters.get_separation()
+					&& location.x <= agent.get_agent_location().x ) {
 				return true;
 			}
 		}

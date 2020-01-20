@@ -35,7 +35,7 @@ namespace station_sim {
 		std::uniform_int_distribution<int> gates_out_int_distribution;
 		std::exponential_distribution<float> gates_speed_exponential_distribution;
 		std::normal_distribution<float> speed_normal_distribution;
-		std::uniform_real_distribution<float> wiggle_int_distribution;
+		std::uniform_int_distribution<int> wiggle_int_distribution;
 
 		int agent_id;
 		bool is_active{};
