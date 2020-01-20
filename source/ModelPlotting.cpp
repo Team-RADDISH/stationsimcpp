@@ -27,10 +27,12 @@ namespace station_sim {
 		args.emplace_back("color", "r");
 		args.emplace_back("marker", "o");
 
-		cxxplot::Plot<float> plot(x_int, y_int, args);
-		plot.set_xlabel("x label");
-		plot.set_ylabel("y label");
-		plot.show_plot();
+		cxxplot::Scatter<float> scatter(x_int, y_int, args);
+		scatter.set_xlabel("x label");
+		scatter.set_ylabel("y label");
+		scatter.set_xlim(model.boundaries[0].x, model.boundaries[1].x);
+		scatter.set_ylim(model.boundaries[0].y, model.boundaries[1].y);
+		scatter.show_plot();
 	}
 
 	void ModelPlotting::plot_gates_locations(const std::vector<std::array<float, 2>>& gates)
@@ -48,9 +50,9 @@ namespace station_sim {
 		args.emplace_back("color", "r");
 		args.emplace_back("marker", "o");
 
-		cxxplot::Plot<float> plot(x_int, y_int, args);
-		plot.set_xlabel("x label");
-		plot.set_ylabel("y label");
-		plot.show_plot();
+		cxxplot::Scatter<float> scatter(x_int, y_int, args);
+		scatter.set_xlabel("x label");
+		scatter.set_ylabel("y label");
+		scatter.show_plot();
 	}
 }
