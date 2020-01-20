@@ -70,6 +70,7 @@ namespace station_sim {
 		static void create_gates(std::vector<Point2D>& gates, float x, float y, int gates_number);
 		void generate_agents(const ModelParameters& model_parameters);
 		void move_agents(Model& model, const ModelParameters& model_parameters);
+		int print_per_steps;
 	};
 }
 
