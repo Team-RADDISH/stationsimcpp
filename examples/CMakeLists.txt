@@ -9,4 +9,4 @@ target_include_directories(example_1 PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
 target_link_libraries(example_1 PRIVATE
-        StationSim)
+        StationSim Chronos::Chronos)

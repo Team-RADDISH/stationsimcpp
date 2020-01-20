@@ -51,6 +51,9 @@ target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
 find_package(cxxplot REQUIRED)
 target_link_libraries(StationSim PRIVATE cxxplot::cxxplot)
 
+find_package(Chronos REQUIRED)
+target_link_libraries(StationSim PRIVATE Chronos::Chronos)
+
 include(GenerateExportHeader)
 generate_export_header(StationSim)
 
