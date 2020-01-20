@@ -22,4 +22,9 @@ namespace station_sim {
 		this->y = y;
 	}
 
+	Point2D Point2D::operator()(float x, float y)
+	{
+		return Point2D(x, y);
+	}
+
 }

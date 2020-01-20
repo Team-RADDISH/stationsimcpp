@@ -21,6 +21,9 @@ namespace station_sim {
 	{
 		initialize_model(unique_id, model_parameters);
 		print_per_steps = 100;
+
+		history_state(model_parameters.get_step_limit(),
+				std::vector<Point2D>(model_parameters.get_population_total(), Point2D()));
 	}
 
 	void Model::initialize_model(int unique_id, const ModelParameters& model_parameters)
@@ -103,6 +106,10 @@ namespace station_sim {
 			move_agents(model, model_parameters);
 
 			// todo do the history for the state
+			if (model_parameters.is_do_history()) {
+				// todo get agents' locations
+
+			}
 
 			step_id += 1;
 		}

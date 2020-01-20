@@ -71,6 +71,7 @@ namespace station_sim {
 		void generate_agents(const ModelParameters& model_parameters);
 		void move_agents(Model& model, const ModelParameters& model_parameters);
 		int print_per_steps;
+		std::vector<std::vector<Point2D>> history_state;
 	};
 }
 
