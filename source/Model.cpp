@@ -69,7 +69,7 @@ namespace station_sim {
 		result.pop_back();
 
 		for (unsigned long i = 0; i<result.size(); i++) {
-			gates[i].x= x;
+			gates[i].x = x;
 			gates[i].y = result[i];
 		}
 	}
