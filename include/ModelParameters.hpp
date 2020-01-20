@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 25/11/2019.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #ifndef STATIONSIM_MODELPARAMETERS_HPP
 #define STATIONSIM_MODELPARAMETERS_HPP
@@ -13,11 +17,11 @@ namespace station_sim {
     private:
         int population_total;
 
-        int space_width;
-        int space_height;
+        float space_width;
+        float space_height;
 
-        int gates_in;
-        int gates_out;
+        int gates_in_count;
+        int gates_out_count;
         int gates_space;
         float gates_speed;
 
@@ -44,10 +48,10 @@ namespace station_sim {
 
         [[nodiscard]] int get_population_total() const;
         void set_population_total(int value);
-		[[nodiscard]] int get_space_width() const;
-        void set_space_width(int value);
-		[[nodiscard]] int get_space_height() const;
-        void set_space_height(int value);
+		[[nodiscard]] float get_space_width() const;
+        void set_space_width(float value);
+		[[nodiscard]] float get_space_height() const;
+        void set_space_height(float value);
 		[[nodiscard]] int get_gates_in() const;
         void set_gates_in(int value);
 		[[nodiscard]] int get_gates_out() const;

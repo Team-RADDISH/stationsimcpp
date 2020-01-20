@@ -1,6 +1,10 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2020 Eleftherios Avramidis <ea461@cam.ac.uk>
+// Research Computing Services, University of Cambridge, UK
 //
-// Created by ea461 on 25/11/2019.
-//
+// Distributed under The MIT License (MIT)
+// See accompanying file LICENSE
+//---------------------------------------------------------------------------//
 
 #ifndef STATIONSIM_MODELPARAMETERS_CPP
 #define STATIONSIM_MODELPARAMETERS_CPP
@@ -19,8 +23,8 @@ namespace station_sim {
 		this->space_width = 400;
 		this->space_height = 200;
 
-		this->gates_in = 3;
-		this->gates_out = 2;
+		this->gates_in_count = 3;
+		this->gates_out_count = 2;
 		this->gates_space = 1;
 		this->gates_speed = 1;
 
@@ -38,10 +42,7 @@ namespace station_sim {
 		this->do_print = true;
 
 		std::random_device r;
-		std::default_random_engine generator(r());
-		std::uniform_int_distribution<int> distribution(std::numeric_limits<int>::min(),
-				std::numeric_limits<int>::max());
-		this->random_seed = distribution(generator);
+		this->random_seed = r();
 	}
 
 	ModelParameters::~ModelParameters() = default;
@@ -60,12 +61,12 @@ namespace station_sim {
 		this->population_total = value;
 	}
 
-	int ModelParameters::get_space_width() const
+	float ModelParameters::get_space_width() const
 	{
 		return space_width;
 	}
 
-	void ModelParameters::set_space_width(int value)
+	void ModelParameters::set_space_width(float value)
 	{
 		if (value <= 0) {
 			throw std::invalid_argument("space_width must be positive!");
@@ -74,12 +75,12 @@ namespace station_sim {
 		this->space_width = value;
 	}
 
-	int ModelParameters::get_space_height() const
+	float ModelParameters::get_space_height() const
 	{
 		return space_height;
 	}
 
-	void ModelParameters::set_space_height(int value)
+	void ModelParameters::set_space_height(float value)
 	{
 		if (value <= 0) {
 			throw std::invalid_argument("space_height must be positive!");
@@ -90,30 +91,30 @@ namespace station_sim {
 
 	int ModelParameters::get_gates_in() const
 	{
-		return gates_in;
+		return gates_in_count;
 	}
 
 	void ModelParameters::set_gates_in(int value)
 	{
 		if (value <= 0) {
-			throw std::invalid_argument("gates_in must be positive!");
+			throw std::invalid_argument("gates_in_count must be positive!");
 		}
 
-		this->gates_in = value;
+		this->gates_in_count = value;
 	}
 
 	int ModelParameters::get_gates_out() const
 	{
-		return gates_out;
+		return gates_out_count;
 	}
 
 	void ModelParameters::set_gates_out(int value)
 	{
 		if (value <= 0) {
-			throw std::invalid_argument("gates_out must be positive!");
+			throw std::invalid_argument("gates_out_count must be positive!");
 		}
 
-		ModelParameters::gates_out = value;
+		ModelParameters::gates_out_count = value;
 	}
 
 	int ModelParameters::get_gates_space() const
