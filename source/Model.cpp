@@ -96,8 +96,7 @@ namespace station_sim {
 		if (pop_finished<model_parameters.get_population_total() && step_id<model_parameters.get_step_limit()
 				&& status==1) {
 			if (model_parameters.is_do_print() && step_id%print_per_steps==0) {
-				std::cout << "\tIteration: " << (float) (step_id)/(float) (model_parameters.get_step_limit())
-						  << std::endl;
+				std::cout << "\tIteration: " << step_id << "/" << model_parameters.get_step_limit() << std::endl;
 			}
 
 			// get agents and move them
