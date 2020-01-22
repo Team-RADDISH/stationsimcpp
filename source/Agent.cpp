@@ -105,9 +105,7 @@ namespace station_sim {
 			if (is_outside_boundaries(model.boundaries, new_agent_location)
 					|| collides_other_agent(model, model_parameters, new_agent_location)) {
 				if (model_parameters.is_do_history()) {
-
 					history_collisions += 1;
-
 					model.add_to_history_collision_locations(new_agent_location);
 				}
 			}
