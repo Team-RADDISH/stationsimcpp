@@ -106,7 +106,7 @@ namespace station_sim {
 			move_agents(model, model_parameters);
 
 			if (model_parameters.is_do_history()) {
-				history_state.emplace_back(get_agents_location());
+				history_state[step_id] = get_agents_location();
 			}
 
 			step_id += 1;
@@ -171,10 +171,10 @@ namespace station_sim {
 
 	std::vector<Point2D> Model::get_agents_location()
 	{
-		std::vector<Point2D> agents_locations(agents.size());
+		std::vector<Point2D> agents_locations;
 
 		for (const Agent& agent:agents) {
-			agents_locations.emplace_back(agent.get_agent_location());
+			agents_locations.push_back(agent.get_agent_location());
 		}
 
 		return std::vector<Point2D>();
