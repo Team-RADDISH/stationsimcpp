@@ -170,4 +170,15 @@ namespace station_sim {
 	{
 		return generator;
 	}
+
+	std::vector<Point2D> Model::get_agents_location()
+	{
+		std::vector<Point2D> agents_locations(agents.size());
+
+		for (const Agent& agent:agents) {
+			agents_locations.emplace_back(agent.get_agent_location());
+		}
+
+		return std::vector<Point2D>();
+	}
 }
