@@ -22,8 +22,8 @@ namespace station_sim {
 		initialize_model(unique_id, model_parameters);
 		print_per_steps = 100;
 
-		history_state(model_parameters.get_step_limit(),
-				std::vector<Point2D>(model_parameters.get_population_total(), Point2D()));
+		history_state = std::vector<std::vector<Point2D>>(model_parameters.get_step_limit(),
+				std::vector<Point2D>(model_parameters.get_population_total()));
 	}
 
 	void Model::initialize_model(int unique_id, const ModelParameters& model_parameters)
