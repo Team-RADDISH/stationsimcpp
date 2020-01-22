@@ -105,10 +105,8 @@ namespace station_sim {
 			// get agents and move them
 			move_agents(model, model_parameters);
 
-			// todo do the history for the state
 			if (model_parameters.is_do_history()) {
-				// todo get agents' locations
-
+				history_state.emplace_back(get_agents_location());
 			}
 
 			step_id += 1;
