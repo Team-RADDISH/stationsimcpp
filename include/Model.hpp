@@ -32,9 +32,6 @@ namespace station_sim {
 		std::vector<Point2D> history_collision_locations;
 		int wiggle_collisions_number;
 		std::vector<Point2D> history_wiggle_locations;
-		int steps_taken;
-		int steps_expected;
-		int steps_delay;
 		std::mt19937* generator;
 
 	public:
@@ -46,6 +43,9 @@ namespace station_sim {
 		std::vector<Point2D> gates_out_locations;
 		std::vector<Agent> agents;
 		[[nodiscard]] std::mt19937* get_generator() const;
+		std::vector<float> steps_expected;
+		std::vector<float> steps_taken;
+		std::vector<float> steps_delay;
 
 		Model() = delete;
 		Model(int unique_id, const ModelParameters& model_parameters);
@@ -70,6 +70,10 @@ namespace station_sim {
 		static void create_gates(std::vector<Point2D>& gates, float x, float y, int gates_number);
 		void generate_agents(const ModelParameters& model_parameters);
 		void move_agents(Model& model, const ModelParameters& model_parameters);
+		int print_per_steps;
+		std::vector<std::vector<Point2D>> history_state;
+
+		[[nodiscard]] std::vector<Point2D> get_agents_location();
 	};
 }
 

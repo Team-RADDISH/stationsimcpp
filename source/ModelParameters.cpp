@@ -117,12 +117,12 @@ namespace station_sim {
 		ModelParameters::gates_out_count = value;
 	}
 
-	int ModelParameters::get_gates_space() const
+	float ModelParameters::get_gates_space() const
 	{
 		return gates_space;
 	}
 
-	void ModelParameters::set_gates_space(int value)
+	void ModelParameters::set_gates_space(float value)
 	{
 		if (value <= 0) {
 			throw std::invalid_argument("gates_space must be positive!");

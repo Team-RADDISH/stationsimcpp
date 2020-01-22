@@ -19,14 +19,8 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "USING OPTIONS FOR GNU COMPILER")
-    set(MY_DEBUG_OPTIONS "-O0;-g;-Wall;-Wextra;-Wpedantic")
-    set(MY_RELEASE_OPTIONS "-O3;-Wall;-Wextra;-Wpedantic")
-endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    message(STATUS "USING OPTIONS FOR MSVC COMPILER")
-    set(MY_DEBUG_OPTIONS "/Wall /wd4710")
-    set(MY_RELEASE_OPTIONS "/Wall;/wd4710;/wd4711;/wd4514")
+    set(MY_DEBUG_OPTIONS "-march=native;-O0;-g;-Wall;-Wextra;-Wpedantic")
+    set(MY_RELEASE_OPTIONS "-march=native;-O3;-Wall;-Wextra;-Wpedantic")
 endif ()
 
 add_compile_options("$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
@@ -50,6 +44,9 @@ target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
 
 find_package(cxxplot REQUIRED)
 target_link_libraries(StationSim PRIVATE cxxplot::cxxplot)
+
+find_package(Chronos REQUIRED)
+target_link_libraries(StationSim PRIVATE Chronos::Chronos)
 
 include(GenerateExportHeader)
 generate_export_header(StationSim)

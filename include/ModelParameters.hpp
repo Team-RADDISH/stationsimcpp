@@ -22,7 +22,7 @@ namespace station_sim {
 
         int gates_in_count;
         int gates_out_count;
-        int gates_space;
+        float gates_space;
         float gates_speed;
 
         float speed_min;
@@ -56,8 +56,8 @@ namespace station_sim {
         void set_gates_in(int value);
 		[[nodiscard]] int get_gates_out() const;
         void set_gates_out(int value);
-		[[nodiscard]] int get_gates_space() const;
-        void set_gates_space(int value);
+		[[nodiscard]] float get_gates_space() const;
+        void set_gates_space(float value);
 		[[nodiscard]] float get_gates_speed() const;
         void set_gates_speed(float value);
 		[[nodiscard]] float get_speed_min() const;
