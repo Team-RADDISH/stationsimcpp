@@ -19,8 +19,8 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "USING OPTIONS FOR GNU COMPILER")
-    set(MY_DEBUG_OPTIONS "-O0;-g;-Wall;-Wextra;-Wpedantic")
-    set(MY_RELEASE_OPTIONS "-O3;-Wall;-Wextra;-Wpedantic")
+    set(MY_DEBUG_OPTIONS "-march=native;-O0;-g;-Wall;-Wextra;-Wpedantic")
+    set(MY_RELEASE_OPTIONS "-march=native;-O3;-Wall;-Wextra;-Wpedantic")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
