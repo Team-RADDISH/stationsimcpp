@@ -183,7 +183,7 @@ namespace station_sim {
 		for (const auto& agent : model.agents) {
 			if (agent.agent_id!=agent_id && agent.status==AgentStatus::active
 					&& calculate_distance(agent.get_agent_location(), location)<=model_parameters.get_separation()
-					&& location.x <= agent.get_agent_location().x ) {
+					&& location.x<=agent.get_agent_location().x) {
 				return true;
 			}
 		}
@@ -199,14 +199,13 @@ namespace station_sim {
 			model.pop_finished += 1;
 
 			if (model_parameters.is_do_history()) {
-				int steps_expected = (calculate_distance(start_location, desired_location)
+				float steps_expected = (calculate_distance(start_location, desired_location)
 						-model_parameters.get_gates_space())/agent_available_speeds[0];
-				// todo complete this part
-//				model.steps_exped.append(steps_exped)
-//				steps_taken = model.step_id - self.step_start
-//				model.steps_taken.append(steps_taken)
-//				steps_delay = steps_taken - steps_exped
-//				model.steps_delay.append(steps_delay)
+				model.steps_expected.push_back(steps_expected);
+				steps_taken = model.step_id-step_start;
+				model.steps_taken.push_back(steps_taken);
+				steps_delay = steps_taken - steps_expected;
+				model.steps_delay.push_back(steps_delay);
 			}
 		}
 	}

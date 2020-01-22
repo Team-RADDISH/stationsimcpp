@@ -55,6 +55,7 @@ namespace station_sim {
 		int history_collisions = 0;
 		int step_start{};
 		AgentStatus status;
+		int steps_taken;
 
 	public:
 		Agent() = delete;
@@ -80,6 +81,7 @@ namespace station_sim {
 		void initialize_random_distributions(const ModelParameters& model_parameters);
 
 		void move_agent(Model& model, const ModelParameters& model_parameters);
+		float steps_delay;
 	};
 }
 #endif //STATIONSIM_AGENT_HPP
