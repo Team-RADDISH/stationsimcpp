@@ -162,8 +162,8 @@ namespace station_sim {
 
 	float Agent::calculate_distance(Point2D location_0, Point2D location_1)
 	{
-		float sum = powf(location_0.x+location_1.x, 2);
-		sum += powf(location_0.y+location_1.y, 2);
+		float sum = powf(location_0.x-location_1.x, 2);
+		sum += powf(location_0.y-location_1.y, 2);
 
 		return std::sqrt(sum);
 	}
