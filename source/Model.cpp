@@ -31,7 +31,7 @@ namespace station_sim {
 		generator = new std::mt19937(model_parameters.get_random_seed());
 
 		model_id = unique_id;
-		status = 1;
+		status = ModelStatus::active;
 		step_id = 0;
 		pop_active = 0;
 		pop_finished = 0;
@@ -97,7 +97,7 @@ namespace station_sim {
 	void Model::step(Model& model, const ModelParameters& model_parameters)
 	{
 		if (pop_finished<model_parameters.get_population_total() && step_id<model_parameters.get_step_limit()
-				&& status==1) {
+				&& status==ModelStatus::active) {
 			if (model_parameters.is_do_print() && step_id%print_per_steps==0) {
 				std::cout << "\tIteration: " << step_id << "/" << model_parameters.get_step_limit() << std::endl;
 			}
@@ -112,8 +112,12 @@ namespace station_sim {
 			step_id += 1;
 		}
 		else {
-			if (model_parameters.is_do_print() && status==1) {
-				std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
+			if (pop_finished<model_parameters.get_population_total()) {
+				status = ModelStatus::finished;
+
+				if (model_parameters.is_do_print() && status==ModelStatus::active) {
+					std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
+				}
 			}
 		}
 	}
