@@ -53,6 +53,10 @@ namespace station_sim {
 		std::vector<float> history_speeds;
 		int history_wiggles = 0;
 		int history_collisions = 0;
+	public:
+		int get_history_wiggles() const;
+		int get_history_collisions() const;
+	private:
 		int step_start{};
 		AgentStatus status;
 		int steps_taken;

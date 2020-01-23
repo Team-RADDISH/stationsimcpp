@@ -68,6 +68,7 @@ namespace station_sim {
 		void increase_wiggle_collisions_number_by_value(int value_increase);
 		void add_to_history_wiggle_locations(Point2D new_location);
 		[[nodiscard]] float get_speed_step() const;
+		void calculate_print_model_run_analytics();
 
 	private:
 		void initialize_model(int unique_id, const ModelParameters& model_parameters);

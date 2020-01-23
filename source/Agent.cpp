@@ -218,4 +218,14 @@ namespace station_sim {
 	{
 		return agent_speed;
 	}
+
+	int Agent::get_history_wiggles() const
+	{
+		return history_wiggles;
+	}
+
+	int Agent::get_history_collisions() const
+	{
+		return history_collisions;
+	}
 }
