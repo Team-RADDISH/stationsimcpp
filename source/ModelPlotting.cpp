@@ -54,4 +54,34 @@ namespace station_sim {
 		scatter.set_ylabel("y label");
 		scatter.show_plot();
 	}
+
+	void ModelPlotting::plot_agents_trails(const Model& model)
+	{
+		std::vector<std::pair<std::string, std::string>> args;
+		args.emplace_back("color", "g");
+
+		cxxplot::Plot<float> trails;
+
+		std::vector<std::vector<float>> x_double;
+		std::vector<std::vector<float>> y_double;
+
+		for (const Agent& agent:model.agents) {
+
+			std::vector<float> agent_location_history_x;
+			std::vector<float> agent_location_history_y;
+
+			for (const Point2D& point_2_d:agent.get_history_locations()) {
+				agent_location_history_x.push_back(point_2_d.x);
+				agent_location_history_y.push_back(point_2_d.y);
+			}
+			x_double.push_back(agent_location_history_x);
+			y_double.push_back(agent_location_history_y);
+		}
+
+		for (long unsigned int i = 0; i<model.agents.size(); i++) {
+			trails.add_data(x_double[i], y_double[i], args);
+		}
+
+		trails.show_plot();
+	}
 }

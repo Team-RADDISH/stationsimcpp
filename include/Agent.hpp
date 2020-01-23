@@ -49,7 +49,10 @@ namespace station_sim {
 		float agent_max_speed{};
 		std::vector<float> agent_available_speeds;
 		float agent_speed{};
-		std::vector<std::array<float, 2>> history_locations;
+		std::vector<Point2D> history_locations;
+	public:
+		const std::vector<Point2D>& get_history_locations() const;
+	private:
 		std::vector<float> history_speeds;
 		int history_wiggles = 0;
 		int history_collisions = 0;
@@ -86,6 +89,7 @@ namespace station_sim {
 
 		void move_agent(Model& model, const ModelParameters& model_parameters);
 		float steps_delay;
+		void add_agent_location_history();
 	};
 }
 #endif //STATIONSIM_AGENT_HPP
