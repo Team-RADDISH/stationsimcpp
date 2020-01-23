@@ -24,8 +24,7 @@ namespace station_sim {
 		}
 
 		std::vector<std::pair<std::string, std::string>> args;
-		args.emplace_back("color", "r");
-		args.emplace_back("marker", "o");
+		args.emplace_back("color", "k");
 
 		cxxplot::Scatter<float> scatter(x_int, y_int, args);
 		scatter.set_xlabel("x label");

@@ -162,8 +162,8 @@ namespace station_sim {
 
 	float Agent::calculate_distance(Point2D location_0, Point2D location_1)
 	{
-		float sum = powf(location_0.x+location_1.x, 2);
-		sum += powf(location_0.y+location_1.y, 2);
+		float sum = powf(location_0.x-location_1.x, 2);
+		sum += powf(location_0.y-location_1.y, 2);
 
 		return std::sqrt(sum);
 	}
@@ -187,7 +187,6 @@ namespace station_sim {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -204,7 +203,7 @@ namespace station_sim {
 				model.steps_expected.push_back(steps_expected);
 				steps_taken = model.step_id-step_start;
 				model.steps_taken.push_back(steps_taken);
-				steps_delay = steps_taken - steps_expected;
+				steps_delay = steps_taken-steps_expected;
 				model.steps_delay.push_back(steps_delay);
 			}
 		}

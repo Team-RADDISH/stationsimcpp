@@ -21,10 +21,16 @@ namespace station_sim {
 	class ModelParameters;
 	class Agent;
 
+	enum class STATIONSIM_EXPORT ModelStatus : int {
+		not_started = 0,
+		active = 1,
+		finished = 2
+	};
+
 	class STATIONSIM_EXPORT Model {
 	private:
 		int model_id;
-		int status;
+		ModelStatus status;
 		float speed_step;
 
 		// History related variables
