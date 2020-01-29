@@ -42,11 +42,10 @@ target_include_directories(StationSim PRIVATE
 find_package(Python3 COMPONENTS Development NumPy)
 target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
 
-find_package(cxxplot REQUIRED)
-target_link_libraries(StationSim PRIVATE cxxplot::cxxplot)
+add_subdirectory(external)
 
-find_package(Chronos REQUIRED)
-target_link_libraries(StationSim PRIVATE Chronos::Chronos)
+target_link_libraries(StationSim PRIVATE cxxplot)
+target_link_libraries(StationSim PRIVATE Chronos)
 
 include(GenerateExportHeader)
 generate_export_header(StationSim)
