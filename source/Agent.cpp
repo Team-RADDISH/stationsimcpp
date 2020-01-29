@@ -80,6 +80,10 @@ namespace station_sim {
 			move_agent(model, model_parameters);
 			deactivate_agent_if_reached_exit_gate(model, model_parameters);
 		}
+
+		if (model_parameters.is_do_history()) {
+			add_agent_location_history();
+		}
 	}
 
 	void Agent::activate_agent(Model& model)
@@ -217,5 +221,25 @@ namespace station_sim {
 	float Agent::get_agent_speed() const
 	{
 		return agent_speed;
+	}
+
+	int Agent::get_history_wiggles() const
+	{
+		return history_wiggles;
+	}
+
+	int Agent::get_history_collisions() const
+	{
+		return history_collisions;
+	}
+
+	const std::vector<Point2D>& Agent::get_history_locations() const
+	{
+		return history_locations;
+	}
+
+	void Agent::add_agent_location_history()
+	{
+		history_locations.push_back(agent_location);
 	}
 }

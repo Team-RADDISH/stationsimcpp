@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
+#include <algorithm>
 
 #include "ModelParameters.hpp"
 #include "Model.hpp"
@@ -182,5 +183,27 @@ namespace station_sim {
 		}
 
 		return std::vector<Point2D>();
+	}
+
+	void Model::calculate_print_model_run_analytics()
+	{
+		std::cout << "Finish step number: " << step_id << std::endl;
+		std::cout << "Population size reached target: " << pop_finished << std::endl;
+		std::cout << "Population size active: " << pop_active << std::endl;
+		std::cout << "Mean steps taken per agent: "
+				  << std::reduce(steps_taken.begin(), steps_taken.end(), 0.0)/agents.size() << std::endl;
+		std::cout << "Expected steps per agent: "
+				  << std::reduce(steps_expected.begin(), steps_expected.end(), 0.0)/agents.size() << std::endl;
+		std::cout << "Mean time delay per agent: "
+				  << std::reduce(steps_delay.begin(), steps_delay.end(), 0.0)/agents.size() << std::endl;
+		std::cout << "Mean number of collisions per agent: "
+				  << std::accumulate(agents.begin(), agents.end(), 0.0, [&](int total, const Agent& agent) {
+					return total += agent.get_history_collisions();
+				  })/agents.size() << std::endl;
+		std::cout << "Mean number of wiggles per agent: "
+				  << std::accumulate(agents.begin(), agents.end(), 0.0, [&](int total, const Agent& agent) {
+					return total += agent.get_history_wiggles();
+				  })/agents.size() << std::endl;
+
 	}
 }
