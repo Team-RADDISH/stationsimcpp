@@ -18,6 +18,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 option(ENABLE_OPENMP "Enables OpenMP" OFF)
+option(ENABLE_MPI "Enables MPI" OFF)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "USING OPTIONS FOR GNU COMPILER")
@@ -51,6 +52,20 @@ if (ENABLE_OPENMP)
         target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
         target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
         target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
+    endif ()
+endif ()
+
+if (ENABLE_MPI)
+    find_package(MPI REQUIRED)
+    if (MPI_FOUND)
+        message(STATUS "USING MPI")
+
+        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
+        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
+        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
+
+        target_sources(StationSim PRIVATE
+                source/MultipleModelsRunMPI.cpp)
     endif ()
 endif ()
 

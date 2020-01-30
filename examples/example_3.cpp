@@ -6,7 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "MultipleModelsRun.hpp"
+#include "MultipleModelsRunMPI.hpp"
 #include "Timer.hpp"
 #include "ModelPlotting.hpp"
 
@@ -18,7 +18,7 @@ int main()
 	int number_of_models = 100;
 
 	timer_models_initialisation.start();
-	station_sim::MultipleModelsRun multiple_models_run;
+	station_sim::MultipleModelsRunMPI multiple_models_run;
 
 	for (int i = 0; i<number_of_models; i++) {
 
@@ -36,7 +36,8 @@ int main()
 	multiple_models_run.run_all_models();
 	timer_models_run.stop_timer(true);
 
-	multiple_models_run.get_model(0).calculate_print_model_run_analytics();
-
-	station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(0));
+	if (multiple_models_run.get_mpi_world_rank()==1) {
+		multiple_models_run.get_model(35).calculate_print_model_run_analytics();
+		station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(35));
+	}
 }

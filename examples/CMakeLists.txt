@@ -19,3 +19,9 @@ endfunction()
 
 add_example(example_1 example_1.cpp)
 add_example(example_2 example_2.cpp)
+
+if (ENABLE_MPI)
+    if (MPI_FOUND)
+        add_example(example_3 example_3.cpp)
+    endif ()
+endif ()
