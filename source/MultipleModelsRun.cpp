@@ -23,10 +23,25 @@ namespace station_sim {
 
 	void MultipleModelsRun::run_model(int model_index)
 	{
-		for (int i = 0; i<model_parameters[model_index].get_step_limit(); i++) {
-			models[model_index].step(model_parameters[model_index]);
+		for (int i = 0; i<models_parameters[model_index].get_step_limit(); i++) {
+			models[model_index].step(models_parameters[model_index]);
 		}
 	}
 
+	void MultipleModelsRun::add_model_and_model_parameters(Model model, ModelParameters model_parameters)
+	{
+		models.push_back(model);
+		models_parameters.push_back(model_parameters);
+	}
+
+	Model MultipleModelsRun::get_model(int index)
+	{
+		return models[index];
+	}
+
+	ModelParameters MultipleModelsRun::get_model_parameters(int index)
+	{
+		return models_parameters[index];
+	}
 }
 

@@ -22,14 +22,13 @@ int main()
 
 	for (int i = 0; i<number_of_models; i++) {
 
-		multiple_models_run.model_parameters.emplace_back(station_sim::ModelParameters());
-		multiple_models_run.model_parameters.back().set_population_total(100);
-		multiple_models_run.model_parameters.back().set_do_print(false);
+		station_sim::ModelParameters model_parameters;
+		model_parameters.set_population_total(100);
+		model_parameters.set_do_print(false);
 
-		station_sim::Model model(i, multiple_models_run.model_parameters.back());
+		station_sim::Model model(i, model_parameters);
 
-		multiple_models_run.models.push_back(model);
-
+		multiple_models_run.add_model_and_model_parameters(model, model_parameters);
 	}
 	timer_models_initialisation.stop_timer(true);
 
@@ -37,7 +36,7 @@ int main()
 	multiple_models_run.run_all_models();
 	timer_models_run.stop_timer(true);
 
-	multiple_models_run.models[0].calculate_print_model_run_analytics();
+	multiple_models_run.get_model(0).calculate_print_model_run_analytics();
 
-	station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.models[0]);
+	station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(0));
 }
