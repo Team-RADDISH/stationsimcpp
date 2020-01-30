@@ -11,6 +11,7 @@
 
 #include "stationsim_export.h"
 #include "Point2D.hpp"
+#include "Agent.hpp"
 
 #include <vector>
 #include <array>
@@ -19,7 +20,6 @@
 namespace station_sim {
 
 	class ModelParameters;
-	class Agent;
 
 	enum class STATIONSIM_EXPORT ModelStatus : int {
 		not_started = 0,
