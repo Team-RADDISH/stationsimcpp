@@ -26,10 +26,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(MY_RELEASE_OPTIONS "-march=native;-O3;-Wall;-Wextra;-Wpedantic")
 endif ()
 
-add_compile_options("$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
-add_compile_options("$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
-
 add_library(StationSim SHARED)
+target_compile_options(StationSim PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+target_compile_options(StationSim PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
 
 target_sources(StationSim PRIVATE
         source/Model.cpp
