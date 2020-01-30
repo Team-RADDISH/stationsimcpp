@@ -26,7 +26,7 @@ namespace station_sim {
 		MultipleModelsRun();
 		~MultipleModelsRun();
 
-		void run_all_models();
+		virtual void run_all_models();
 		void run_model(int model_index);
 
 		void add_model_and_model_parameters(Model model, ModelParameters model_parameters);
@@ -34,6 +34,8 @@ namespace station_sim {
 		Model get_model(int index);
 
 		ModelParameters get_model_parameters(int index);
+
+		[[nodiscard]] int get_number_of_models();
 	};
 }
 
