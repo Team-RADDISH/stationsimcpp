@@ -10,6 +10,8 @@ function(ADD_EXAMPLE EXE_NAME SRC_NAME)
     message(STATUS "Generating ${EXE_NAME} target")
 
     add_executable(${EXE_NAME})
+    target_compile_options(${EXE_NAME} PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+    target_compile_options(${EXE_NAME} PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
     target_sources(${EXE_NAME} PRIVATE ${SRC_NAME})
     target_include_directories(${EXE_NAME} PRIVATE PRIVATE
             ${CMAKE_SOURCE_DIR}/include
