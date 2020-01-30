@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
+option(ENABLE_OPENMP "Enables OpenMP" OFF)
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "USING OPTIONS FOR GNU COMPILER")
     set(MY_DEBUG_OPTIONS "-march=native;-O0;-g;-Wall;-Wextra;-Wpedantic")
@@ -42,6 +44,15 @@ target_include_directories(StationSim PRIVATE
 
 find_package(Python3 COMPONENTS Development NumPy)
 target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
+
+if (ENABLE_OPENMP)
+    find_package(OpenMP REQUIRED)
+    if (OpenMP_CXX_FOUND)
+        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
+        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
+        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
+    endif ()
+endif ()
 
 add_subdirectory(external)
 

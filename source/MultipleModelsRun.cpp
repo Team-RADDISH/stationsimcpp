@@ -15,6 +15,7 @@ namespace station_sim {
 
 	void MultipleModelsRun::run_all_models()
 	{
+#pragma omp parallel for schedule(static, 1) default(none)
 		for (int i = 0; i<models.size(); i++) {
 			run_model(i);
 		}

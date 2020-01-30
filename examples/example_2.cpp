@@ -11,11 +11,12 @@
 
 int main()
 {
+	Chronos::Timer timer_models_initialisation("Models initialisation");
+	Chronos::Timer timer_models_run("Models runs");
+
 	int number_of_models = 1000;
 
-	Chronos::Timer timer("timer1");
-	timer.start();
-
+	timer_models_initialisation.start();
 	station_sim::MultipleModelsRun multiple_models_run;
 
 	for (int i = 0; i<number_of_models; i++) {
@@ -29,8 +30,9 @@ int main()
 		multiple_models_run.models.push_back(model);
 
 	}
+	timer_models_initialisation.stop_timer(true);
 
+	timer_models_run.start();
 	multiple_models_run.run_all_models();
-
-	timer.stop_timer(true);
+	timer_models_run.stop_timer(true);
 }
