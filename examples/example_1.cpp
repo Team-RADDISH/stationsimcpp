@@ -24,7 +24,7 @@ int main()
 	timer.start();
 
 	for (int i = 0; i<model_parameters.get_step_limit(); i++) {
-		model.step(model, model_parameters);
+		model.step(model_parameters);
 
 		if (i%300==0) {
 			station_sim::ModelPlotting::plot_agents_locations(model);

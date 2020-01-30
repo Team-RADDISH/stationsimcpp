@@ -60,7 +60,7 @@ namespace station_sim {
 		[[nodiscard]] int get_unique_id() const;
 		[[nodiscard]] const std::vector<Point2D>& get_gates_in_locations() const;
 		[[nodiscard]] const std::vector<Point2D>& get_gates_out_locations() const;
-		void step(Model& model, const ModelParameters& model_parameters);
+		void step(const ModelParameters& model_parameters);
 		[[nodiscard]] int get_history_collisions_number() const;
 		void set_history_collisions_number(int history_collisions_number);
 		void increase_history_collisions_number_by_value(int value_increase);
@@ -76,7 +76,7 @@ namespace station_sim {
 		void set_gates_locations(const ModelParameters& model_parameters);
 		static void create_gates(std::vector<Point2D>& gates, float x, float y, int gates_number);
 		void generate_agents(const ModelParameters& model_parameters);
-		void move_agents(Model& model, const ModelParameters& model_parameters);
+		void move_agents(const ModelParameters& model_parameters);
 		int print_per_steps;
 		std::vector<std::vector<Point2D>> history_state;
 
