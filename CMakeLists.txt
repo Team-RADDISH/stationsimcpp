@@ -31,6 +31,7 @@ add_library(StationSim SHARED)
 target_sources(StationSim PRIVATE
         source/Model.cpp
         source/ModelParameters.cpp
+        source/MultipleModelsRun.cpp
         source/Agent.cpp
         source/ModelPlotting.cpp
         source/HelpFunctions.cpp
