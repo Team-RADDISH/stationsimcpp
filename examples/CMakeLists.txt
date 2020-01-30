@@ -6,19 +6,16 @@
 # See accompanying file LICENSE
 #---------------------------------------------------------------------------//
 
-add_executable(example_1)
-target_sources(example_1 PRIVATE example_1.cpp)
-target_include_directories(example_1 PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR})
-target_link_libraries(example_1 PRIVATE
-        StationSim Chronos)
+function(ADD_EXAMPLE EXE_NAME SRC_NAME)
+    message(STATUS "Generating ${EXE_NAME} target")
 
+    add_executable(${EXE_NAME})
+    target_sources(${EXE_NAME} PRIVATE ${SRC_NAME})
+    target_include_directories(${EXE_NAME} PRIVATE PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_BINARY_DIR})
+    target_link_libraries(${EXE_NAME} PRIVATE StationSim Chronos)
+endfunction()
 
-add_executable(example_2)
-target_sources(example_2 PRIVATE example_2.cpp)
-target_include_directories(example_2 PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR})
-target_link_libraries(example_2 PRIVATE
-        StationSim Chronos)
+add_example(example_1 example_1.cpp)
+add_example(example_2 example_2.cpp)
