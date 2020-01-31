@@ -28,7 +28,7 @@ namespace station_sim {
 	MultipleModelsRunMPI::add_model_and_model_parameters(Model model, ModelParameters model_parameters, int model_index)
 	{
 		if (model_index>=start_chuck && model_index<end_chuck) {
-			MultipleModelsRun::add_model_and_model_parameters(model, model_parameters);
+			MultipleModelsRun::add_model_and_model_parameters(model);
 		}
 	}
 

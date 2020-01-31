@@ -23,15 +23,14 @@ namespace station_sim {
 
 	void MultipleModelsRun::run_model(int model_index)
 	{
-		for (int i = 0; i<models_parameters[model_index].get_step_limit(); i++) {
-			models[model_index].step(models_parameters[model_index]);
+		for (int i = 0; i<models[model_index].get_model_parameters()->get_step_limit(); i++) {
+			models[model_index].step();
 		}
 	}
 
-	void MultipleModelsRun::add_model_and_model_parameters(Model model, ModelParameters model_parameters)
+	void MultipleModelsRun::add_model_and_model_parameters(Model model)
 	{
 		models.push_back(model);
-		models_parameters.push_back(model_parameters);
 	}
 
 	Model MultipleModelsRun::get_model(int index)
@@ -39,10 +38,6 @@ namespace station_sim {
 		return models[index];
 	}
 
-	ModelParameters MultipleModelsRun::get_model_parameters(int index)
-	{
-		return models_parameters[index];
-	}
 	int MultipleModelsRun::get_size_of_models_vector()
 	{
 		return models.size();
