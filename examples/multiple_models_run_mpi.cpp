@@ -18,7 +18,7 @@ int main()
 	int number_of_models = 100;
 
 	timer_models_initialisation.start();
-	station_sim::MultipleModelsRunMPI multiple_models_run;
+	station_sim::MultipleModelsRunMPI multiple_models_run(number_of_models);
 
 	for (int i = 0; i<number_of_models; i++) {
 
@@ -28,7 +28,7 @@ int main()
 
 		station_sim::Model model(i, model_parameters);
 
-		multiple_models_run.add_model_and_model_parameters(model, model_parameters);
+		multiple_models_run.add_model_and_model_parameters(model, model_parameters, i);
 	}
 	timer_models_initialisation.stop_timer(true);
 
