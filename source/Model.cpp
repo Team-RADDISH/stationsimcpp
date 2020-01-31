@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 
 #include "ModelParameters.hpp"
 #include "Model.hpp"
