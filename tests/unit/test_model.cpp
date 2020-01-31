@@ -8,6 +8,8 @@
 
 #define CATCH_CONFIG_MAIN
 
+#include <memory>
+
 #include "catch.hpp"
 #include "ModelParameters.hpp"
 #include "Model.hpp"
@@ -16,7 +18,7 @@ using namespace station_sim;
 
 TEST_CASE("Test Model")
 {
-	ModelParameters modelparameters;
+	std::shared_ptr<ModelParameters> modelparameters(new ModelParameters);
 	Model model(10, modelparameters);
 
 	SECTION("Test default values") {

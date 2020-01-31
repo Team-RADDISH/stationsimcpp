@@ -22,13 +22,13 @@ int main()
 
 	for (int i = 0; i<number_of_models; i++) {
 
-		station_sim::ModelParameters model_parameters;
-		model_parameters.set_population_total(100);
-		model_parameters.set_do_print(false);
+		std::shared_ptr<station_sim::ModelParameters> model_parameters(new station_sim::ModelParameters);
+		model_parameters->set_population_total(100);
+		model_parameters->set_do_print(false);
 
 		station_sim::Model model(i, model_parameters);
 
-		multiple_models_run.add_model_and_model_parameters(model, model_parameters);
+		multiple_models_run.add_model_and_model_parameters(model);
 	}
 	timer_models_initialisation.stop_timer(true);
 

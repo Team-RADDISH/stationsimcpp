@@ -6,6 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include <memory>
 #include "ModelParameters.hpp"
 #include "Model.hpp"
 #include "ModelPlotting.hpp"
@@ -13,8 +14,8 @@
 
 int main()
 {
-	station_sim::ModelParameters model_parameters;
-	model_parameters.set_population_total(100);
+	std::shared_ptr<station_sim::ModelParameters> model_parameters(new station_sim::ModelParameters);
+	model_parameters->set_population_total(100);
 	station_sim::Model model(0, model_parameters);
 
 //	station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
@@ -23,8 +24,8 @@ int main()
 	Chronos::Timer timer("timer1");
 	timer.start();
 
-	for (int i = 0; i<model_parameters.get_step_limit(); i++) {
-		model.step(model_parameters);
+	for (int i = 0; i<model_parameters->get_step_limit(); i++) {
+		model.step();
 
 		if (i%300==0) {
 			station_sim::ModelPlotting::plot_agents_locations(model);

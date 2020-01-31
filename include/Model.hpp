@@ -16,6 +16,7 @@
 #include <vector>
 #include <array>
 #include <random>
+#include <memory>
 
 namespace station_sim {
 
@@ -40,6 +41,8 @@ namespace station_sim {
 		std::vector<Point2D> history_wiggle_locations;
 		std::mt19937* generator;
 
+		std::shared_ptr<ModelParameters> model_parameters;
+
 	public:
 		int step_id = 0;
 		int pop_active = 0;
@@ -54,13 +57,13 @@ namespace station_sim {
 		std::vector<float> steps_delay;
 
 		Model() = delete;
-		Model(int unique_id, const ModelParameters& model_parameters);
+		Model(int unique_id, std::shared_ptr<ModelParameters> model_parameters);
 		~Model();
 
 		[[nodiscard]] int get_unique_id() const;
 		[[nodiscard]] const std::vector<Point2D>& get_gates_in_locations() const;
 		[[nodiscard]] const std::vector<Point2D>& get_gates_out_locations() const;
-		void step(const ModelParameters& model_parameters);
+		void step();
 		[[nodiscard]] int get_history_collisions_number() const;
 		void set_history_collisions_number(int history_collisions_number);
 		void increase_history_collisions_number_by_value(int value_increase);
@@ -69,19 +72,19 @@ namespace station_sim {
 		void add_to_history_wiggle_locations(Point2D new_location);
 		[[nodiscard]] float get_speed_step() const;
 		void calculate_print_model_run_analytics();
+		[[nodiscard]] const std::shared_ptr<ModelParameters>& get_model_parameters() const;
 
 	private:
-		void initialize_model(int unique_id, const ModelParameters& model_parameters);
-		void set_boundaries(const ModelParameters& model_parameters);
-		void set_gates_locations(const ModelParameters& model_parameters);
+		void initialize_model(int unique_id);
+		void set_boundaries();
+		void set_gates_locations();
 		static void create_gates(std::vector<Point2D>& gates, float x, float y, int gates_number);
-		void generate_agents(const ModelParameters& model_parameters);
-		void move_agents(const ModelParameters& model_parameters);
+		void generate_agents();
+		void move_agents();
 		int print_per_steps;
 		std::vector<std::vector<Point2D>> history_state;
-
 		[[nodiscard]] std::vector<Point2D> get_agents_location();
 	};
 }
 
-#endif //STATIONSIM_MODEL_HPP
+#endif
