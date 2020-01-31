@@ -20,7 +20,6 @@ namespace station_sim {
 	class STATIONSIM_EXPORT MultipleModelsRun {
 	private:
 		std::vector<Model> models;
-		std::vector<ModelParameters> models_parameters;
 
 	public:
 		MultipleModelsRun();
@@ -29,11 +28,9 @@ namespace station_sim {
 		virtual void run_all_models();
 		void run_model(int model_index);
 
-		void add_model_and_model_parameters(Model model, ModelParameters model_parameters);
+		void add_model_and_model_parameters(Model model);
 
 		[[nodiscard]] Model get_model(int index);
-
-		[[nodiscard]] ModelParameters get_model_parameters(int index);
 
 		[[nodiscard]] int get_size_of_models_vector();
 	};

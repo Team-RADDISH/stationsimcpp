@@ -26,6 +26,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(MY_RELEASE_OPTIONS "-march=native;-O3;-Wall;-Wextra;-Wpedantic")
 endif ()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "USING OPTIONS FOR MSVC COMPILER")
+    set(MY_DEBUG_OPTIONS "/Wall /wd4710")
+    set(MY_RELEASE_OPTIONS "/Wall;/wd4710;/wd4711;/wd4514")
+endif ()
+
 add_library(StationSim SHARED)
 target_compile_options(StationSim PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
 target_compile_options(StationSim PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")

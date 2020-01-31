@@ -50,16 +50,10 @@ namespace station_sim {
 		std::vector<float> agent_available_speeds;
 		float agent_speed{};
 		std::vector<Point2D> history_locations;
-	public:
-		const std::vector<Point2D>& get_history_locations() const;
-	private:
+
 		std::vector<float> history_speeds;
 		int history_wiggles = 0;
 		int history_collisions = 0;
-	public:
-		int get_history_wiggles() const;
-		int get_history_collisions() const;
-	private:
 		int step_start{};
 		AgentStatus status;
 		int steps_taken;
@@ -72,6 +66,9 @@ namespace station_sim {
 		void step(Model& model, const ModelParameters& model_parameters);
 		[[nodiscard]] const Point2D& get_agent_location() const;
 		[[nodiscard]] float get_agent_speed() const;
+		[[nodiscard]] const std::vector<Point2D>& get_history_locations() const;
+		[[nodiscard]] int get_history_wiggles() const;
+		[[nodiscard]] int get_history_collisions() const;
 
 	private:
 		void initialize_location(const Model& model, const ModelParameters& model_parameters);
