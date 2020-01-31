@@ -36,8 +36,8 @@ int main()
 	multiple_models_run.run_all_models();
 	timer_models_run.stop_timer(true);
 
-	if (multiple_models_run.get_mpi_world_rank()==1) {
-		multiple_models_run.get_model(35).calculate_print_model_run_analytics();
-		station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(35));
+	if (multiple_models_run.get_mpi_world_rank()==0) {
+		multiple_models_run.get_model(2).calculate_print_model_run_analytics();
+		station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(2));
 	}
 }
