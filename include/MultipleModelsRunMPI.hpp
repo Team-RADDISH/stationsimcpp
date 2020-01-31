@@ -21,17 +21,23 @@ namespace station_sim {
 	class STATIONSIM_EXPORT MultipleModelsRunMPI : public MultipleModelsRun {
 	private:
 		int mpi_world_size;
-	public:
-		[[nodiscard]] int get_mpi_world_size() const;
-		[[nodiscard]] int get_mpi_world_rank() const;
-	private:
 		int mpi_world_rank;
+		int number_of_models;
+
+		int chunk_size;
+		int start_chuck;
+		int end_chuck;
 
 	public:
-		MultipleModelsRunMPI();
+		explicit MultipleModelsRunMPI(int number_of_models);
 		~MultipleModelsRunMPI();
 
+		void add_model_and_model_parameters(Model model, ModelParameters model_parameters, int model_index);
+
 		void run_all_models() override;
+
+		[[nodiscard]] int get_mpi_world_size() const;
+		[[nodiscard]] int get_mpi_world_rank() const;
 	};
 }
 

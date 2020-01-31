@@ -43,7 +43,7 @@ namespace station_sim {
 	{
 		return models_parameters[index];
 	}
-	int MultipleModelsRun::get_number_of_models()
+	int MultipleModelsRun::get_size_of_models_vector()
 	{
 		return models.size();
 	}

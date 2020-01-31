@@ -31,11 +31,11 @@ namespace station_sim {
 
 		void add_model_and_model_parameters(Model model, ModelParameters model_parameters);
 
-		Model get_model(int index);
+		[[nodiscard]] Model get_model(int index);
 
-		ModelParameters get_model_parameters(int index);
+		[[nodiscard]] ModelParameters get_model_parameters(int index);
 
-		[[nodiscard]] int get_number_of_models();
+		[[nodiscard]] int get_size_of_models_vector();
 	};
 }
 
