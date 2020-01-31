@@ -26,6 +26,7 @@ namespace station_sim {
 
 		std::cout << "world rank: " << mpi_world_rank << " start " << start_chuck << " end " << end_chuck << std::endl;
 
+#pragma omp parallel for schedule(static, 1) default(none)
 		for (int i = start_chuck; i<end_chuck; i++) {
 			run_model(i);
 		}
