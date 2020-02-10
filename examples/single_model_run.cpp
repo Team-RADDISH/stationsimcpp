@@ -30,6 +30,10 @@ int main()
 		if (i%300==0) {
 			station_sim::ModelPlotting::plot_agents_locations(model);
 		}
+
+		if (model.model_simulation_finished()) {
+			break;
+		}
 	}
 
 	timer.stop_timer(true);

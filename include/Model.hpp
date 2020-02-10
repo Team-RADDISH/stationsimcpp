@@ -73,6 +73,7 @@ namespace station_sim {
 		[[nodiscard]] float get_speed_step() const;
 		void calculate_print_model_run_analytics();
 		[[nodiscard]] const std::shared_ptr<ModelParameters>& get_model_parameters() const;
+		[[nodiscard]] bool model_simulation_finished();
 
 	private:
 		void initialize_model(int unique_id);

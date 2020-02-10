@@ -214,4 +214,8 @@ namespace station_sim {
 	{
 		return model_parameters;
 	}
+	bool Model::model_simulation_finished()
+	{
+		return pop_finished==model_parameters->get_population_total();
+	}
 }
