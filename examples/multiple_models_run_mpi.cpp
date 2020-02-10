@@ -40,4 +40,6 @@ int main()
 		multiple_models_run.get_model(2).calculate_print_model_run_analytics();
 		station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(2));
 	}
+
+	return 0;
 }

@@ -37,4 +37,6 @@ int main()
 	model.calculate_print_model_run_analytics();
 
 	station_sim::ModelPlotting::plot_agents_trails(model);
+
+	return 0;
 }
