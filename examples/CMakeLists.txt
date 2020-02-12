@@ -17,6 +17,9 @@ function(ADD_EXAMPLE EXE_NAME SRC_NAME)
             ${CMAKE_SOURCE_DIR}/include
             ${CMAKE_BINARY_DIR})
     target_link_libraries(${EXE_NAME} PRIVATE StationSim Chronos)
+
+    set_target_properties(${EXE_NAME} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/examples")
 endfunction()
 
 add_example(single_model_run single_model_run.cpp)
