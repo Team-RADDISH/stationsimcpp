@@ -17,6 +17,7 @@
 #include <array>
 #include <random>
 #include <memory>
+#include "H5Cpp.h"
 
 namespace station_sim {
 
@@ -74,7 +75,7 @@ namespace station_sim {
 		void calculate_print_model_run_analytics();
 		[[nodiscard]] const std::shared_ptr<ModelParameters>& get_model_parameters() const;
 		[[nodiscard]] bool model_simulation_finished();
-		void write_model_output_to_hdf5();
+		void write_model_output_to_hdf_5(std::string file_name);
 
 	private:
 		void initialize_model(int unique_id);
@@ -86,7 +87,15 @@ namespace station_sim {
 		int print_per_steps;
 		std::vector<std::vector<Point2D>> history_state;
 		[[nodiscard]] std::vector<Point2D> get_agents_location();
-	};
+
+        void write_agent_locations_to_hdf_5(H5::Group& history_group);
+
+        void write_model_parameters_to_hdf5(H5::Group& model_parameters_group);
+
+        void write_collisions_history_to_hdf_5(H5::Group& history_group);
+
+        void write_wiggle_history_to_hdf_5(H5::Group& history_group);
+    };
 }
 
 #endif
