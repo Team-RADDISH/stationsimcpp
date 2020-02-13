@@ -50,8 +50,17 @@ target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
 
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+if (${HDF5_FOUND})
+    message(STATUS "HDF5 FOUND!")
+    message(STATUS ${HDF5_CXX_INCLUDE_DIRS})
+    message(STATUS ${HDF5_CXX_LIBRARIES})
+endif ()
+
 find_package(Python3 COMPONENTS Development NumPy)
-target_link_libraries(StationSim PRIVATE Python3::Python Python3::NumPy)
+target_link_libraries(StationSim PUBLIC Python3::Python Python3::NumPy)
+target_include_directories(StationSim PUBLIC ${HDF5_CXX_INCLUDE_DIRS})
+target_link_libraries(StationSim PUBLIC ${HDF5_CXX_LIBRARIES})
 
 if (STATIONSIM_ENABLE_OPENMP)
     find_package(OpenMP REQUIRED)
@@ -78,8 +87,8 @@ endif ()
 
 add_subdirectory(external)
 
-target_link_libraries(StationSim PRIVATE cxxplot)
-target_link_libraries(StationSim PRIVATE Chronos)
+target_link_libraries(StationSim PUBLIC cxxplot)
+target_link_libraries(StationSim PUBLIC Chronos)
 
 set_target_properties(StationSim PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
