@@ -9,10 +9,11 @@ build:ubuntu:
   tags:
     - docker
   script:
+    - apt install -qq -y libhdf5-dev
     - cd /builds/$CI_PROJECT_PATH
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -DSTATIONSIM_ENABLE_OPENMP=OFF -DSTATIONSIM_ENABLE_MPI=OFF ..
     - make
   artifacts:
     paths:
