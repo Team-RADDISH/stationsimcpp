@@ -12,34 +12,34 @@
 
 int main()
 {
-	Chronos::Timer timer_models_initialisation("Models initialisation");
-	Chronos::Timer timer_models_run("Models runs");
+    Chronos::Timer timer_models_initialisation("Models initialisation");
+    Chronos::Timer timer_models_run("Models runs");
 
-	int number_of_models = 100;
+    int number_of_models = 100;
 
-	timer_models_initialisation.start();
-	station_sim::MultipleModelsRunMPI multiple_models_run(number_of_models);
+    timer_models_initialisation.start();
+    station_sim::MultipleModelsRunMPI multiple_models_run(number_of_models);
 
-	for (int i = 0; i<number_of_models; i++) {
+    for (int i = 0; i<number_of_models; i++) {
 
-		station_sim::ModelParameters model_parameters;
-		model_parameters.set_population_total(100);
-		model_parameters.set_do_print(false);
+        station_sim::ModelParameters model_parameters;
+        model_parameters.set_population_total(100);
+        model_parameters.set_do_print(false);
 
-		station_sim::Model model(i, model_parameters);
+        station_sim::Model model(i, model_parameters);
 
-		multiple_models_run.add_model_and_model_parameters(model, model_parameters, i);
-	}
-	timer_models_initialisation.stop_timer(true);
+        multiple_models_run.add_model_and_model_parameters(model, model_parameters, i);
+    }
+    timer_models_initialisation.stop_timer(true);
 
-	timer_models_run.start();
-	multiple_models_run.run_all_models();
-	timer_models_run.stop_timer(true);
+    timer_models_run.start();
+    multiple_models_run.run_all_models();
+    timer_models_run.stop_timer(true);
 
-	if (multiple_models_run.get_mpi_world_rank()==0) {
-		multiple_models_run.get_model(2).calculate_print_model_run_analytics();
-		station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(2));
-	}
+    if (multiple_models_run.get_mpi_world_rank()==0) {
+        multiple_models_run.get_model(2).calculate_print_model_run_analytics();
+        station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(2));
+    }
 
-	return 0;
+    return 0;
 }
