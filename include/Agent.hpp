@@ -38,7 +38,11 @@ namespace station_sim {
 		std::uniform_int_distribution<int> wiggle_int_distribution;
 
 		int agent_id;
-		bool is_active{};
+    public:
+        int get_agent_id() const;
+
+    private:
+        bool is_active{};
 		int gate_in{};
 		Point2D start_location;
 		int gate_out{};

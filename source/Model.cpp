@@ -143,6 +143,7 @@ namespace station_sim {
 
     void Model::add_to_history_collision_locations(Point2D new_location)
     {
+        history_collisions_number = +1;
         history_collision_locations.push_back(new_location);
     }
 
@@ -228,7 +229,7 @@ namespace station_sim {
         H5::Group history_group(file.createGroup("/history"));
 
         //write_model_parameters_to_hdf5(file);
-        Model::write_agent_locations_to_hdf_5(history_group);
+        write_agent_locations_to_hdf_5(history_group);
         write_collisions_history_to_hdf_5(history_group);
         write_wiggle_history_to_hdf_5(history_group);
     }
@@ -241,70 +242,53 @@ namespace station_sim {
 
     void Model::write_agent_locations_to_hdf_5(H5::Group& history_group)
     {
-        int steps_done_by_model = step_id;
-        int rank = 3;
+        H5::Group agents_locations_group(history_group.createGroup("/history/agents_locations"));
 
-        // Create the data space for the dataset.
-        hsize_t dims[3];
-        dims[0] = steps_done_by_model;
-        dims[1] = this->agents.size();
-        dims[2] = 2;
-        H5::DataSpace dataspace(rank, dims);
+        for (Agent& agent: agents) {
+            // Create the data space for the dataset.
+            hsize_t dims[2];
+            dims[0] = agent.get_history_locations().size();
+            dims[1] = 2;
+            int rank = 2;
+            H5::DataSpace dataspace(rank, dims);
 
-        // Create the dataset
-        //H5::DataSet dataset = group.createDataSet("agents_locations", H5::PredType::NATIVE_FLOAT, dataspace);
-        H5::DataSet dataset = history_group.createDataSet("agents_locations", H5::PredType::NATIVE_FLOAT, dataspace);
+            std::string dataset_name("agent_");
+            dataset_name.append(std::to_string(agent.get_agent_id()));
+            H5::DataSet dataset = agents_locations_group.createDataSet(dataset_name.c_str(), H5::PredType::NATIVE_FLOAT,
+                    dataspace);
 
-        float agents_locations[steps_done_by_model][this->agents.size()][2];
-        for (int i = 0; i<agents.size(); i++) {
-            std::vector<float> agent_location_history_x;
-            std::vector<float> agent_location_history_y;
-
-            for (int j = 0; j<steps_done_by_model; j++) {
-                if (agents[i].get_history_locations().size()<=steps_done_by_model) {
-                    agents_locations[j][i][0] = agents[i].get_history_locations()[j].x;
-                    agents_locations[j][i][1] = agents[i].get_history_locations()[j].y;
-                }
+            float agents_locations[dims[0]][2];
+            for (int i = 0; i<dims[0]; i++) {
+                agents_locations[i][0] = agent.get_history_locations()[i].x;
+                agents_locations[i][1] = agent.get_history_locations()[i].y;
             }
+            dataset.write(agents_locations, H5::PredType::NATIVE_FLOAT);
         }
-        dataset.write(agents_locations, H5::PredType::IEEE_F32LE);
-
-        H5::DataSpace attr_dataspace_description(H5S_SCALAR);
-        H5::StrType strdatatype(H5::PredType::C_S1, 256); // of length 256 characters
-        const H5std_string strwritebuf("Agents' location history");
-        H5::Attribute myatt_in = dataset.createAttribute("Description", strdatatype, attr_dataspace_description);
-        myatt_in.write(strdatatype, strwritebuf);
     }
 
     void Model::write_collisions_history_to_hdf_5(H5::Group& history_group)
     {
         int rank = 2;
-
-        // Create a group named "/MygGroup" in the file
-        // H5::Group group(file.createGroup("/agents_collisions"));
-
-        // Create the data space for the dataset.
         hsize_t dims[2];
         dims[0] = history_collision_locations.size();
         dims[1] = 2;
         H5::DataSpace dataspace(rank, dims);
 
-        // Create the dataset
-        //H5::DataSet dataset = group.createDataSet("agents_locations", H5::PredType::NATIVE_FLOAT, dataspace);
         H5::DataSet dataset = history_group.createDataSet("collisions_locations", H5::PredType::NATIVE_FLOAT,
                 dataspace);
 
-        float collision_locations[history_collision_locations.size()][2];
+        int temp_size = history_collision_locations.size();
+        std::vector<std::vector<float>> collision_locations(temp_size, std::vector<float>(2));
         for (int i = 0; i<history_collision_locations.size(); i++) {
 
             collision_locations[i][0] = history_collision_locations[i].x;
             collision_locations[i][1] = history_collision_locations[i].y;
 
         }
-        dataset.write(collision_locations, H5::PredType::IEEE_F32LE);
+        dataset.write(collision_locations.data(), H5::PredType::NATIVE_FLOAT);
 
         H5::DataSpace attr_dataspace_description(H5S_SCALAR);
-        H5::StrType strdatatype(H5::PredType::C_S1, 256); // of length 256 characters
+        H5::StrType strdatatype(H5::PredType::C_S1, 256);
         const H5std_string strwritebuf("Agents' collision locations");
         H5::Attribute myatt_in = dataset.createAttribute("Description", strdatatype, attr_dataspace_description);
         myatt_in.write(strdatatype, strwritebuf);
@@ -313,18 +297,11 @@ namespace station_sim {
     void Model::write_wiggle_history_to_hdf_5(H5::Group& history_group)
     {
         int rank = 2;
-
-        // Create a group named "/MygGroup" in the file
-        // H5::Group group(file.createGroup("/agents_collisions"));
-
-        // Create the data space for the dataset.
         hsize_t dims[2];
         dims[0] = history_wiggle_locations.size();
         dims[1] = 2;
         H5::DataSpace dataspace(rank, dims);
 
-        // Create the dataset
-        //H5::DataSet dataset = group.createDataSet("agents_locations", H5::PredType::NATIVE_FLOAT, dataspace);
         H5::DataSet dataset = history_group.createDataSet("wiggle_locations", H5::PredType::NATIVE_FLOAT,
                 dataspace);
 
@@ -335,10 +312,10 @@ namespace station_sim {
             collision_locations[i][1] = history_wiggle_locations[i].y;
 
         }
-        dataset.write(collision_locations, H5::PredType::IEEE_F32LE);
+        dataset.write(collision_locations, H5::PredType::NATIVE_FLOAT);
 
         H5::DataSpace attr_dataspace_description(H5S_SCALAR);
-        H5::StrType strdatatype(H5::PredType::C_S1, 256); // of length 256 characters
+        H5::StrType strdatatype(H5::PredType::C_S1, 256);
         const H5std_string strwritebuf("Agents' wiggle locations");
         H5::Attribute myatt_in = dataset.createAttribute("Description", strdatatype, attr_dataspace_description);
         myatt_in.write(strdatatype, strwritebuf);
