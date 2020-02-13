@@ -14,6 +14,7 @@
 #include "Model.hpp"
 #include "Agent.hpp"
 #include "HelpFunctions.hpp"
+#include "H5Cpp.h"
 
 namespace station_sim {
 
@@ -42,7 +43,8 @@ namespace station_sim {
 		wiggle_collisions_number = 0;
 
 		speed_step =
-				(model_parameters->get_speed_mean()-model_parameters->get_speed_min())/model_parameters->get_speed_steps();
+				(model_parameters->get_speed_mean()-model_parameters->get_speed_min())
+						/model_parameters->get_speed_steps();
 
 		set_boundaries();
 		set_gates_locations();
@@ -214,8 +216,51 @@ namespace station_sim {
 	{
 		return model_parameters;
 	}
+
 	bool Model::model_simulation_finished()
 	{
 		return pop_finished==model_parameters->get_population_total();
+	}
+
+	void Model::write_model_output_to_hdf5()
+	{
+		int steps_done_by_model = step_id;
+		int RANK = 3;
+
+		// Create a file
+		H5::H5File file("model_run.h5", H5F_ACC_TRUNC);
+
+		// Create the data space for the dataset.
+		hsize_t dims[3];
+		dims[0] = steps_done_by_model;
+		dims[1] = this->agents.size();
+		dims[2] = 2;
+		H5::DataSpace dataspace(RANK, dims);
+
+		// Create the dataset
+		H5::DataSet dataset = file.createDataSet("agents_locations", H5::PredType::NATIVE_FLOAT, dataspace);
+
+		float agents_locations[steps_done_by_model][this->agents.size()][2];
+
+		for (int i = 0; i<agents.size(); i++) {
+
+			std::vector<float> agent_location_history_x;
+			std::vector<float> agent_location_history_y;
+
+			for (int j = 0; j<steps_done_by_model; j++) {
+				if (agents[i].get_history_locations().size()<=steps_done_by_model) {
+					agents_locations[j][i][0] = agents[i].get_history_locations()[j].x;
+					agents_locations[j][i][1] = agents[i].get_history_locations()[j].y;
+				}
+			}
+		}
+
+		// Write the data to the dataset using default memory space, file
+		// space, and transfer properties.
+		dataset.write(agents_locations, H5::PredType::IEEE_F32LE);
+
+		dataspace.close();
+		dataset.close();
+		file.close();
 	}
 }

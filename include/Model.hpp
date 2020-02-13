@@ -74,6 +74,7 @@ namespace station_sim {
 		void calculate_print_model_run_analytics();
 		[[nodiscard]] const std::shared_ptr<ModelParameters>& get_model_parameters() const;
 		[[nodiscard]] bool model_simulation_finished();
+		void write_model_output_to_hdf5();
 
 	private:
 		void initialize_model(int unique_id);

@@ -27,14 +27,16 @@ int main()
 	for (int i = 0; i<model_parameters->get_step_limit(); i++) {
 		model.step();
 
-		if (i%300==0) {
-			station_sim::ModelPlotting::plot_agents_locations(model);
-		}
+//		if (i%300==0) {
+//			station_sim::ModelPlotting::plot_agents_locations(model);
+//		}
 
 		if (model.model_simulation_finished()) {
 			break;
 		}
 	}
+
+	model.write_model_output_to_hdf5();
 
 	timer.stop_timer(true);
 
