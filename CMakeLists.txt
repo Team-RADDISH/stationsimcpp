@@ -13,30 +13,28 @@ project(StationSim
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 17)
-
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+
+# Project dependences
+include(cmake/ProjectDependences.cmake)
+
+# Project settings
+include(cmake/StandardProjectSettings.cmake)
+add_library(project_options INTERFACE)
+target_compile_features(project_options INTERFACE cxx_std_17)
+
+# Standard compiler warnings
+add_library(project_warnings INTERFACE)
+include(cmake/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
 
 option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
 option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
 option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
 option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    message(STATUS "USING OPTIONS FOR GNU COMPILER")
-    set(MY_DEBUG_OPTIONS "-march=native;-O0;-g;-Wall;-Wextra;-Wpedantic")
-    set(MY_RELEASE_OPTIONS "-march=native;-O3;-Wall;-Wextra;-Wpedantic")
-endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    message(STATUS "USING OPTIONS FOR MSVC COMPILER")
-    set(MY_DEBUG_OPTIONS "/Wall;/wd4710")
-    set(MY_RELEASE_OPTIONS "/Wall;/wd4710;/wd4711;/wd4514")
-endif ()
-
 add_library(StationSim SHARED)
-target_compile_options(StationSim PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
-target_compile_options(StationSim PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
 
 target_sources(StationSim PRIVATE
         source/Model.cpp
@@ -58,6 +56,7 @@ if (${HDF5_FOUND})
 endif ()
 
 find_package(Python3 COMPONENTS Development NumPy)
+target_link_libraries(StationSim PRIVATE project_warnings)
 target_link_libraries(StationSim PUBLIC Python3::Python Python3::NumPy)
 target_include_directories(StationSim PUBLIC ${HDF5_CXX_INCLUDE_DIRS})
 target_link_libraries(StationSim PUBLIC ${HDF5_CXX_LIBRARIES})
