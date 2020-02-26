@@ -52,14 +52,16 @@ make -j4
 sudo make install
 ```
 
-Note: if you have an anaconda installation of python, then you may need to tell CMake where it has been installed 
-using the `DPython3_ROOT_DIR` argument. Assuming your python environment is called `stationsimcpp` then you can
-replace the `cmake -DCMAKE_BUILD_TYPE=Release ..` line above with:
+Note: if you have an anaconda installation of python, then you may need to tell CMake where the environment that you
+want to use is actually located. Assuming your python environment is called `stationsimcpp` then you can replace the 
+`cmake -DCMAKE_BUILD_TYPE=Release ..` line above with:
 
 ```
-cmake -DCMAKE_BUILD_TYPE=Release -DPython3_ROOT_DIR=~/opt/anaconda3/envs/stationsimcpp/ ..
+cmake -DCMAKE_BUILD_TYPE=Release -DPython3_ROOT_DIR=~/opt/anaconda3/envs/stationsimcpp/ -DHDF5_ROOT=~/opt/anaconda3/envs/stationsimcpp/ ..
 ```
 
+That line not only tells CMake where the `python3` installation that you want to use can be found, but it also tells
+it to use the `hdf5` library included in that environment, not the default one found somewhere else on the system. 
 
 
 ## Support
