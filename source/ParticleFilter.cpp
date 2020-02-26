@@ -8,6 +8,7 @@
 
 #include "ParticleFilter.hpp"
 #include <algorithm>
+#include <vector>
 
 namespace station_sim {
 
@@ -24,6 +25,7 @@ namespace station_sim {
         this->plot_save = false;
         this->do_ani = false;
         this->show_ani = false;
+        this->do_resample = true;
 
         steps_run = 0;
         number_of_step_to_run = 10;
@@ -33,6 +35,8 @@ namespace station_sim {
         generator = new std::mt19937(r());
 
         this->base_model = base_model;
+
+        weights = std::vector<float>(base_model.get_model_parameters()->get_population_total());
 
         for (int i = 0; i<base_model.get_model_parameters()->get_population_total(); i++) {
 
@@ -69,6 +73,11 @@ namespace station_sim {
 
             if (steps_run%resample_window==0) {
                 window_counter++;
+
+                if (do_resample) {
+                    reweight();
+                    resample();
+                }
             }
         }
     }
@@ -79,11 +88,16 @@ namespace station_sim {
             base_model.step();
         }
 
+        for (int i = 0; i<multiple_models_run.get_size_of_models_vector(); i++) {
+            step_particle(multiple_models_run.get_model(i), numiter*number_of_particles,
+                    particle_std*number_of_particles);
+        }
+
 
     }
 
     void
-    ParticleFilter::step_particle(Model model, int num_iter, float particle_std, std::pair<int, int> particle_shape)
+    ParticleFilter::step_particle(Model& model, int num_iter, float particle_std)
     {
         model.reseed_random_number_generator();
         for (int i = 0; i<num_iter; i++) {
@@ -98,6 +112,43 @@ namespace station_sim {
             agent_location.y += float_normal_distribution(*generator);
             agent.set_agent_location(agent_location);
         }
+
+    }
+
+    void ParticleFilter::reweight()
+    {
+        float_normal_distribution = std::normal_distribution<float>(0.0, particle_std);
+
+        std::vector<Point2D> measured_state(base_model.agents.size());
+
+        for (unsigned long i = 0; i<base_model.agents.size(); i++) {
+            Point2D agent_location = base_model.agents[i].get_agent_location();
+            agent_location.x += float_normal_distribution(*generator);
+            agent_location.y += float_normal_distribution(*generator);
+
+            measured_state[i].x = base_model.agents[i].get_agent_location().x-agent_location.x;
+            measured_state[i].y = base_model.agents[i].get_agent_location().y-agent_location.y;
+        }
+
+        std::vector<double> distance;
+        // calculate the norm
+        for (Point2D& point_2d: measured_state) {
+            distance.push_back(sqrt(static_cast<double>(powf(point_2d.x, 2)+powf(point_2d.y, 2))));
+        }
+
+        double sum = 0;
+        for (unsigned int i = 0; i<weights.size(); i++) {
+            weights[i] = 1.0/static_cast<double>(powf((distance[i]+1e-9), 2));
+            sum += weights[i];
+        }
+
+        for (float& weight : weights) {
+            weight = static_cast<float>(weight/sum);
+        }
+    }
+
+    void ParticleFilter::resample()
+    {
 
     }
 }

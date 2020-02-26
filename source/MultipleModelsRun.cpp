@@ -35,7 +35,7 @@ namespace station_sim {
         models.push_back(model);
     }
 
-    Model MultipleModelsRun::get_model(int index)
+    Model& MultipleModelsRun::get_model(int index)
     {
         return models[index];
     }

@@ -25,6 +25,7 @@ namespace station_sim {
         float model_std;
         int agents_to_visualise;
         bool do_save;
+        bool do_resample;
         bool plot_save;
         bool do_ani;
         bool show_ani;
@@ -32,6 +33,8 @@ namespace station_sim {
         int steps_run;
         int number_of_step_to_run;
         int window_counter;
+
+        std::vector<float> weights;
 
         std::mt19937* generator;
         std::normal_distribution<float> float_normal_distribution;
@@ -50,7 +53,7 @@ namespace station_sim {
 
         void predict(int numiter = 1);
 
-        void step_particle(Model model, int num_iter, float particle_std, std::pair<int, int> particle_shape);
+        void step_particle(Model& model, int num_iter, float particle_std);
 
         void reweight();
 

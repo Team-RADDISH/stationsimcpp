@@ -89,7 +89,7 @@ namespace station_sim {
 		void generate_agents();
 		void move_agents();
 		int print_per_steps;
-        [[nodiscard]] std::vector<std::vector<Point2D>> history_state;
+        std::vector<std::vector<Point2D>> history_state;
 		[[nodiscard]] std::vector<Point2D> get_agents_location();
 
         void write_agent_locations_to_hdf_5(H5::Group& history_group);

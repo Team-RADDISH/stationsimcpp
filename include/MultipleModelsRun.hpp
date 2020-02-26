@@ -30,7 +30,7 @@ namespace station_sim {
 
 		void add_model_and_model_parameters(Model model);
 
-		[[nodiscard]] Model get_model(int index);
+		[[nodiscard]] Model& get_model(int index);
 
 		[[nodiscard]] int get_size_of_models_vector();
 
