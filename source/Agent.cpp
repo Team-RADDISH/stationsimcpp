@@ -247,4 +247,9 @@ namespace station_sim {
     {
         return agent_id;
     }
+
+    void Agent::set_agent_location(const Point2D& agent_location)
+    {
+        this->agent_location = agent_location;
+    }
 }

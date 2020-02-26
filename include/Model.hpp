@@ -33,7 +33,9 @@ namespace station_sim {
 	private:
 		int model_id;
 		ModelStatus status;
-		float speed_step;
+
+    private:
+        float speed_step;
 
 		// History related variables
 		int history_collisions_number;
@@ -57,7 +59,7 @@ namespace station_sim {
 		std::vector<float> steps_taken;
 		std::vector<float> steps_delay;
 
-		Model() = delete;
+		Model() = default;
 		Model(int unique_id, std::shared_ptr<ModelParameters> model_parameters);
 		~Model();
 
@@ -76,6 +78,8 @@ namespace station_sim {
 		[[nodiscard]] const std::shared_ptr<ModelParameters>& get_model_parameters() const;
 		[[nodiscard]] bool model_simulation_finished();
 		void write_model_output_to_hdf_5(std::string file_name);
+        [[nodiscard]] ModelStatus get_status() const;
+        void reseed_random_number_generator();
 
 	private:
 		void initialize_model(int unique_id);
@@ -85,7 +89,7 @@ namespace station_sim {
 		void generate_agents();
 		void move_agents();
 		int print_per_steps;
-		std::vector<std::vector<Point2D>> history_state;
+        [[nodiscard]] std::vector<std::vector<Point2D>> history_state;
 		[[nodiscard]] std::vector<Point2D> get_agents_location();
 
         void write_agent_locations_to_hdf_5(H5::Group& history_group);

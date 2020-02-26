@@ -33,6 +33,8 @@ namespace station_sim {
 		[[nodiscard]] Model get_model(int index);
 
 		[[nodiscard]] int get_size_of_models_vector();
+
+		[[nodiscard]] bool has_any_model_active();
 	};
 }
 

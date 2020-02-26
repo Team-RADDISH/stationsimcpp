@@ -48,7 +48,11 @@ namespace station_sim {
 		int gate_out{};
 		Point2D desired_location;
 		Point2D agent_location;
-		int steps_activate;
+    public:
+        void set_agent_location(const Point2D& agent_location);
+
+    private:
+        int steps_activate;
 		float wiggle;
 		float agent_max_speed{};
 		std::vector<float> agent_available_speeds;

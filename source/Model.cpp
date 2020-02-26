@@ -320,4 +320,15 @@ namespace station_sim {
         H5::Attribute myatt_in = dataset.createAttribute("Description", strdatatype, attr_dataspace_description);
         myatt_in.write(strdatatype, strwritebuf);
     }
+
+    ModelStatus Model::get_status() const
+    {
+        return status;
+    }
+
+    void Model::reseed_random_number_generator()
+    {
+        std::random_device r;
+        generator = new std::mt19937(r());
+    }
 }
