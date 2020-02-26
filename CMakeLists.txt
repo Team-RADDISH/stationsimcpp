@@ -11,23 +11,21 @@ project(StationSim
         VERSION 1.0.0
         DESCRIPTION "Station simulator library.")
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
-# Project dependences
-include(cmake/ProjectDependences.cmake)
+# Project dependencies
+include(cmake/ProjectDependencies.cmake)
 
 # Project settings
 include(cmake/StandardProjectSettings.cmake)
-add_library(project_options INTERFACE)
-target_compile_features(project_options INTERFACE cxx_std_17)
+add_library(stationsim_project_options INTERFACE)
+target_compile_features(stationsim_project_options INTERFACE cxx_std_17)
 
 # Standard compiler warnings
-add_library(project_warnings INTERFACE)
+add_library(stationsim_project_warnings INTERFACE)
 include(cmake/CompilerWarnings.cmake)
-set_project_warnings(project_warnings)
+set_project_warnings(stationsim_project_warnings)
 
 option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
 option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
@@ -55,11 +53,10 @@ if (${HDF5_FOUND})
     message(STATUS ${HDF5_CXX_LIBRARIES})
 endif ()
 
-find_package(Python3 COMPONENTS Development NumPy)
-target_link_libraries(StationSim PRIVATE project_warnings)
 target_link_libraries(StationSim PUBLIC Python3::Python Python3::NumPy)
 target_include_directories(StationSim PUBLIC ${HDF5_CXX_INCLUDE_DIRS})
 target_link_libraries(StationSim PUBLIC ${HDF5_CXX_LIBRARIES})
+target_link_libraries(StationSim PUBLIC stationsim_project_options stationsim_project_warnings)
 
 if (STATIONSIM_ENABLE_OPENMP)
     find_package(OpenMP REQUIRED)
