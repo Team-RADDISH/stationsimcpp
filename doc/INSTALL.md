@@ -52,6 +52,16 @@ make -j4
 sudo make install
 ```
 
+Note: if you have an anaconda installation of python, then you may need to tell CMake where it has been installed 
+using the `DPython3_ROOT_DIR` argument. Assuming your python environment is called `stationsimcpp` then you can
+replace the `cmake -DCMAKE_BUILD_TYPE=Release ..` line above with:
+
+```
+cmake -DCMAKE_BUILD_TYPE=Release -DPython3_ROOT_DIR=~/opt/anaconda3/envs/stationsimcpp/ ..
+```
+
+
+
 ## Support
 
 If you encounter any problems, found a bug or need help, please open an [issue on github](https://github.com/avramidis/stationsimcpp/issues)  
