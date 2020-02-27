@@ -68,7 +68,7 @@ namespace station_sim {
             }
 
             if (multiple_models_run.has_any_model_active()) {
-                predict();
+                predict(numiter);
             }
 
             if (steps_run%resample_window==0) {
