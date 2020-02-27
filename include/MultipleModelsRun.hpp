@@ -23,7 +23,7 @@ namespace station_sim {
 
 	public:
 		MultipleModelsRun();
-		~MultipleModelsRun();
+		virtual ~MultipleModelsRun();
 
 		virtual void run_all_models();
 		void run_model(int model_index);
