@@ -23,15 +23,15 @@ namespace station_sim {
 			y_int.emplace_back(agent_location.y);
 		}
 
-		std::vector<std::pair<std::string, std::string>> args;
-		args.emplace_back("color", "k");
+		cxxplot::Kwargs args;
+		args.add_kwarg("color", "k");
 
 		cxxplot::Scatter<float> scatter(x_int, y_int, args);
 		scatter.set_xlabel("x label");
 		scatter.set_ylabel("y label");
 		scatter.set_xlim(model.boundaries[0].x, model.boundaries[1].x);
 		scatter.set_ylim(model.boundaries[0].y, model.boundaries[1].y);
-		scatter.show_plot();
+		scatter.show();
 	}
 
 	void ModelPlotting::plot_gates_locations(const std::vector<std::array<float, 2>>& gates)
@@ -45,20 +45,20 @@ namespace station_sim {
 			y_int.emplace_back(agent_location[1]);
 		}
 
-		std::vector<std::pair<std::string, std::string>> args;
-		args.emplace_back("color", "r");
-		args.emplace_back("marker", "o");
+        cxxplot::Kwargs args;
+        args.add_kwarg("color", "r");
+        args.add_kwarg("marker", "o");
 
 		cxxplot::Scatter<float> scatter(x_int, y_int, args);
 		scatter.set_xlabel("x label");
 		scatter.set_ylabel("y label");
-		scatter.show_plot();
+		scatter.show();
 	}
 
 	void ModelPlotting::plot_agents_trails(const Model& model)
 	{
-		std::vector<std::pair<std::string, std::string>> args;
-		args.emplace_back("color", "g");
+        cxxplot::Kwargs args;
+        args.add_kwarg("color", "g");
 
 		cxxplot::Plot<float> trails;
 
@@ -82,6 +82,6 @@ namespace station_sim {
 			trails.add_data(x_double[i], y_double[i], args);
 		}
 
-		trails.show_plot();
+		trails.show();
 	}
 }

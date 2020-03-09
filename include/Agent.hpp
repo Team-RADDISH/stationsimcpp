@@ -38,7 +38,11 @@ namespace station_sim {
 		std::uniform_int_distribution<int> wiggle_int_distribution;
 
 		int agent_id;
-		bool is_active{};
+    public:
+        int get_agent_id() const;
+
+    private:
+        bool is_active{};
 		int gate_in{};
 		Point2D start_location;
 		int gate_out{};
@@ -77,7 +81,7 @@ namespace station_sim {
 		void deactivate_agent_if_reached_exit_gate(Model& model, const ModelParameters& model_parameters);
 		[[nodiscard]] static float calculate_distance(Point2D location_0, Point2D location_1);
 		[[nodiscard]] Point2D calculate_agent_direction();
-		static bool is_outside_boundaries(std::array<Point2D, 2> boundaries, const Point2D& location);
+        [[nodiscard]] static bool is_outside_boundaries(std::array<Point2D, 2> boundaries, const Point2D& location);
 		[[nodiscard]] bool collides_other_agent(const Model& model, const ModelParameters& model_parameters,
 				const Point2D& location);
 		static void

@@ -12,11 +12,13 @@
 
 int main()
 {
+	Chronos::Timer timer_total("Total runtime");
 	Chronos::Timer timer_models_initialisation("Models initialisation");
 	Chronos::Timer timer_models_run("Models runs");
 
 	int number_of_models = 100;
 
+	timer_total.start();
 	timer_models_initialisation.start();
 	station_sim::MultipleModelsRun multiple_models_run;
 
@@ -35,8 +37,11 @@ int main()
 	timer_models_run.start();
 	multiple_models_run.run_all_models();
 	timer_models_run.stop_timer(true);
+	timer_total.stop_timer(true);
 
 	multiple_models_run.get_model(0).calculate_print_model_run_analytics();
 
-	station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(0));
+	//station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(0));
+
+	return 0;
 }

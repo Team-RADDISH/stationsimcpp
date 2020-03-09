@@ -242,4 +242,9 @@ namespace station_sim {
 	{
 		history_locations.push_back(agent_location);
 	}
+
+    int Agent::get_agent_id() const
+    {
+        return agent_id;
+    }
 }
