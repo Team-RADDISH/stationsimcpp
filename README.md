@@ -6,8 +6,8 @@ stationsimcpp
 
 branch | status 
 | :--- | ---: |
-| master | [![pipeline status](https://gitlab.com/avramidis/stationsimcpp/badges/master/pipeline.svg)](https://gitlab.com/avramidis/stationsimcpp/-/commits/master)
-| develop | [![pipeline status](https://gitlab.com/avramidis/stationsimcpp/badges/develop/pipeline.svg)](https://gitlab.com/avramidis/stationsimcpp/-/commits/develop)
+| master | [![pipeline status](https://gitlab.com/avramidis/stationsimcpp/badges/master/pipeline.svg)](https://gitlab.com/avramidis/stationsimcpp/commits/master)
+| develop | [![pipeline status](https://gitlab.com/avramidis/stationsimcpp/badges/develop/pipeline.svg)](https://gitlab.com/avramidis/stationsimcpp/commits/develop)
 
 ### Introduction
 stationsimcpp is a C++ plotting library for the study of moving agents. Currently, stationsimcpp is under development and it is not suited for production.  
