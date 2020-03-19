@@ -1,0 +1,14 @@
+language: cpp
+os: osx
+python: "3.8"
+compiler: clang
+
+install:
+  - pip3 install numpy matplotlib
+
+script:
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Release -DSTATIONSIM_ENABLE_OPENMP=OFF -DSTATIONSIM_ENABLE_MPI=OFF ..
+  - make
+  - ctest
