@@ -13,12 +13,12 @@
 #include <vector>
 
 namespace station_sim {
-	class STATIONSIM_EXPORT HelpFunctions {
-	public:
-		static std::vector<float> evenly_spaced_values_within_interval(float start, float stop, float step);
+    class STATIONSIM_EXPORT HelpFunctions {
+      public:
+        static std::vector<float> evenly_spaced_values_within_interval(float start, float stop, float step);
 
-		static std::vector<float> linear_spaced_vector(float start, float end, int points_number);
-	};
-}
+        static std::vector<float> linear_spaced_vector(float start, float end, int points_number);
+    };
+} // namespace station_sim
 
-#endif //STATIONSIM_HELPFUNCTIONS_HPP
+#endif // STATIONSIM_HELPFUNCTIONS_HPP
