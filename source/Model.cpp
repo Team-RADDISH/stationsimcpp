@@ -187,7 +187,7 @@ namespace station_sim {
             agents_locations.push_back(agent.get_agent_location());
         }
 
-        return std::vector<Point2D>();
+        return agents_locations;
     }
 
     void Model::calculate_print_model_run_analytics()
