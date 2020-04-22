@@ -20,7 +20,7 @@ namespace station_sim {
         this->number_of_particles =
             100; // todo change that param_list[int(sys.argv[1]) - 1][0],  # particles read from ARC task array variable
         this->number_of_runs = 20;
-        this->resample_window = 100;
+        this->resample_window = 10;
         this->multi_step = true;
         this->particle_std =
             0.5; // todo change that param_list[int(sys.argv[1]) - 1][2], # Particle noise read from task array variable
@@ -33,7 +33,7 @@ namespace station_sim {
         this->do_resample = true;
 
         steps_run = 0;
-        number_of_step_to_run = 10;
+        number_of_step_to_run = 100;
         window_counter = 0;
 
         std::random_device r;
