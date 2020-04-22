@@ -93,6 +93,8 @@ namespace station_sim {
         void resample();
 
         void update_agents_locations_of_model(std::vector<Point2D> locations, Model &model);
+
+        void calculate_statistics();
     };
 } // namespace station_sim
 

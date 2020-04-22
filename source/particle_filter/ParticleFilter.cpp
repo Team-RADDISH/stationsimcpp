@@ -208,4 +208,16 @@ namespace station_sim {
             model.agents[i].set_agent_location(locations[i]);
         }
     }
+
+    void ParticleFilter::calculate_statistics() {
+        // calculate number of active agents in base model
+        int base_model_active_agents = 0;
+        for (const Agent &agent : base_model.agents) {
+            if (agent.getStatus() == AgentStatus::active) {
+                base_model_active_agents++;
+            }
+        }
+
+        std::cout << "Base model active agents: " << base_model_active_agents << std::endl;
+    }
 } // namespace station_sim
