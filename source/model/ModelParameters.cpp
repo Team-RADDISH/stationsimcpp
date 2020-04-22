@@ -40,7 +40,7 @@ namespace station_sim {
         this->do_print = true;
 
         std::random_device r;
-        this->random_seed = r();
+        this->random_seed = static_cast<int>(r());
     }
 
     ModelParameters::~ModelParameters() = default;
