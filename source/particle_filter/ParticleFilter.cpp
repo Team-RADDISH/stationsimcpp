@@ -129,7 +129,7 @@ namespace station_sim {
             measured_state[i].y = agent_location.y + float_normal_distribution(*generator);
         }
 
-        std::vector<double> distance(measured_state.size());
+        std::vector<float> distance(measured_state.size());
         for (int i = 0; i < models.size(); i++) {
             distance[i] = calculate_particle_fit(models[i], measured_state);
         }
