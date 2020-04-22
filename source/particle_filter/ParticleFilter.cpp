@@ -94,8 +94,8 @@ namespace station_sim {
             base_model.step();
         }
 
-        for (int i = 0; i < models.size(); i++) {
-            step_particle(models[i], number_of_steps * number_of_particles, particle_std * number_of_particles);
+        for (auto &model : models) {
+            step_particle(model, number_of_steps * number_of_particles, particle_std * number_of_particles);
         }
     }
 
