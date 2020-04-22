@@ -13,7 +13,7 @@
 
 namespace station_sim {
     class STATIONSIM_EXPORT ParticleFilterModelParameters {
-    private:
+      private:
         int width;
         int height;
         int pop_total;
@@ -23,7 +23,7 @@ namespace station_sim {
         bool do_history;
         bool do_print;
 
-    public:
+      public:
         ParticleFilterModelParameters();
 
         ~ParticleFilterModelParameters();
@@ -60,6 +60,6 @@ namespace station_sim {
 
         void set_do_print(bool do_print);
     };
-}
+} // namespace station_sim
 
-#endif //STATIONSIM_PARTICLEFILTERMODELPARAMETERS_HPP
+#endif // STATIONSIM_PARTICLEFILTERMODELPARAMETERS_HPP

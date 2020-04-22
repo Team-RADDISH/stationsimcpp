@@ -32,19 +32,19 @@ option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
 option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
 option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
 
-add_library(StationSim SHARED include/ParticleFilter.hpp include/ParticleFilterParameters.hpp source/ParticleFilterParameters.cpp source/ParticleFilter.cpp include/ParticleFilterModelParameters.hpp source/ParticleFilterModelParameters.cpp)
+add_library(StationSim SHARED include/particle_filter/ParticleFilter.hpp include/particle_filter/ParticleFilterParameters.hpp source/particle_filter/ParticleFilterParameters.cpp source/particle_filter/ParticleFilter.cpp include/particle_filter/ParticleFilterModelParameters.hpp source/particle_filter/ParticleFilterModelParameters.cpp)
 
 target_sources(StationSim PRIVATE
-        source/Model.cpp
-        source/ModelParameters.cpp
-        source/MultipleModelsRun.cpp
-        source/Agent.cpp
-        source/ModelPlotting.cpp
+        source/model/Model.cpp
+        source/model/ModelParameters.cpp
+        source/model/MultipleModelsRun.cpp
+        source/model/Agent.cpp
+        source/model/ModelPlotting.cpp
         source/HelpFunctions.cpp
-        source/Point2D.cpp
-        source/ParticleFilter.cpp
-        source/ParticleFilterParameters.cpp
-        source/ParticleFilterModelParameters.cpp)
+        source/model/Point2D.cpp
+        source/particle_filter/ParticleFilter.cpp
+        source/particle_filter/ParticleFilterParameters.cpp
+        source/particle_filter/ParticleFilterModelParameters.cpp)
 target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
@@ -80,7 +80,7 @@ if (STATIONSIM_ENABLE_MPI)
         target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
 
         target_sources(StationSim PRIVATE
-                source/MultipleModelsRunMPI.cpp)
+                source/model/MultipleModelsRunMPI.cpp)
     endif ()
 endif ()
 

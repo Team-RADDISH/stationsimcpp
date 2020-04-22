@@ -6,9 +6,9 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "MultipleModelsRun.hpp"
 #include "Timer.hpp"
-#include "ModelPlotting.hpp"
+#include "model/ModelPlotting.hpp"
+#include "model/MultipleModelsRun.hpp"
 
 int main()
 {

@@ -6,13 +6,13 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include <memory>
-#include "ModelParameters.hpp"
-#include "Model.hpp"
-#include "ModelPlotting.hpp"
 #include "Timer.hpp"
-#include "ParticleFilterParameters.hpp"
-#include "ParticleFilter.hpp"
+#include "model/Model.hpp"
+#include "model/ModelParameters.hpp"
+#include "model/ModelPlotting.hpp"
+#include "particle_filter/ParticleFilter.hpp"
+#include "particle_filter/ParticleFilterParameters.hpp"
+#include <memory>
 
 int main()
 {

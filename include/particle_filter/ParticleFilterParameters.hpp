@@ -14,7 +14,7 @@
 namespace station_sim {
     class STATIONSIM_EXPORT ParticleFilterParameters {
 
-    private:
+      private:
         int number_of_particles;
         int number_of_runs;
         int resample_window;
@@ -27,7 +27,7 @@ namespace station_sim {
         bool do_ani;
         bool show_ani;
 
-    public:
+      public:
         ParticleFilterParameters();
 
         ~ParticleFilterParameters();
@@ -76,6 +76,6 @@ namespace station_sim {
 
         void set_show_ani(bool show_ani);
     };
-}
+} // namespace station_sim
 
-#endif //STATIONSIM_PARTICLEFILTERPARAMETERS_HPP
+#endif // STATIONSIM_PARTICLEFILTERPARAMETERS_HPP

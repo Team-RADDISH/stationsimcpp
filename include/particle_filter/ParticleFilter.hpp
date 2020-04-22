@@ -9,9 +9,9 @@
 #ifndef STATIONSIM_PARTICLEFILTER_HPP
 #define STATIONSIM_PARTICLEFILTER_HPP
 
-#include "Model.hpp"
-#include "MultipleModelsRun.hpp"
 #include "ParticleFilterParameters.hpp"
+#include "model/Model.hpp"
+#include "model/MultipleModelsRun.hpp"
 #include "stationsim_export.h"
 
 namespace station_sim {

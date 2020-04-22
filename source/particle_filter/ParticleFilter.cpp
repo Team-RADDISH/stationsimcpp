@@ -6,7 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "ParticleFilter.hpp"
+#include "particle_filter/ParticleFilter.hpp"
 #include "HelpFunctions.hpp"
 #include <algorithm>
 #include <cmath>
@@ -73,6 +73,7 @@ namespace station_sim {
                 steps_run++;
             }
 
+            // TODO fix this if
             if (multiple_models_run.has_any_model_active()) {
                 predict(number_of_steps);
 

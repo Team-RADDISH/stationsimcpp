@@ -9,8 +9,8 @@
 #ifndef STATIONSIM_MODEL_HPP
 #define STATIONSIM_MODEL_HPP
 
-#include "Agent.hpp"
 #include "Point2D.hpp"
+#include "model/Agent.hpp"
 #include "stationsim_export.h"
 
 #include "H5Cpp.h"
