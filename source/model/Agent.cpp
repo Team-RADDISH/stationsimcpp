@@ -210,4 +210,6 @@ namespace station_sim {
     int Agent::get_agent_id() const { return agent_id; }
 
     void Agent::set_agent_location(const Point2D &agent_location) { this->agent_location = agent_location; }
+
+    AgentStatus Agent::getStatus() const { return status; }
 } // namespace station_sim

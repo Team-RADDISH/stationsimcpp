@@ -36,25 +36,15 @@ namespace station_sim {
         int agent_id;
 
       public:
-        int get_agent_id() const;
-
-      private:
-        bool is_active{};
-        int gate_in{};
-        Point2D start_location;
-        int gate_out{};
-        Point2D desired_location;
-        Point2D agent_location;
-
-      public:
+        [[nodiscard]] int get_agent_id() const;
         void set_agent_location(const Point2D &agent_location);
 
       private:
         int steps_activate;
         float wiggle;
-        float agent_max_speed{};
+        float agent_max_speed;
         std::vector<float> agent_available_speeds;
-        float agent_speed{};
+        float agent_speed;
         std::vector<Point2D> history_locations;
 
         std::vector<float> history_speeds;
@@ -62,7 +52,16 @@ namespace station_sim {
         int history_collisions = 0;
         int step_start{};
         AgentStatus status;
+
+      private:
         int steps_taken;
+
+      private:
+        int gate_in;
+        Point2D start_location;
+        int gate_out;
+        Point2D desired_location;
+        Point2D agent_location;
 
       public:
         Agent() = delete;
@@ -75,6 +74,7 @@ namespace station_sim {
         [[nodiscard]] const std::vector<Point2D> &get_history_locations() const;
         [[nodiscard]] int get_history_wiggles() const;
         [[nodiscard]] int get_history_collisions() const;
+        [[nodiscard]] AgentStatus getStatus() const;
 
       private:
         void initialize_location(const Model &model, const ModelParameters &model_parameters);
