@@ -73,8 +73,9 @@ namespace station_sim {
                 steps_run++;
             }
 
-            // TODO fix this if
-            if (multiple_models_run.has_any_model_active()) {
+            if (std::any_of(models.cbegin(), models.cend(),
+                            [](Model model) { return model.get_status() == ModelStatus::active; })) {
+
                 predict(number_of_steps);
 
                 if (steps_run % resample_window == 0) {
