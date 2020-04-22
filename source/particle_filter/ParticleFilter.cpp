@@ -81,6 +81,8 @@ namespace station_sim {
                 if (steps_run % resample_window == 0) {
                     window_counter++;
 
+                    calculate_statistics();
+
                     if (do_resample) {
                         reweight();
                         resample();
