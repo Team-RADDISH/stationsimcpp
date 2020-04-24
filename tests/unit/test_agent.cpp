@@ -12,23 +12,22 @@
 #include <memory>
 
 #include "catch.hpp"
-#include "Model.hpp"
-#include "ModelParameters.hpp"
-#include "Agent.hpp"
+#include "model/Agent.hpp"
+#include "model/Model.hpp"
+#include "model/ModelParameters.hpp"
 
 using namespace station_sim;
 
-TEST_CASE("Test Agent")
-{
-	std::shared_ptr<ModelParameters> model_parameters(new ModelParameters);
-	Model model(0, model_parameters);
-	Agent agent(0, model, *model_parameters);
+TEST_CASE("Test Agent") {
+    std::shared_ptr<ModelParameters> model_parameters(new ModelParameters);
+    Model model(0, model_parameters);
+    Agent agent(0, model, *model_parameters);
 
-	SECTION("Test generated locations") {
-//		std::cout << agent.get_agent_location()[0] << std::endl;
+    SECTION("Test generated locations") {
+        //		std::cout << agent.get_agent_location()[0] << std::endl;
 
-//		std::cout << agent.get_agent_speed() << std::endl;
+        //		std::cout << agent.get_agent_speed() << std::endl;
 
-		REQUIRE(5==5);
-	}
+        REQUIRE(5 == 5);
+    }
 }

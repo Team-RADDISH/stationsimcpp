@@ -11,18 +11,17 @@
 #include <memory>
 
 #include "catch.hpp"
-#include "ModelParameters.hpp"
-#include "Model.hpp"
+#include "model/Model.hpp"
+#include "model/ModelParameters.hpp"
 
 using namespace station_sim;
 
-TEST_CASE("Test Model")
-{
-	std::shared_ptr<ModelParameters> modelparameters(new ModelParameters);
-	Model model(10, modelparameters);
+TEST_CASE("Test Model") {
+    std::shared_ptr<ModelParameters> modelparameters(new ModelParameters);
+    Model model(10, modelparameters);
 
-	SECTION("Test default values") {
-		REQUIRE(model.get_unique_id()==10);
-		std::cout << model.get_speed_step() << std::endl;
-	}
+    SECTION("Test default values") {
+        REQUIRE(model.get_unique_id() == 10);
+        std::cout << model.get_speed_step() << std::endl;
+    }
 }

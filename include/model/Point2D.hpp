@@ -13,17 +13,17 @@
 
 namespace station_sim {
 
-	class STATIONSIM_EXPORT Point2D {
-	public:
-		float x, y;
+    class STATIONSIM_EXPORT Point2D {
+      public:
+        float x, y;
 
-		Point2D();
+        Point2D();
 
-		Point2D(float x, float y);
+        Point2D(float x, float y);
 
-		Point2D operator()(float x, float y);
-	};
+        Point2D operator()(float x, float y);
+    };
 
-}
+} // namespace station_sim
 
-#endif //STATIONSIM_POINT2D_HPP
+#endif // STATIONSIM_POINT2D_HPP

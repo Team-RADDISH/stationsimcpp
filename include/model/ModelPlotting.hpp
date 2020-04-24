@@ -10,20 +10,22 @@
 #define STATIONSIM_MODELPLOTTING_HPP
 
 #include "stationsim_export.h"
+#include <array>
+#include <vector>
 
 namespace station_sim {
 
-	class Model;
+    class Model;
 
-	class STATIONSIM_EXPORT ModelPlotting {
-	public:
-		ModelPlotting() = delete;
+    class STATIONSIM_EXPORT ModelPlotting {
+      public:
+        ModelPlotting() = delete;
 
-		static void plot_agents_locations(const Model& model);
+        static void plot_agents_locations(const Model &model);
 
-		static void plot_gates_locations(const std::vector<std::array<float, 2>>& gates);
+        static void plot_gates_locations(const std::vector<std::array<float, 2>> &gates);
 
-		static void plot_agents_trails(const Model& model);
-	};
-}
-#endif //STATIONSIM_MODELPLOTTING_HPP
+        static void plot_agents_trails(const Model &model);
+    };
+} // namespace station_sim
+#endif // STATIONSIM_MODELPLOTTING_HPP

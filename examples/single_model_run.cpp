@@ -6,11 +6,11 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include <memory>
-#include "ModelParameters.hpp"
-#include "Model.hpp"
-#include "ModelPlotting.hpp"
 #include "Timer.hpp"
+#include "model/Model.hpp"
+#include "model/ModelParameters.hpp"
+#include "model/ModelPlotting.hpp"
+#include <memory>
 
 int main()
 {
