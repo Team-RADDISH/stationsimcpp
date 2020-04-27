@@ -40,7 +40,7 @@ namespace station_sim {
         std::vector<Point2D> history_wiggle_locations;
         std::mt19937 *generator;
 
-        std::shared_ptr<ModelParameters> model_parameters;
+        ModelParameters model_parameters;
 
       public:
         int step_id = 0;
@@ -56,7 +56,7 @@ namespace station_sim {
         std::vector<float> steps_delay;
 
         Model() = default;
-        Model(int unique_id, std::shared_ptr<ModelParameters> model_parameters);
+        Model(int unique_id, ModelParameters model_parameters);
         ~Model();
 
         [[nodiscard]] int get_unique_id() const;
@@ -71,7 +71,7 @@ namespace station_sim {
         void add_to_history_wiggle_locations(Point2D new_location);
         [[nodiscard]] float get_speed_step() const;
         void calculate_print_model_run_analytics();
-        [[nodiscard]] const std::shared_ptr<ModelParameters> &get_model_parameters() const;
+        [[nodiscard]] ModelParameters get_model_parameters() const;
         [[nodiscard]] bool model_simulation_finished();
         void write_model_output_to_hdf_5(std::string file_name);
         [[nodiscard]] ModelStatus get_status() const;
