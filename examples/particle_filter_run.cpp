@@ -12,17 +12,20 @@
 #include "model/ModelPlotting.hpp"
 #include "particle_filter/ParticleFilter.hpp"
 #include "particle_filter/ParticleFilterParameters.hpp"
-#include <memory>
 
-int main()
-{
-    std::shared_ptr<station_sim::ModelParameters> model_parameters(new station_sim::ModelParameters);
-    model_parameters->set_population_total(100);
-    model_parameters->set_do_print(false);
+int main() {
+    Chronos::Timer timer("timer1");
+    timer.start();
+
+    station_sim::ModelParameters model_parameters;
+    model_parameters.set_population_total(40);
+    model_parameters.set_do_print(false);
     station_sim::Model base_model(0, model_parameters);
 
     station_sim::ParticleFilter particle_filter(base_model);
     particle_filter.step();
+
+    timer.stop_timer(true);
 
     return 0;
 }

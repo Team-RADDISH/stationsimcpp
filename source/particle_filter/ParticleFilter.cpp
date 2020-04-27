@@ -17,7 +17,7 @@
 namespace station_sim {
 
     ParticleFilter::ParticleFilter(Model base_model) {
-        this->number_of_particles = 100;
+        this->number_of_particles = 10000;
         this->number_of_runs = 20;
         this->resample_window = 10;
         this->multi_step = true;
@@ -43,22 +43,20 @@ namespace station_sim {
         std::for_each(locations.begin(), locations.end(),
                       [&base_model](std::vector<Point2D> &point_2d) { point_2d = base_model.get_agents_location(); });
 
-        weights = std::vector<float>(base_model.get_model_parameters()->get_population_total());
+        weights = std::vector<float>(number_of_particles);
         std::fill(weights.begin(), weights.end(), 1.0);
 
-        for (int i = 0; i < base_model.get_model_parameters()->get_population_total(); i++) {
-            std::shared_ptr<station_sim::ModelParameters> model_parameters(new station_sim::ModelParameters);
-            model_parameters->set_population_total(100);
-            model_parameters->set_do_print(false);
-
+        station_sim::ModelParameters model_parameters;
+        model_parameters.set_population_total(base_model.get_model_parameters().get_population_total());
+        model_parameters.set_do_print(false);
+        for (int i = 0; i < number_of_particles; i++) {
             station_sim::Model model(i, model_parameters);
-
-            multiple_models_run.add_model_and_model_parameters(model);
+            //multiple_models_run.add_model_and_model_parameters(model);
             models.push_back(model);
         }
     }
 
-    ParticleFilter::~ParticleFilter() { delete generator; }
+    ParticleFilter::~ParticleFilter() = default;
 
     void ParticleFilter::step() {
         while (steps_run < total_number_of_particle_steps_to_run) {
@@ -123,13 +121,13 @@ namespace station_sim {
         std::vector<Point2D> measured_state(base_model.agents.size());
         for (unsigned long i = 0; i < base_model.agents.size(); i++) {
             Point2D agent_location = base_model.agents[i].get_agent_location();
-            measured_state[i].x = agent_location.x + float_normal_distribution(*generator);
-            measured_state[i].y = agent_location.y + float_normal_distribution(*generator);
+            measured_state.at(i).x = agent_location.x + float_normal_distribution(*generator);
+            measured_state.at(i).y = agent_location.y + float_normal_distribution(*generator);
         }
 
-        std::vector<float> distance(measured_state.size());
+        std::vector<float> distance;
         for (int i = 0; i < models.size(); i++) {
-            distance[i] = calculate_particle_fit(models[i], measured_state);
+            distance.push_back(calculate_particle_fit(models[i], measured_state));
         }
 
         std::transform(distance.begin(), distance.end(), weights.begin(), [](float distance) -> float {

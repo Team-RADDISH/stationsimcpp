@@ -17,7 +17,7 @@
 using namespace station_sim;
 
 TEST_CASE("Test Model") {
-    std::shared_ptr<ModelParameters> modelparameters(new ModelParameters);
+    ModelParameters modelparameters;
     Model model(10, modelparameters);
 
     SECTION("Test default values") {
