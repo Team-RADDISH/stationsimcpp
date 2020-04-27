@@ -24,9 +24,9 @@ int main()
 
 	for (int i = 0; i<number_of_models; i++) {
 
-		std::shared_ptr<station_sim::ModelParameters> model_parameters(new station_sim::ModelParameters);
-		model_parameters->set_population_total(100);
-		model_parameters->set_do_print(false);
+		station_sim::ModelParameters model_parameters;
+		model_parameters.set_population_total(100);
+		model_parameters.set_do_print(false);
 
 		station_sim::Model model(i, model_parameters);
 

@@ -19,17 +19,17 @@ namespace station_sim {
 
     Model::~Model() = default;
 
-    Model::Model(int unique_id, const std::shared_ptr<ModelParameters> model_parameters) {
+    Model::Model(int unique_id, ModelParameters model_parameters) {
         this->model_parameters = model_parameters;
         initialize_model(unique_id);
         print_per_steps = 100;
 
         history_state = std::vector<std::vector<Point2D>>(
-            model_parameters->get_step_limit(), std::vector<Point2D>(model_parameters->get_population_total()));
+            model_parameters.get_step_limit(), std::vector<Point2D>(model_parameters.get_population_total()));
     }
 
     void Model::initialize_model(int unique_id) {
-        generator = new std::mt19937(model_parameters->get_random_seed());
+        generator = new std::mt19937(model_parameters.get_random_seed());
 
         model_id = unique_id;
         status = ModelStatus::active;
@@ -39,8 +39,8 @@ namespace station_sim {
         history_collisions_number = 0;
         wiggle_collisions_number = 0;
 
-        speed_step = (model_parameters->get_speed_mean() - model_parameters->get_speed_min()) /
-                     model_parameters->get_speed_steps();
+        speed_step = (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) /
+                     model_parameters.get_speed_steps();
 
         set_boundaries();
         set_gates_locations();
@@ -51,17 +51,17 @@ namespace station_sim {
     void Model::set_boundaries() {
         boundaries[0].x = 0;                                    // x1
         boundaries[0].y = 0;                                    // y1
-        boundaries[1].x = model_parameters->get_space_width();  // x2
-        boundaries[1].y = model_parameters->get_space_height(); // y2
+        boundaries[1].x = model_parameters.get_space_width();  // x2
+        boundaries[1].y = model_parameters.get_space_height(); // y2
     }
 
     void Model::set_gates_locations() {
-        gates_in_locations.resize(model_parameters->get_gates_in());
-        gates_out_locations.resize(model_parameters->get_gates_out());
+        gates_in_locations.resize(model_parameters.get_gates_in());
+        gates_out_locations.resize(model_parameters.get_gates_out());
 
-        create_gates(gates_in_locations, 0, model_parameters->get_space_height(), model_parameters->get_gates_in() + 2);
-        create_gates(gates_out_locations, model_parameters->get_space_width(), model_parameters->get_space_height(),
-                     model_parameters->get_gates_out() + 2);
+        create_gates(gates_in_locations, 0, model_parameters.get_space_height(), model_parameters.get_gates_in() + 2);
+        create_gates(gates_out_locations, model_parameters.get_space_width(), model_parameters.get_space_height(),
+                     model_parameters.get_gates_out() + 2);
     }
 
     void Model::create_gates(std::vector<Point2D> &gates, float x, float y, int gates_number) {
@@ -76,8 +76,8 @@ namespace station_sim {
     }
 
     void Model::generate_agents() {
-        for (int i = 0; i < model_parameters->get_population_total(); i++) {
-            agents.emplace_back(Agent(i, *this, *model_parameters));
+        for (int i = 0; i < model_parameters.get_population_total(); i++) {
+            agents.emplace_back(Agent(i, *this, model_parameters));
         }
     }
 
@@ -86,25 +86,25 @@ namespace station_sim {
     const std::vector<Point2D> &Model::get_gates_out_locations() const { return gates_out_locations; }
 
     void Model::step() {
-        if (pop_finished < model_parameters->get_population_total() && step_id < model_parameters->get_step_limit() &&
+        if (pop_finished < model_parameters.get_population_total() && step_id < model_parameters.get_step_limit() &&
             status == ModelStatus::active) {
-            if (model_parameters->is_do_print() && step_id % print_per_steps == 0) {
-                std::cout << "\tIteration: " << step_id << "/" << model_parameters->get_step_limit() << std::endl;
+            if (model_parameters.is_do_print() && step_id % print_per_steps == 0) {
+                std::cout << "\tIteration: " << step_id << "/" << model_parameters.get_step_limit() << std::endl;
             }
 
             // get agents and move them
             move_agents();
 
-            if (model_parameters->is_do_history()) {
+            if (model_parameters.is_do_history()) {
                 history_state[step_id] = get_agents_location();
             }
 
             step_id += 1;
         } else {
-            if (pop_finished < model_parameters->get_population_total()) {
+            if (pop_finished < model_parameters.get_population_total()) {
                 status = ModelStatus::finished;
 
-                if (model_parameters->is_do_print() && status == ModelStatus::active) {
+                if (model_parameters.is_do_print() && status == ModelStatus::active) {
                     std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
                 }
             }
@@ -136,7 +136,7 @@ namespace station_sim {
 
     void Model::move_agents() {
         for (auto &agent : agents) {
-            agent.step(*this, *model_parameters);
+            agent.step(*this, model_parameters);
         }
     }
 
@@ -180,9 +180,9 @@ namespace station_sim {
                   << std::endl;
     }
 
-    const std::shared_ptr<ModelParameters> &Model::get_model_parameters() const { return model_parameters; }
+    ModelParameters Model::get_model_parameters() const { return model_parameters; }
 
-    bool Model::model_simulation_finished() { return pop_finished == model_parameters->get_population_total(); }
+    bool Model::model_simulation_finished() { return pop_finished == model_parameters.get_population_total(); }
 
     void Model::write_model_output_to_hdf_5(std::string file_name) {
         // Create a file

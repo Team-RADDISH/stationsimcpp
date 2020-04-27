@@ -31,7 +31,7 @@ namespace station_sim {
         bool show_ani;
 
         int steps_run;
-        int number_of_step_to_run;
+        int total_number_of_particle_steps_to_run;
         int window_counter;
 
         std::vector<float> weights;

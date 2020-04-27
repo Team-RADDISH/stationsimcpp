@@ -23,7 +23,7 @@ namespace station_sim {
     }
 
     void MultipleModelsRun::run_model(int model_index) {
-        for (int i = 0; i < models[model_index].get_model_parameters()->get_step_limit(); i++) {
+        for (int i = 0; i < models[model_index].get_model_parameters().get_step_limit(); i++) {
             models[model_index].step();
         }
     }
