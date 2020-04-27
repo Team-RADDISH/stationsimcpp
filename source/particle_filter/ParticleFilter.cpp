@@ -17,13 +17,11 @@
 namespace station_sim {
 
     ParticleFilter::ParticleFilter(Model base_model) {
-        this->number_of_particles =
-            100; // todo change that param_list[int(sys.argv[1]) - 1][0],  # particles read from ARC task array variable
+        this->number_of_particles = 100;
         this->number_of_runs = 20;
         this->resample_window = 10;
         this->multi_step = true;
-        this->particle_std =
-            0.5; // todo change that param_list[int(sys.argv[1]) - 1][2], # Particle noise read from task array variable
+        this->particle_std = 0.5;
         this->target_model_std = 1.0;
         this->agents_to_visualise = 10;
         this->do_save = true;
@@ -33,7 +31,7 @@ namespace station_sim {
         this->do_resample = true;
 
         steps_run = 0;
-        number_of_step_to_run = 100;
+        total_number_of_particle_steps_to_run = 100;
         window_counter = 0;
 
         std::random_device r;
@@ -63,7 +61,7 @@ namespace station_sim {
     ParticleFilter::~ParticleFilter() { delete generator; }
 
     void ParticleFilter::step() {
-        while (steps_run < number_of_step_to_run) {
+        while (steps_run < total_number_of_particle_steps_to_run) {
             std::cout << "Step number: " << steps_run << std::endl;
             int number_of_steps = 1;
             if (multi_step) {
