@@ -17,7 +17,7 @@
 namespace station_sim {
 
     ParticleFilter::ParticleFilter(Model base_model) {
-        this->number_of_particles = 10000;
+        this->number_of_particles = 100;
         this->number_of_runs = 20;
         this->resample_window = 10;
         this->multi_step = true;

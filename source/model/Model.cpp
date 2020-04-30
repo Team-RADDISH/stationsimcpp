@@ -39,8 +39,8 @@ namespace station_sim {
         history_collisions_number = 0;
         wiggle_collisions_number = 0;
 
-        speed_step = (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) /
-                     model_parameters.get_speed_steps();
+        speed_step =
+            (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) / model_parameters.get_speed_steps();
 
         set_boundaries();
         set_gates_locations();
@@ -49,8 +49,8 @@ namespace station_sim {
     }
 
     void Model::set_boundaries() {
-        boundaries[0].x = 0;                                    // x1
-        boundaries[0].y = 0;                                    // y1
+        boundaries[0].x = 0;                                   // x1
+        boundaries[0].y = 0;                                   // y1
         boundaries[1].x = model_parameters.get_space_width();  // x2
         boundaries[1].y = model_parameters.get_space_height(); // y2
     }
@@ -278,5 +278,25 @@ namespace station_sim {
     void Model::reseed_random_number_generator() {
         std::random_device r;
         generator = new std::mt19937(r());
+    }
+
+    std::vector<float> Model::get_state() {
+        std::vector<float> state;
+        for (const Agent &agent : agents) {
+            state.push_back(agent.get_agent_location().x);
+            state.push_back(agent.get_agent_location().y);
+        }
+        return state;
+    }
+
+    std::vector<float> Model::get_active_agents_state() const {
+        std::vector<float> state;
+        for (const Agent &agent : agents) {
+            if (agent.getStatus() == AgentStatus::active) {
+                state.push_back(agent.get_agent_location().x);
+                state.push_back(agent.get_agent_location().y);
+            }
+        }
+        return state;
     }
 } // namespace station_sim
