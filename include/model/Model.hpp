@@ -77,6 +77,8 @@ namespace station_sim {
         [[nodiscard]] ModelStatus get_status() const;
         void reseed_random_number_generator();
         [[nodiscard]] std::vector<Point2D> get_agents_location();
+        [[nodiscard]] std::vector<float> get_state();
+        [[nodiscard]] std::vector<float> get_active_agents_state() const;
 
       private:
         void initialize_model(int unique_id);
