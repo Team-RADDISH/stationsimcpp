@@ -29,7 +29,7 @@ namespace station_sim {
             float target_model_std = 1.0;
             float_normal_distribution = std::normal_distribution<float>(0.0, powf(target_model_std, 2));
 
-            ModelParameters model_parameters = ModelParameters();
+            model_parameters = ModelParameters();
             model_parameters.set_population_total(40);
             model_parameters.set_do_print(false);
             base_model = station_sim::Model(0, model_parameters);
