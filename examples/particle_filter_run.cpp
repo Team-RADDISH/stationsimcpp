@@ -19,7 +19,7 @@ int main() {
     timer.start();
 
     station_sim::ParticleFilterDataFeed<std::vector<float>> particle_filter_data_feed;
-    std::vector<float> simulation_data = particle_filter_data_feed.get_data();
+    std::vector<float> simulation_data = particle_filter_data_feed.get_state();
 
     station_sim::ModelParameters model_parameters;
     model_parameters.set_population_total(40);

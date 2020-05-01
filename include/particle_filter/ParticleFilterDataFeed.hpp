@@ -36,7 +36,7 @@ namespace station_sim {
         }
         ~ParticleFilterDataFeed() = default;
 
-        [[nodiscard]] T get_data() {
+        [[nodiscard]] T get_state() {
             base_model.step();
 
             // Add noise to the synthetic target data
