@@ -70,7 +70,8 @@ namespace station_sim {
 
             std::random_device r;
             generator = std::make_shared<std::mt19937>(std::mt19937(r()));
-            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std);
+
+            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std * number_of_particles);
 
             this->base_model = base_model;
 
