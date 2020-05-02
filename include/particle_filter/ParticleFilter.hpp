@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace station_sim {
-    template <class ModelType, class StateType>
+    template <class ParticleType, class StateType>
     class STATIONSIM_EXPORT ParticleFilter {
       private:
         int number_of_particles;
@@ -42,21 +42,22 @@ namespace station_sim {
         int total_number_of_particle_steps_to_run;
         int window_counter;
 
-        std::vector<float> weights;
+        std::vector<float> particles_weights;
         std::vector<std::vector<Point2D>> locations;
 
         std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
-        Model base_model;
-        std::vector<Model> models;
+        ParticleType base_model;
+        std::vector<ParticleType> particles;
         MultipleModelsRun multiple_models_run;
 
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
+
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(Model base_model,
+        explicit ParticleFilter(ParticleType base_model,
                                 std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
@@ -89,27 +90,31 @@ namespace station_sim {
                 point_2d = base_model.get_agents_location();
             });
 
-            weights = std::vector<float>(number_of_particles);
-            std::fill(weights.begin(), weights.end(), 1.0);
+            particles_weights = std::vector<float>(number_of_particles);
+            std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
+            initialise_particles();
+        }
+
+        ~ParticleFilter() = default;
+
+        void initialise_particles() {
             station_sim::ModelParameters model_parameters;
             model_parameters.set_population_total(base_model.get_model_parameters().get_population_total());
             model_parameters.set_do_print(false);
             for (int i = 0; i < number_of_particles; i++) {
                 station_sim::Model model(i, model_parameters);
                 // multiple_models_run.add_model_and_model_parameters(model);
-                models.push_back(model);
+                particles.push_back(model);
             }
         }
-
-        ~ParticleFilter() = default;
 
         /// \brief Step Particle Filter
         ///
         /// Loop through process. Predict the base model and particles
         /// forward. If the resample window has been reached, reweight particles
         /// based on distance to base model and resample particles choosing
-        /// particles with higher weights. Then save and animate the data. When
+        /// particles with higher particles_weights. Then save and animate the data. When
         /// done, plot save figures. Note: if the multi_step is True then
         /// predict() is called once, but steps the model forward until the next
         /// window. This is quicker but means that animations and saves will
@@ -125,8 +130,8 @@ namespace station_sim {
                     steps_run++;
                 }
 
-                if (std::any_of(models.cbegin(), models.cend(),
-                                [](const Model &model) { return model.get_status() == ModelStatus::active; })) {
+                if (std::any_of(particles.cbegin(), particles.cend(),
+                                [](const ParticleType &particle) { return particle.get_status(); })) {
 
                     predict(number_of_steps);
 
@@ -147,10 +152,10 @@ namespace station_sim {
         /// \brief Step the base model
         ///
         /// Increment time. Step the base model. Use a multiprocessing method to
-        /// step particle models, set the particle states as the agent
+        /// step particle particles, set the particle states as the agent
         /// locations with some added noise, and reassign the
         /// locations of the particle agents using the new particle
-        /// states. We extract the models and states from the stepped
+        /// states. We extract the particles and states from the stepped
         /// particles variable.
         /// \param number_of_steps The number of iterations to step (usually either 1, or the  resample window)
         void predict(int number_of_steps = 1) {
@@ -159,7 +164,7 @@ namespace station_sim {
                 particle_filter_data_feed->run_model();
             }
 
-            for (auto &model : models) {
+            for (auto &model : particles) {
                 step_particle(model, number_of_steps * number_of_particles, particle_std * number_of_particles);
             }
         }
@@ -174,7 +179,7 @@ namespace station_sim {
         /// \param model Μodel object associated with the particle that needs to be stepped
         /// \param num_iter The number of iterations to step
         /// \param particle_std Τhe particle noise standard deviation
-        void step_particle(ModelType &model, int num_iter, float particle_std) {
+        void step_particle(ParticleType &model, int num_iter, float particle_std) {
             model.reseed_random_number_generator();
             for (int i = 0; i < num_iter; i++) {
                 model.step();
@@ -199,16 +204,16 @@ namespace station_sim {
             }
 
             std::vector<float> distance;
-            for (int i = 0; i < models.size(); i++) {
-                distance.push_back(calculate_particle_fit(models[i], measured_state));
+            for (int i = 0; i < particles.size(); i++) {
+                distance.push_back(calculate_particle_fit(particles[i], measured_state));
             }
 
-            std::transform(distance.begin(), distance.end(), weights.begin(), [](float distance) -> float {
+            std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
                 return static_cast<float>(1.0 / (pow((static_cast<double>(distance) + 1e-9), 2)));
             });
 
-            double sum = std::reduce(weights.begin(), weights.end(), 0.0);
-            std::for_each(weights.begin(), weights.end(),
+            double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
+            std::for_each(particles_weights.begin(), particles_weights.end(),
                           [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
         }
 
@@ -233,10 +238,10 @@ namespace station_sim {
             std::for_each(offset_partition.begin(), offset_partition.end(),
                           [&](float &value) { value = (value + dis(gen)) / number_of_particles; });
 
-            std::vector<float> cumsum(weights.size());
-            cumsum[0] = weights[0];
-            for (size_t i = 1; i < weights.size(); i++) {
-                cumsum[i] = cumsum[i - 1] + weights[i];
+            std::vector<float> cumsum(particles_weights.size());
+            cumsum[0] = particles_weights[0];
+            for (size_t i = 1; i < particles_weights.size(); i++) {
+                cumsum[i] = cumsum[i - 1] + particles_weights[i];
             }
 
             std::vector<int> indexes(number_of_particles);
@@ -254,12 +259,12 @@ namespace station_sim {
                 }
             }
 
-            std::vector<float> weights_temp(weights);
+            std::vector<float> weights_temp(particles_weights);
             for (int i = 0; i < indexes.size(); i++) {
-                weights_temp[i] = weights[i];
+                weights_temp[i] = particles_weights[i];
             }
             for (int i = 0; i < indexes.size(); i++) {
-                weights[i] = weights_temp[indexes[i]];
+                particles_weights[i] = weights_temp[indexes[i]];
             }
 
             std::vector<std::vector<Point2D>> locations_temp(locations);
@@ -271,7 +276,7 @@ namespace station_sim {
             }
 
             for (int i = 0; i < indexes.size(); i++) {
-                update_agents_locations_of_model(locations[i], models[i]);
+                update_agents_locations_of_model(locations[i], particles[i]);
             }
         }
 
