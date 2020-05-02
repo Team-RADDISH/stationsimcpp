@@ -37,9 +37,11 @@ namespace station_sim {
         }
         ~ParticleFilterDataFeed() = default;
 
-        [[nodiscard]] T get_state() {
+        void run_model() {
             base_model.step();
+        }
 
+        [[nodiscard]] T get_state() {
             // Add noise to the synthetic target data
             std::vector<Point2D> measured_state(base_model.agents.size());
             for (unsigned long i = 0; i < base_model.agents.size(); i++) {
