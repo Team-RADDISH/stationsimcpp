@@ -80,6 +80,7 @@ namespace station_sim {
 
             std::random_device r;
             generator = std::make_shared<std::mt19937>(std::mt19937(r()));
+            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std);
 
             this->base_model = base_model;
 
@@ -172,20 +173,17 @@ namespace station_sim {
         /// \param model Μodel object associated with the particle that needs to be stepped
         /// \param num_iter The number of iterations to step
         /// \param particle_std Τhe particle noise standard deviation
-        void step_particle(Model &model, int num_iter, float particle_std) {
+        void step_particle(ModelType &model, int num_iter, float particle_std) {
             model.reseed_random_number_generator();
             for (int i = 0; i < num_iter; i++) {
                 model.step();
             }
 
-            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std);
+            std::vector<float> state = model.get_state();
 
-            for (Agent &agent : model.agents) {
-                Point2D agent_location = agent.get_agent_location();
-                agent_location.x += float_normal_distribution(*generator);
-                agent_location.y += float_normal_distribution(*generator);
-                agent.set_agent_location(agent_location);
-            }
+            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
+
+            model.set_state(state);
         }
 
         void reweight() {
