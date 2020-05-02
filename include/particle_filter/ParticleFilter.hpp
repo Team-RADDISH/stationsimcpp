@@ -31,12 +31,8 @@ namespace station_sim {
         bool multi_step;
         float particle_std;
         float target_model_std;
-        int agents_to_visualise;
         bool do_save;
         bool do_resample;
-        bool plot_save;
-        bool do_ani;
-        bool show_ani;
 
         int steps_run;
         int total_number_of_particle_steps_to_run;
@@ -70,9 +66,6 @@ namespace station_sim {
             this->target_model_std = 1.0;
             this->agents_to_visualise = 10;
             this->do_save = true;
-            this->plot_save = false;
-            this->do_ani = false;
-            this->show_ani = false;
             this->do_resample = true;
 
             steps_run = 0;
