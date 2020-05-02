@@ -152,8 +152,8 @@ namespace station_sim {
                 particle_filter_data_feed->run_model();
             }
 
-            for (auto &model : particles) {
-                step_particle(model, number_of_steps * number_of_particles, particle_std * number_of_particles);
+            for (auto &particle : particles) {
+                step_particle(particle, number_of_steps * number_of_particles);
             }
         }
 
@@ -166,18 +166,15 @@ namespace station_sim {
         ///
         /// \param model Μodel object associated with the particle that needs to be stepped
         /// \param num_iter The number of iterations to step
-        /// \param particle_std Τhe particle noise standard deviation
-        void step_particle(ParticleType &model, int num_iter, float particle_std) {
-            model.reseed_random_number_generator();
+        void step_particle(ParticleType &particle, int num_iter) {
+            particle.reseed_random_number_generator();
             for (int i = 0; i < num_iter; i++) {
-                model.step();
+                particle.step();
             }
 
-            std::vector<float> state = model.get_state();
-
+            std::vector<float> state = particle.get_state();
             std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
-
-            model.set_state(state);
+            particle.set_state(state);
         }
 
         void reweight() {
