@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace station_sim {
-    template <class ModelType>
+    template <class ModelType, class StateType>
     class STATIONSIM_EXPORT ParticleFilter {
       private:
         int number_of_particles;
@@ -52,10 +52,15 @@ namespace station_sim {
         std::vector<Model> models;
         MultipleModelsRun multiple_models_run;
 
+        std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(Model base_model) {
+        explicit ParticleFilter(Model base_model,
+                                std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed) {
+
+            this->particle_filter_data_feed = particle_filter_data_feed;
+
             this->number_of_particles = 100;
             this->number_of_runs = 20;
             this->resample_window = 10;
