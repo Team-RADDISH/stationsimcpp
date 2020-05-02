@@ -289,6 +289,14 @@ namespace station_sim {
         return state;
     }
 
+    void Model::set_state(const std::vector<float> &new_state) {
+        int j = 0;
+        for (unsigned long i = 0; i < new_state.size() - 1; i += 2) {
+            agents[j].set_agent_location(Point2D(new_state[i], new_state[i + 1]));
+            j++;
+        }
+    }
+
     std::vector<float> Model::get_active_agents_state() const {
         std::vector<float> state;
         for (const Agent &agent : agents) {
@@ -299,4 +307,5 @@ namespace station_sim {
         }
         return state;
     }
+
 } // namespace station_sim
