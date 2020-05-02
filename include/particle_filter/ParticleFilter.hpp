@@ -45,7 +45,7 @@ namespace station_sim {
         std::vector<float> weights;
         std::vector<std::vector<Point2D>> locations;
 
-        std::mt19937 *generator;
+        std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
         Model base_model;
@@ -74,7 +74,7 @@ namespace station_sim {
             window_counter = 0;
 
             std::random_device r;
-            generator = new std::mt19937(r());
+            generator = std::make_shared<std::mt19937>(std::mt19937(r()));
 
             this->base_model = base_model;
 
