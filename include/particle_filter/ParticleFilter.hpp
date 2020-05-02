@@ -155,6 +155,10 @@ namespace station_sim {
             for (auto &particle : particles) {
                 step_particle(particle, number_of_steps * number_of_particles);
             }
+
+            for (unsigned long i = 0; i < particles_states.size(); i++) {
+                particles_states[i] = particles[i].get_state();
+            }
         }
 
         /// \brief Step a particle
