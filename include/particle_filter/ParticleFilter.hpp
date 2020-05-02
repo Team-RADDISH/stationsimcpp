@@ -38,16 +38,13 @@ namespace station_sim {
         int total_number_of_particle_steps_to_run;
         int window_counter;
 
-        std::vector<float> particles_weights;
-        std::vector<std::vector<Point2D>> locations;
-
         std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
         ParticleType base_model;
         std::vector<ParticleType> particles;
-        MultipleModelsRun multiple_models_run;
-
+        std::vector<StateType> particles_states;
+        std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
 
       public:
@@ -60,16 +57,15 @@ namespace station_sim {
 
             this->number_of_particles = 100;
             this->number_of_runs = 20;
-            this->resample_window = 10;
+            this->resample_window = 100;
             this->multi_step = true;
             this->particle_std = 0.5;
             this->target_model_std = 1.0;
-            this->agents_to_visualise = 10;
             this->do_save = true;
             this->do_resample = true;
 
             steps_run = 0;
-            total_number_of_particle_steps_to_run = 100;
+            total_number_of_particle_steps_to_run = 1000;
             window_counter = 0;
 
             std::random_device r;
@@ -78,10 +74,9 @@ namespace station_sim {
 
             this->base_model = base_model;
 
-            locations.resize(number_of_particles);
-            std::for_each(locations.begin(), locations.end(), [&base_model](std::vector<Point2D> &point_2d) {
-                point_2d = base_model.get_agents_location();
-            });
+            particles_states.resize(number_of_particles);
+            std::for_each(particles_states.begin(), particles_states.end(),
+                          [&base_model](StateType &particle_state) { particle_state = base_model.get_state(); });
 
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
@@ -186,15 +181,7 @@ namespace station_sim {
         }
 
         void reweight() {
-
-            // Add noise to the synthetic target data
-            float_normal_distribution = std::normal_distribution<float>(0.0, powf(target_model_std, 2));
-            std::vector<Point2D> measured_state(base_model.agents.size());
-            for (unsigned long i = 0; i < base_model.agents.size(); i++) {
-                Point2D agent_location = base_model.agents[i].get_agent_location();
-                measured_state.at(i).x = agent_location.x + float_normal_distribution(*generator);
-                measured_state.at(i).y = agent_location.y + float_normal_distribution(*generator);
-            }
+            StateType measured_state = particle_filter_data_feed->get_state();
 
             std::vector<float> distance;
             for (int i = 0; i < particles.size(); i++) {
@@ -210,26 +197,25 @@ namespace station_sim {
                           [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
         }
 
-        float calculate_particle_fit(const Model &model, const std::vector<Point2D> &measured_state) {
+        float calculate_particle_fit(const ParticleType &particle, const StateType &measured_state) {
             float distance = 0;
 
-            for (int i = 0; i < model.agents.size(); i++) {
-                distance += std::sqrt(powf(model.agents[i].get_agent_location().x - measured_state[i].x, 2) +
-                                      powf(model.agents[i].get_agent_location().y - measured_state[i].y, 2));
+            StateType particle_state = particle.get_state();
+
+            for (int i = 0; i < particle_state.size(); i++) {
+                distance += powf(particle_state[i] - measured_state[i], 2);
             }
 
-            return distance;
+            return std::sqrt(distance);
         }
 
         void resample() {
             std::vector<float> offset_partition =
                 HelpFunctions::evenly_spaced_values_within_interval(0, number_of_particles, 1);
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
             std::uniform_real_distribution<float> dis(0.0, 1.0);
             std::for_each(offset_partition.begin(), offset_partition.end(),
-                          [&](float &value) { value = (value + dis(gen)) / number_of_particles; });
+                          [&](float &value) { value = (value + dis(*generator)) / number_of_particles; });
 
             std::vector<float> cumsum(particles_weights.size());
             cumsum[0] = particles_weights[0];
@@ -256,27 +242,26 @@ namespace station_sim {
             for (int i = 0; i < indexes.size(); i++) {
                 weights_temp[i] = particles_weights[i];
             }
+
             for (int i = 0; i < indexes.size(); i++) {
                 particles_weights[i] = weights_temp[indexes[i]];
             }
 
-            std::vector<std::vector<Point2D>> locations_temp(locations);
+            std::vector<StateType> particle_states_temp(particles_states);
             for (int i = 0; i < indexes.size(); i++) {
-                locations_temp[i] = locations[i];
+                particle_states_temp[i] = particles_states[i];
             }
             for (int i = 0; i < indexes.size(); i++) {
-                locations[i] = locations_temp[indexes[i]];
+                particles_states[i] = particle_states_temp[indexes[i]];
             }
 
             for (int i = 0; i < indexes.size(); i++) {
-                update_agents_locations_of_model(locations[i], particles[i]);
+                update_agents_locations_of_model(particles_states[i], particles[i]);
             }
         }
 
-        void update_agents_locations_of_model(std::vector<Point2D> locations, Model &model) {
-            for (int i = 0; i < model.agents.size(); i++) {
-                model.agents[i].set_agent_location(locations[i]);
-            }
+        void update_agents_locations_of_model(StateType particle_state, ParticleType &particle) {
+            particle.set_state(particle_state);
         }
 
         void calculate_statistics() {
