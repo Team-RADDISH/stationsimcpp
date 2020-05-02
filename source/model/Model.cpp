@@ -308,4 +308,6 @@ namespace station_sim {
         return state;
     }
 
+    bool Model::is_active() { return get_status() == ModelStatus::active; }
+
 } // namespace station_sim

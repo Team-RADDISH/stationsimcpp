@@ -80,6 +80,7 @@ namespace station_sim {
         [[nodiscard]] std::vector<float> get_state();
         void set_state(const std::vector<float> &new_state);
         [[nodiscard]] std::vector<float> get_active_agents_state() const;
+        [[nodiscard]] bool is_active();
 
       private:
         void initialize_model(int unique_id);
