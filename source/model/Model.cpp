@@ -280,7 +280,7 @@ namespace station_sim {
         generator = new std::mt19937(r());
     }
 
-    std::vector<float> Model::get_state() {
+    std::vector<float> Model::get_state() const {
         std::vector<float> state;
         for (const Agent &agent : agents) {
             state.push_back(agent.get_agent_location().x);
