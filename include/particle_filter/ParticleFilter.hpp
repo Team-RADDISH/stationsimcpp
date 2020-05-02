@@ -126,7 +126,7 @@ namespace station_sim {
                 }
 
                 if (std::any_of(models.cbegin(), models.cend(),
-                                [](Model model) { return model.get_status() == ModelStatus::active; })) {
+                                [](const Model &model) { return model.get_status() == ModelStatus::active; })) {
 
                     predict(number_of_steps);
 
