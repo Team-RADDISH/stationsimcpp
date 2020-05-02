@@ -32,7 +32,7 @@ option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
 option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
 option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
 
-add_library(StationSim SHARED include/particle_filter/ParticleFilter.hpp include/particle_filter/ParticleFilterParameters.hpp source/particle_filter/ParticleFilterParameters.cpp source/particle_filter/ParticleFilter.cpp include/particle_filter/ParticleFilterModelParameters.hpp source/particle_filter/ParticleFilterModelParameters.cpp)
+add_library(StationSim SHARED)
 
 target_sources(StationSim PRIVATE
         source/model/Model.cpp
@@ -42,7 +42,6 @@ target_sources(StationSim PRIVATE
         source/model/ModelPlotting.cpp
         source/HelpFunctions.cpp
         source/model/Point2D.cpp
-        source/particle_filter/ParticleFilter.cpp
         source/particle_filter/ParticleFilterParameters.cpp
         source/particle_filter/ParticleFilterModelParameters.cpp)
 target_include_directories(StationSim PRIVATE

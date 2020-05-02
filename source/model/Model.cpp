@@ -39,8 +39,8 @@ namespace station_sim {
         history_collisions_number = 0;
         wiggle_collisions_number = 0;
 
-        speed_step = (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) /
-                     model_parameters.get_speed_steps();
+        speed_step =
+            (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) / model_parameters.get_speed_steps();
 
         set_boundaries();
         set_gates_locations();
@@ -49,8 +49,8 @@ namespace station_sim {
     }
 
     void Model::set_boundaries() {
-        boundaries[0].x = 0;                                    // x1
-        boundaries[0].y = 0;                                    // y1
+        boundaries[0].x = 0;                                   // x1
+        boundaries[0].y = 0;                                   // y1
         boundaries[1].x = model_parameters.get_space_width();  // x2
         boundaries[1].y = model_parameters.get_space_height(); // y2
     }
@@ -279,4 +279,35 @@ namespace station_sim {
         std::random_device r;
         generator = new std::mt19937(r());
     }
+
+    std::vector<float> Model::get_state() const {
+        std::vector<float> state;
+        for (const Agent &agent : agents) {
+            state.push_back(agent.get_agent_location().x);
+            state.push_back(agent.get_agent_location().y);
+        }
+        return state;
+    }
+
+    void Model::set_state(const std::vector<float> &new_state) {
+        int j = 0;
+        for (unsigned long i = 0; i < new_state.size() - 1; i += 2) {
+            agents[j].set_agent_location(Point2D(new_state[i], new_state[i + 1]));
+            j++;
+        }
+    }
+
+    std::vector<float> Model::get_active_agents_state() const {
+        std::vector<float> state;
+        for (const Agent &agent : agents) {
+            if (agent.getStatus() == AgentStatus::active) {
+                state.push_back(agent.get_agent_location().x);
+                state.push_back(agent.get_agent_location().y);
+            }
+        }
+        return state;
+    }
+
+    bool Model::is_active() { return get_status() == ModelStatus::active; }
+
 } // namespace station_sim
