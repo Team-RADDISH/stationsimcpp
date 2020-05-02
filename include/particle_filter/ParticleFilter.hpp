@@ -22,6 +22,7 @@
 #include <vector>
 
 namespace station_sim {
+    template <class ModelType>
     class STATIONSIM_EXPORT ParticleFilter {
       private:
         int number_of_particles;

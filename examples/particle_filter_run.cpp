@@ -26,7 +26,7 @@ int main() {
     model_parameters.set_do_print(false);
     station_sim::Model base_model(0, model_parameters);
 
-    station_sim::ParticleFilter particle_filter(base_model);
+    station_sim::ParticleFilter<station_sim::Model> particle_filter(base_model);
     particle_filter.step();
 
     timer.stop_timer(true);
