@@ -156,6 +156,7 @@ namespace station_sim {
         void predict(int number_of_steps = 1) {
             for (int i = 0; i < number_of_steps; i++) {
                 base_model.step();
+                particle_filter_data_feed->run_model();
             }
 
             for (auto &model : models) {
