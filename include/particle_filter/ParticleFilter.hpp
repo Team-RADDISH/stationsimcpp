@@ -111,6 +111,8 @@ namespace station_sim {
         /// window. This is quicker but means that animations and saves will
         /// only report once per window, rather than every iteration
         void step() {
+            Chronos::Timer window_timer("window timer");
+            window_timer.start();
             while (steps_run < total_number_of_particle_steps_to_run) {
                 std::cout << "Step number: " << steps_run << std::endl;
                 int number_of_steps = 1;
@@ -128,7 +130,7 @@ namespace station_sim {
 
                     if (steps_run % resample_window == 0) {
                         window_counter++;
-
+                        
                         particle_filter_statistics.calculate_statistics(base_model, particles, particles_weights);
 
                         if (do_resample) {
@@ -136,6 +138,12 @@ namespace station_sim {
                             resample();
                         }
                     }
+
+                    window_timer.stop_timer(false);
+                    std::cout << "Finished windows " << window_counter << std::endl;
+                    window_timer.print_elapsed_time();
+                    window_timer.reset();
+                    window_timer.start();
                 }
             }
         }
