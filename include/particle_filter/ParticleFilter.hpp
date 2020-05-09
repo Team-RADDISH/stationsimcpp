@@ -276,17 +276,6 @@ namespace station_sim {
             particle.set_state(particle_state);
         }
 
-        void calculate_statistics() {
-            // calculate number of active agents in base model
-            int base_model_active_agents = 0;
-            for (const Agent &agent : base_model.agents) {
-                if (agent.getStatus() == AgentStatus::active) {
-                    base_model_active_agents++;
-                }
-            }
-            std::cout << "Base model active agents: " << base_model_active_agents << std::endl;
-        }
-
         [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
             return particle_filter_statistics;
         }
