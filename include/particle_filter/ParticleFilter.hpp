@@ -12,6 +12,7 @@
 #include "HelpFunctions.hpp"
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterParameters.hpp"
+#include "ParticleFilterStatistics.hpp"
 #include "model/Model.hpp"
 #include "model/MultipleModelsRun.hpp"
 #include "stationsim_export.h"
@@ -46,6 +47,7 @@ namespace station_sim {
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
+        ParticleFilterStatistics<ParticleType, StateType> particle_filter_statistics;
 
       public:
         ParticleFilter() = delete;
@@ -127,7 +129,7 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        calculate_statistics();
+                        particle_filter_statistics.calculate_statistics(base_model, particles, particles_weights);
 
                         if (do_resample) {
                             reweight();
@@ -274,8 +276,11 @@ namespace station_sim {
                     base_model_active_agents++;
                 }
             }
-
             std::cout << "Base model active agents: " << base_model_active_agents << std::endl;
+        }
+
+        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
+            return particle_filter_statistics;
         }
     };
 } // namespace station_sim

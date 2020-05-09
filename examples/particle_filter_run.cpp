@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Timer.hpp"
+#include "cxxplot.hpp"
 #include "model/Model.hpp"
 #include "model/ModelParameters.hpp"
 #include "model/ModelPlotting.hpp"
@@ -35,6 +36,25 @@ int main() {
     particle_filter.step();
 
     timer.stop_timer(true);
+
+    station_sim::ParticleFilterStatistics particle_filter_statistics = particle_filter.get_particle_filter_statistics();
+    //    std::vector<float> active_agents = particle_filter_statistics.get_active_agents();
+
+    //    for (const float v : active_agents) {
+    //        std::cout << v << std::endl;
+    //    }
+
+    auto weighted_mean_errors = particle_filter_statistics.get_weighted_mean_errors();
+
+    std::vector<float> y_int;
+    for (const auto &mean : weighted_mean_errors) {
+        y_int.emplace_back(mean);
+    }
+
+    cxxplot::Plot<float> plot(y_int);
+    plot.set_xlabel("x label");
+    plot.set_ylabel("y label");
+    plot.show();
 
     return 0;
 }
