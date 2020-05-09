@@ -78,10 +78,10 @@ namespace station_sim {
         [[nodiscard]] ModelStatus get_status() const;
         void reseed_random_number_generator();
         [[nodiscard]] std::vector<Point2D> get_agents_location();
-        [[nodiscard]] std::vector<float> get_state() const;
+        [[nodiscard]] const std::vector<float> get_state() const override;
         void set_state(const std::vector<float> &new_state);
         [[nodiscard]] std::vector<float> get_active_agents_state() const;
-        [[nodiscard]] bool is_active();
+        [[nodiscard]] bool is_active() const override ;
 
       private:
         void initialize_model(int unique_id);
