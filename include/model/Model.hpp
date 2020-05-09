@@ -11,6 +11,7 @@
 
 #include "Point2D.hpp"
 #include "model/Agent.hpp"
+#include "particle_filter/Particle.hpp"
 #include "stationsim_export.h"
 
 #include "H5Cpp.h"
@@ -25,7 +26,7 @@ namespace station_sim {
 
     enum class STATIONSIM_EXPORT ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Model {
+    class STATIONSIM_EXPORT Model : public Particle {
       private:
         int model_id;
         ModelStatus status;
