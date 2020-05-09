@@ -124,13 +124,13 @@ namespace station_sim {
                 }
 
                 if (std::any_of(particles.cbegin(), particles.cend(),
-                                [](const ParticleType &particle) { return particle.get_status(); })) {
+                                [](const ParticleType &particle) { return particle.is_active(); })) {
 
                     predict(number_of_steps);
 
                     if (steps_run % resample_window == 0) {
                         window_counter++;
-                        
+
                         particle_filter_statistics.calculate_statistics(base_model, particles, particles_weights);
 
                         if (do_resample) {
