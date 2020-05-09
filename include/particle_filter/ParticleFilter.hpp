@@ -27,11 +27,9 @@ namespace station_sim {
     class STATIONSIM_EXPORT ParticleFilter {
       private:
         int number_of_particles;
-        int number_of_runs;
         int resample_window;
         bool multi_step;
         float particle_std;
-        float target_model_std;
         bool do_save;
         bool do_resample;
 
@@ -58,11 +56,9 @@ namespace station_sim {
             this->particle_filter_data_feed = particle_filter_data_feed;
 
             this->number_of_particles = 100;
-            this->number_of_runs = 20;
             this->resample_window = 100;
             this->multi_step = true;
             this->particle_std = 0.5;
-            this->target_model_std = 1.0;
             this->do_save = true;
             this->do_resample = true;
 
