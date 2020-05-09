@@ -10,6 +10,7 @@
 #define STATIONSIM_PARTICLE_HPP
 
 #include <memory>
+#include <vector>
 
 namespace station_sim {
     class Particle {
@@ -18,7 +19,8 @@ namespace station_sim {
         Particle() = default;
         virtual ~Particle() = default;
 
-        [[nodiscard]] virtual bool is_active() const { return false; };
+        [[nodiscard]] virtual bool is_active() const = 0;
+        [[nodiscard]] virtual const std::vector<float> get_state() const = 0;
     };
 } // namespace station_sim
 
