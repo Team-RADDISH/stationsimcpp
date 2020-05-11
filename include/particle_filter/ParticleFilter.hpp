@@ -51,7 +51,8 @@ namespace station_sim {
         ParticleFilter() = delete;
 
         explicit ParticleFilter(ParticleType base_model,
-                                std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed) {
+                                std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
+                                std::function<std::vector<station_sim::Model>(int)> initialise_particles) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
@@ -80,21 +81,10 @@ namespace station_sim {
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
-            initialise_particles();
+            particles = initialise_particles(number_of_particles);
         }
 
         ~ParticleFilter() = default;
-
-        void initialise_particles() {
-            station_sim::ModelParameters model_parameters;
-            model_parameters.set_population_total(base_model.get_model_parameters().get_population_total());
-            model_parameters.set_do_print(false);
-            for (int i = 0; i < number_of_particles; i++) {
-                station_sim::Model model(i, model_parameters);
-                // multiple_models_run.add_model_and_model_parameters(model);
-                particles.push_back(model);
-            }
-        }
 
         /// \brief Step Particle Filter
         ///

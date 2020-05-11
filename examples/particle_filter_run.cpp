@@ -14,7 +14,21 @@
 #include "particle_filter/ParticleFilter.hpp"
 #include "particle_filter/ParticleFilterDataFeed.hpp"
 #include "particle_filter/ParticleFilterParameters.hpp"
+#include <functional>
 #include <memory>
+
+[[nodiscard]] std::vector<station_sim::Model> initialise_particles(int number_of_particles) {
+    station_sim::ModelParameters model_parameters;
+    model_parameters.set_population_total(40);
+    model_parameters.set_do_print(false);
+    station_sim::Model base_model(0, model_parameters);
+
+    std::vector<station_sim::Model> particles;
+    for (int i = 0; i < number_of_particles; i++) {
+        particles.emplace_back(station_sim::Model(i, model_parameters));
+    }
+    return particles;
+}
 
 int main() {
     Chronos::Timer timer("timer1");
@@ -31,8 +45,10 @@ int main() {
     model_parameters.set_do_print(false);
     station_sim::Model base_model(0, model_parameters);
 
-    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(base_model,
-                                                                                        particle_filter_data_feed);
+    std::function<std::vector<station_sim::Model>(int)> f_initialise_particles = initialise_particles;
+
+    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(
+        base_model, particle_filter_data_feed, initialise_particles);
     particle_filter.step();
 
     timer.stop_timer(true);
