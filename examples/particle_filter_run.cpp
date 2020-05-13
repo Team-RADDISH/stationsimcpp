@@ -13,22 +13,34 @@
 #include "model/ModelPlotting.hpp"
 #include "particle_filter/ParticleFilter.hpp"
 #include "particle_filter/ParticleFilterDataFeed.hpp"
-#include "particle_filter/ParticleFilterParameters.hpp"
-#include <functional>
+#include "particle_filter/ParticlesInitialiser.hpp"
 #include <memory>
 
-[[nodiscard]] std::vector<station_sim::Model> initialise_particles(int number_of_particles) {
-    station_sim::ModelParameters model_parameters;
-    model_parameters.set_population_total(40);
-    model_parameters.set_do_print(false);
-    station_sim::Model base_model(0, model_parameters);
+class InitialiseModelParticles : public station_sim::ParticlesInitialiser<station_sim::Model> {
 
-    std::vector<station_sim::Model> particles;
-    for (int i = 0; i < number_of_particles; i++) {
-        particles.emplace_back(station_sim::Model(i, model_parameters));
+  public:
+    station_sim::ModelParameters model_parameters;
+    std::shared_ptr<station_sim::Model> base_model;
+
+    InitialiseModelParticles() {
+        model_parameters.set_population_total(40);
+        model_parameters.set_do_print(false);
+
+        base_model = std::make_shared<station_sim::Model>(station_sim::Model(0, model_parameters));
     }
-    return particles;
-}
+
+    [[nodiscard]] std::vector<station_sim::Model> initialise_particles(int number_of_particles) const override {
+
+        std::vector<station_sim::Model> particles;
+        for (int i = 0; i < number_of_particles; i++) {
+            station_sim::Model particle_model = station_sim::Model(i, model_parameters);
+            particle_model.set_state(base_model->get_state());
+
+            particles.emplace_back(particle_model);
+        }
+        return particles;
+    }
+};
 
 int main() {
     Chronos::Timer timer("timer1");
@@ -38,6 +50,9 @@ int main() {
         std::make_shared<station_sim::ParticleFilterDataFeed<std::vector<float>>>(
             station_sim::ParticleFilterDataFeed<std::vector<float>>());
 
+    std::shared_ptr<InitialiseModelParticles> initialise_model_particles =
+        std::make_shared<InitialiseModelParticles>(InitialiseModelParticles());
+
     std::vector<float> simulation_data = particle_filter_data_feed->get_state();
 
     station_sim::ModelParameters model_parameters;
@@ -45,10 +60,8 @@ int main() {
     model_parameters.set_do_print(false);
     station_sim::Model base_model(0, model_parameters);
 
-    std::function<std::vector<station_sim::Model>(int)> f_initialise_particles = initialise_particles;
-
     station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(particle_filter_data_feed,
-                                                                                        initialise_particles);
+                                                                                        initialise_model_particles);
     particle_filter.step();
 
     timer.stop_timer(true);
