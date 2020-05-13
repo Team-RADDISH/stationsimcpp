@@ -171,7 +171,6 @@ namespace station_sim {
         const std::vector<std::vector<float>> &get_weighted_means_states() const { return weighted_means_states; }
         const std::vector<float> &get_weighted_mean_errors() const { return weighted_mean_errors; }
         const std::vector<float> &get_absolute_mean_errors() const { return absolute_mean_errors; }
-
     };
 } // namespace station_sim
 #endif // STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
