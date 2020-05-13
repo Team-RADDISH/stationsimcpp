@@ -40,7 +40,6 @@ namespace station_sim {
         std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
-        ParticleType base_model;
         std::vector<ParticleType> particles;
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
@@ -50,8 +49,7 @@ namespace station_sim {
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(ParticleType base_model,
-                                std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
+        explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
                                 std::function<std::vector<station_sim::Model>(int)> initialise_particles) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
@@ -72,11 +70,7 @@ namespace station_sim {
 
             float_normal_distribution = std::normal_distribution<float>(0.0, particle_std * number_of_particles);
 
-            this->base_model = base_model;
-
             particles_states.resize(number_of_particles);
-            std::for_each(particles_states.begin(), particles_states.end(),
-                          [&base_model](StateType &particle_state) { particle_state = base_model.get_state(); });
 
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
@@ -146,7 +140,6 @@ namespace station_sim {
         /// \param number_of_steps The number of iterations to step (usually either 1, or the  resample window)
         void predict(int number_of_steps = 1) {
             for (int i = 0; i < number_of_steps; i++) {
-                base_model.step();
                 particle_filter_data_feed->run_model();
             }
 

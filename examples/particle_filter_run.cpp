@@ -47,18 +47,13 @@ int main() {
 
     std::function<std::vector<station_sim::Model>(int)> f_initialise_particles = initialise_particles;
 
-    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(
-        base_model, particle_filter_data_feed, initialise_particles);
+    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(particle_filter_data_feed,
+                                                                                        initialise_particles);
     particle_filter.step();
 
     timer.stop_timer(true);
 
     station_sim::ParticleFilterStatistics particle_filter_statistics = particle_filter.get_particle_filter_statistics();
-    //    std::vector<float> active_agents = particle_filter_statistics.get_active_agents();
-
-    //    for (const float v : active_agents) {
-    //        std::cout << v << std::endl;
-    //    }
 
     auto weighted_mean_errors = particle_filter_statistics.get_weighted_mean_errors();
 
