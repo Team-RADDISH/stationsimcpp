@@ -13,6 +13,7 @@
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterParameters.hpp"
 #include "ParticleFilterStatistics.hpp"
+#include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
 #include "model/MultipleModelsRun.hpp"
 #include "stationsim_export.h"
@@ -50,7 +51,7 @@ namespace station_sim {
         ParticleFilter() = delete;
 
         explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
-                                std::function<std::vector<station_sim::Model>(int)> initialise_particles) {
+                                std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
@@ -75,7 +76,7 @@ namespace station_sim {
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
-            particles = initialise_particles(number_of_particles);
+            particles = particles_initialiser->initialise_particles(number_of_particles);
         }
 
         ~ParticleFilter() = default;
