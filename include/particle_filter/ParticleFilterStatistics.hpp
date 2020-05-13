@@ -37,6 +37,8 @@ namespace station_sim {
 
             std::cout << "Particle filter general statistics:" << std::endl;
 
+            Model base_model = particle_filter_data_feed.get_base_model();
+
             std::vector<bool> base_model_agents_status = get_base_model_agents_status(base_model);
 
             long base_model_active_agents = calculate_base_model_active_agents_number(base_model_agents_status);

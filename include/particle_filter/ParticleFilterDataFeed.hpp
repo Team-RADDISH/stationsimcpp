@@ -50,6 +50,8 @@ namespace station_sim {
 
             return base_model.get_state();
         }
+
+        [[nodiscard]] const Model &get_base_model() const { return base_model; }
     };
 } // namespace station_sim
 
