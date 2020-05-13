@@ -27,11 +27,9 @@ namespace station_sim {
     class STATIONSIM_EXPORT ParticleFilter {
       private:
         int number_of_particles;
-        int number_of_runs;
         int resample_window;
         bool multi_step;
         float particle_std;
-        float target_model_std;
         bool do_save;
         bool do_resample;
 
@@ -42,7 +40,6 @@ namespace station_sim {
         std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
-        ParticleType base_model;
         std::vector<ParticleType> particles;
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
@@ -52,17 +49,15 @@ namespace station_sim {
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(ParticleType base_model,
-                                std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed) {
+        explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
+                                std::function<std::vector<station_sim::Model>(int)> initialise_particles) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
             this->number_of_particles = 100;
-            this->number_of_runs = 20;
             this->resample_window = 100;
             this->multi_step = true;
             this->particle_std = 0.5;
-            this->target_model_std = 1.0;
             this->do_save = true;
             this->do_resample = true;
 
@@ -75,30 +70,15 @@ namespace station_sim {
 
             float_normal_distribution = std::normal_distribution<float>(0.0, particle_std * number_of_particles);
 
-            this->base_model = base_model;
-
             particles_states.resize(number_of_particles);
-            std::for_each(particles_states.begin(), particles_states.end(),
-                          [&base_model](StateType &particle_state) { particle_state = base_model.get_state(); });
 
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
-            initialise_particles();
+            particles = initialise_particles(number_of_particles);
         }
 
         ~ParticleFilter() = default;
-
-        void initialise_particles() {
-            station_sim::ModelParameters model_parameters;
-            model_parameters.set_population_total(base_model.get_model_parameters().get_population_total());
-            model_parameters.set_do_print(false);
-            for (int i = 0; i < number_of_particles; i++) {
-                station_sim::Model model(i, model_parameters);
-                // multiple_models_run.add_model_and_model_parameters(model);
-                particles.push_back(model);
-            }
-        }
 
         /// \brief Step Particle Filter
         ///
@@ -124,14 +104,15 @@ namespace station_sim {
                 }
 
                 if (std::any_of(particles.cbegin(), particles.cend(),
-                                [](const ParticleType &particle) { return particle.get_status(); })) {
+                                [](const ParticleType &particle) { return particle.is_active(); })) {
 
                     predict(number_of_steps);
 
                     if (steps_run % resample_window == 0) {
                         window_counter++;
-                        
-                        particle_filter_statistics.calculate_statistics(base_model, particles, particles_weights);
+
+                        particle_filter_statistics.calculate_statistics(*particle_filter_data_feed, particles,
+                                                                        particles_weights);
 
                         if (do_resample) {
                             reweight();
@@ -159,7 +140,6 @@ namespace station_sim {
         /// \param number_of_steps The number of iterations to step (usually either 1, or the  resample window)
         void predict(int number_of_steps = 1) {
             for (int i = 0; i < number_of_steps; i++) {
-                base_model.step();
                 particle_filter_data_feed->run_model();
             }
 
@@ -274,17 +254,6 @@ namespace station_sim {
 
         void update_agents_locations_of_model(StateType particle_state, ParticleType &particle) {
             particle.set_state(particle_state);
-        }
-
-        void calculate_statistics() {
-            // calculate number of active agents in base model
-            int base_model_active_agents = 0;
-            for (const Agent &agent : base_model.agents) {
-                if (agent.getStatus() == AgentStatus::active) {
-                    base_model_active_agents++;
-                }
-            }
-            std::cout << "Base model active agents: " << base_model_active_agents << std::endl;
         }
 
         [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {

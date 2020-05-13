@@ -37,9 +37,7 @@ namespace station_sim {
         }
         ~ParticleFilterDataFeed() = default;
 
-        void run_model() {
-            base_model.step();
-        }
+        void run_model() { base_model.step(); }
 
         [[nodiscard]] T get_state() {
             // Add noise to the synthetic target data
@@ -52,6 +50,8 @@ namespace station_sim {
 
             return base_model.get_state();
         }
+
+        [[nodiscard]] const Model &get_base_model() const { return base_model; }
     };
 } // namespace station_sim
 

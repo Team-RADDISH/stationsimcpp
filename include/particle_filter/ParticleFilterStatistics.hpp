@@ -31,10 +31,13 @@ namespace station_sim {
         ParticleFilterStatistics() = default;
         ~ParticleFilterStatistics() = default;
 
-        void calculate_statistics(const ParticleType &base_model, const std::vector<ParticleType> &particles,
+        void calculate_statistics(const ParticleFilterDataFeed<StateType> &particle_filter_data_feed,
+                                  const std::vector<ParticleType> &particles,
                                   const std::vector<float> &particles_weights) {
 
             std::cout << "Particle filter general statistics:" << std::endl;
+
+            Model base_model = particle_filter_data_feed.get_base_model();
 
             std::vector<bool> base_model_agents_status = get_base_model_agents_status(base_model);
 
@@ -171,7 +174,6 @@ namespace station_sim {
         const std::vector<std::vector<float>> &get_weighted_means_states() const { return weighted_means_states; }
         const std::vector<float> &get_weighted_mean_errors() const { return weighted_mean_errors; }
         const std::vector<float> &get_absolute_mean_errors() const { return absolute_mean_errors; }
-
     };
 } // namespace station_sim
 #endif // STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
