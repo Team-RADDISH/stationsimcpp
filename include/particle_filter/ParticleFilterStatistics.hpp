@@ -31,7 +31,8 @@ namespace station_sim {
         ParticleFilterStatistics() = default;
         ~ParticleFilterStatistics() = default;
 
-        void calculate_statistics(const ParticleType &base_model, const std::vector<ParticleType> &particles,
+        void calculate_statistics(const ParticleFilterDataFeed<StateType> &particle_filter_data_feed,
+                                  const std::vector<ParticleType> &particles,
                                   const std::vector<float> &particles_weights) {
 
             std::cout << "Particle filter general statistics:" << std::endl;

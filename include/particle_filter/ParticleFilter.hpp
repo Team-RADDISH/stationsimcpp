@@ -117,7 +117,8 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        particle_filter_statistics.calculate_statistics(base_model, particles, particles_weights);
+                        particle_filter_statistics.calculate_statistics(*particle_filter_data_feed, particles,
+                                                                        particles_weights);
 
                         if (do_resample) {
                             reweight();
