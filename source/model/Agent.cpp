@@ -149,7 +149,6 @@ namespace station_sim {
 
         return Point2D((desired_location.x - agent_location.x) / distance,
                        (desired_location.y - agent_location.y) / distance);
-        ;
     }
 
     float Agent::calculate_distance(Point2D location_0, Point2D location_1) {
