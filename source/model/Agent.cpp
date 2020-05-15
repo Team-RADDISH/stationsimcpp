@@ -165,7 +165,7 @@ namespace station_sim {
     }
 
     bool Agent::collides_other_agent(const Model &model, const ModelParameters &model_parameters,
-                                     const Point2D &location) {
+                                     const Point2D &location) const {
         for (const auto &agent : model.agents) {
             if (agent.agent_id != agent_id && agent.status == AgentStatus::active &&
                 calculate_distance(agent.get_agent_location(), location) <= model_parameters.get_separation() &&

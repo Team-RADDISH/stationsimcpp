@@ -85,7 +85,7 @@ namespace station_sim {
         [[nodiscard]] Point2D calculate_agent_direction();
         [[nodiscard]] static bool is_outside_boundaries(std::array<Point2D, 2> boundaries, const Point2D &location);
         [[nodiscard]] bool collides_other_agent(const Model &model, const ModelParameters &model_parameters,
-                                                const Point2D &location);
+                                                const Point2D &location) const;
         static void clip_vector_values_to_boundaries(Point2D &location, std::array<Point2D, 2> boundaries);
         void initialize_random_distributions(const ModelParameters &model_parameters);
 
