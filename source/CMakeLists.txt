@@ -53,7 +53,7 @@ if (STATIONSIM_ENABLE_MPI)
         target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
 
         target_sources(StationSim PRIVATE
-                source/model/MultipleModelsRunMPI.cpp)
+                model/MultipleModelsRunMPI.cpp)
     endif ()
 endif ()
 
