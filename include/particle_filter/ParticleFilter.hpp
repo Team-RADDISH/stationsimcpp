@@ -51,12 +51,13 @@ namespace station_sim {
         ParticleFilter() = delete;
 
         explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
-                                std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser) {
+                                std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
+                                int number_of_particles, int resample_window) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
-            this->number_of_particles = 2000;
-            this->resample_window = 100;
+            this->number_of_particles = number_of_particles;
+            this->resample_window = resample_window;
             this->multi_step = true;
             this->particle_std = 0.5;
             this->do_save = true;
