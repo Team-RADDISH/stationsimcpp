@@ -19,6 +19,7 @@ option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
 option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
 option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
 option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
+option(STATIONSIM_ENABLE_OPENACC "Enables OpenACC" ON)
 
 # Project dependencies
 include(cmake/ProjectDependencies.cmake)

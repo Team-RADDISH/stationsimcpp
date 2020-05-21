@@ -22,6 +22,16 @@ target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "PGI")
+    if (STATIONSIM_ENABLE_OPENACC)
+        message(STATUS "Using OpenACC")
+        set(OPENACC_OPTIONS "-acc=verystrict -ta=tesla:managed -Minfo=accel")
+
+        target_compile_options(StationSim PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+        target_compile_options(StationSim PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
+    endif ()
+endif ()
+
 find_package(HDF5 REQUIRED COMPONENTS CXX)
 if (${HDF5_FOUND})
     message(STATUS "HDF5 FOUND!")
