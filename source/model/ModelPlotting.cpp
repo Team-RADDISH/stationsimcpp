@@ -33,14 +33,14 @@ namespace station_sim {
         scatter.show();
     }
 
-    void ModelPlotting::plot_gates_locations(const std::vector<std::array<float, 2>> &gates) {
+    void ModelPlotting::plot_gates_locations(const std::vector<Point2D> &gates) {
         std::vector<float> x_int;
         std::vector<float> y_int;
 
         for (const auto &gate : gates) {
-            const std::array<float, 2> agent_location = gate;
-            x_int.emplace_back(agent_location[0]);
-            y_int.emplace_back(agent_location[1]);
+            const Point2D agent_location = (Point2D &&) gate;
+            x_int.emplace_back(agent_location.x);
+            y_int.emplace_back(agent_location.y);
         }
 
         cxxplot::Kwargs args;
