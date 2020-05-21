@@ -12,24 +12,23 @@
 #include "model/ModelPlotting.hpp"
 #include <memory>
 
-int main()
-{
+int main() {
     station_sim::ModelParameters model_parameters;
-    model_parameters.set_population_total(100);
+    model_parameters.set_population_total(500);
     station_sim::Model model(0, model_parameters);
 
-//	station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
-//	station_sim::ModelPlotting::plot_gates_locations(model.gates_out_locations);
+    station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
+    station_sim::ModelPlotting::plot_gates_locations(model.gates_out_locations);
 
     Chronos::Timer timer("timer1");
     timer.start();
 
-    for (int i = 0; i<model_parameters.get_step_limit(); i++) {
+    for (int i = 0; i < model_parameters.get_step_limit(); i++) {
         model.step();
 
-//		if (i%300==0) {
-//			station_sim::ModelPlotting::plot_agents_locations(model);
-//		}
+        if (i % 300 == 0) {
+            station_sim::ModelPlotting::plot_agents_locations(model);
+        }
 
         if (model.model_simulation_finished()) {
             break;
