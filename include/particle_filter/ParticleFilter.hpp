@@ -144,10 +144,12 @@ namespace station_sim {
                 particle_filter_data_feed->run_model();
             }
 
-            for (auto &particle : particles) {
-                step_particle(particle, number_of_steps * number_of_particles);
+#pragma omp parallel for shared(particles)
+            for (int i = 0; i < particles.size(); i++) {
+                step_particle(particles[i], number_of_steps * number_of_particles);
             }
 
+#pragma omp parallel for shared(particles_states, particles)
             for (unsigned long i = 0; i < particles_states.size(); i++) {
                 particles_states[i] = particles[i].get_state();
             }
@@ -194,7 +196,6 @@ namespace station_sim {
             float distance = 0;
 
             StateType particle_state = particle.get_state();
-
             for (int i = 0; i < particle_state.size(); i++) {
                 distance += powf(particle_state[i] - measured_state[i], 2);
             }
