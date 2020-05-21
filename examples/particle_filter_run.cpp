@@ -61,8 +61,8 @@ int main() {
     model_parameters.set_do_print(false);
     station_sim::Model base_model(0, model_parameters);
 
-    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(particle_filter_data_feed,
-                                                                                        initialise_model_particles);
+    station_sim::ParticleFilter<station_sim::Model, std::vector<float>> particle_filter(
+        particle_filter_data_feed, initialise_model_particles, 1000, 100);
     particle_filter.step();
 
     timer.stop_timer(true);
