@@ -55,7 +55,7 @@ namespace station_sim {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
-            this->number_of_particles = 100;
+            this->number_of_particles = 2000;
             this->resample_window = 100;
             this->multi_step = true;
             this->particle_std = 0.5;
