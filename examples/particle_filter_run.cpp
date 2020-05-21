@@ -31,12 +31,13 @@ class InitialiseModelParticles : public station_sim::ParticlesInitialiser<statio
 
     [[nodiscard]] std::vector<station_sim::Model> initialise_particles(int number_of_particles) const override {
 
-        std::vector<station_sim::Model> particles;
+        std::vector<station_sim::Model> particles(number_of_particles);
+#pragma omp parallel for shared(particles)
         for (int i = 0; i < number_of_particles; i++) {
             station_sim::Model particle_model = station_sim::Model(i, model_parameters);
             particle_model.set_state(base_model->get_state());
 
-            particles.emplace_back(particle_model);
+            particles[i] = particle_model;
         }
         return particles;
     }
