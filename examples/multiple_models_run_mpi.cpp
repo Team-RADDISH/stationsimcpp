@@ -15,7 +15,7 @@ int main()
     Chronos::Timer timer_models_initialisation("Models initialisation");
     Chronos::Timer timer_models_run("Models runs");
 
-    int number_of_models = 100;
+    int number_of_models = 1000;
 
     timer_models_initialisation.start();
     station_sim::MultipleModelsRunMPI multiple_models_run(number_of_models);

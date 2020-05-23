@@ -26,7 +26,7 @@ namespace station_sim {
         this->gates_space = 1;
         this->gates_speed = 1;
 
-        this->speed_min = 0.2;
+        this->speed_min = static_cast<float>(0.2);
         this->speed_mean = 1;
         this->speed_std = 1;
         this->speed_steps = 3;

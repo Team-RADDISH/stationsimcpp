@@ -9,6 +9,7 @@
 #ifndef STATIONSIM_MODELPLOTTING_HPP
 #define STATIONSIM_MODELPLOTTING_HPP
 
+#include "model/Point2D.hpp"
 #include "stationsim_export.h"
 #include <array>
 #include <vector>
@@ -23,7 +24,7 @@ namespace station_sim {
 
         static void plot_agents_locations(const Model &model);
 
-        static void plot_gates_locations(const std::vector<std::array<float, 2>> &gates);
+        static void plot_gates_locations(const std::vector<Point2D> &gates);
 
         static void plot_agents_trails(const Model &model);
     };

@@ -16,7 +16,7 @@ int main()
 	Chronos::Timer timer_models_initialisation("Models initialisation");
 	Chronos::Timer timer_models_run("Models runs");
 
-	int number_of_models = 100;
+	int number_of_models = 1000;
 
 	timer_total.start();
 	timer_models_initialisation.start();
