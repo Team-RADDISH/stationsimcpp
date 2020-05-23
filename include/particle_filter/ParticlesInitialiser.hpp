@@ -20,7 +20,7 @@ namespace station_sim {
         ParticlesInitialiser() = default;
         virtual ~ParticlesInitialiser() = default;
 
-        [[nodiscard]] virtual std::vector<ParticleType> initialise_particles(int number_of_particles) const = 0;
+        [[nodiscard]] virtual std::shared_ptr<std::vector<ParticleType>> initialise_particles(int number_of_particles) const = 0;
     };
 } // namespace station_sim
 

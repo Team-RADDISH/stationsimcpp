@@ -14,6 +14,13 @@ project(StationSim
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
+# General options
+option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
+option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
+option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
+option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
+option(STATIONSIM_ENABLE_OPENACC "Enables OpenACC" ON)
+
 # Project dependencies
 include(cmake/ProjectDependencies.cmake)
 
@@ -27,126 +34,11 @@ add_library(stationsim_project_warnings INTERFACE)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(stationsim_project_warnings)
 
-option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
-option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
-option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
-option(STATIONSIM_ENABLE_MPI "Enables MPI" OFF)
-
-add_library(StationSim SHARED)
-
-target_sources(StationSim PRIVATE
-        source/model/Model.cpp
-        source/model/ModelParameters.cpp
-        source/model/MultipleModelsRun.cpp
-        source/model/Agent.cpp
-        source/model/ModelPlotting.cpp
-        source/HelpFunctions.cpp
-        source/model/Point2D.cpp
-        source/particle_filter/ParticleFilterParameters.cpp
-        source/particle_filter/ParticleFilterModelParameters.cpp)
-target_include_directories(StationSim PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR})
-
-find_package(HDF5 REQUIRED COMPONENTS CXX)
-if (${HDF5_FOUND})
-    message(STATUS "HDF5 FOUND!")
-    message(STATUS ${HDF5_CXX_INCLUDE_DIRS})
-    message(STATUS ${HDF5_CXX_LIBRARIES})
-endif ()
-
-target_link_libraries(StationSim PUBLIC Python3::Python Python3::NumPy)
-target_include_directories(StationSim PUBLIC ${HDF5_CXX_INCLUDE_DIRS})
-target_link_libraries(StationSim PUBLIC ${HDF5_CXX_LIBRARIES})
-target_link_libraries(StationSim PUBLIC stationsim_project_options stationsim_project_warnings)
-
-if (STATIONSIM_ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
-    if (OpenMP_CXX_FOUND)
-        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
-        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
-        target_link_libraries(StationSim PUBLIC OpenMP::OpenMP_CXX)
-    endif ()
-endif ()
-
-if (STATIONSIM_ENABLE_MPI)
-    find_package(MPI REQUIRED)
-    if (MPI_FOUND)
-        message(STATUS "USING MPI")
-
-        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
-        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
-        target_link_libraries(StationSim PUBLIC MPI::MPI_CXX)
-
-        target_sources(StationSim PRIVATE
-                source/model/MultipleModelsRunMPI.cpp)
-    endif ()
-endif ()
-
 add_subdirectory(external)
-
-target_link_libraries(StationSim PUBLIC cxxplot)
-target_link_libraries(StationSim PUBLIC Chronos)
-
-set_target_properties(StationSim PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
+add_subdirectory(source)
 include(GenerateExportHeader)
 generate_export_header(StationSim)
-
-include(CMakePackageConfigHelpers)
-
-write_basic_package_version_file(
-        SomeProjConfigVersion.cmake
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY SameMajorVersion)
 
 add_subdirectory(examples)
 enable_testing()
 add_subdirectory(tests)
-
-if (CMAKE_HOST_WIN32)
-    target_compile_definitions(StationSim PUBLIC StationSim_EXPORT)
-
-    if (STATIONSIM_ENABLE_EXAMPLES)
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:StationSim>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/examples/$<TARGET_FILE_NAME:StationSim>"
-                COMMENT "Copying StationSim.dll to examples directory")
-
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:cxxplot>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/examples/$<TARGET_FILE_NAME:cxxplot>"
-                COMMENT "Copying cxxplot.dll to examples directory")
-
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:Chronos>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/examples/$<TARGET_FILE_NAME:Chronos>"
-                COMMENT "Copying Chronos.dll to examples directory")
-    endif ()
-
-    if (STATIONSIM_ENABLE_TESTS)
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:StationSim>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/tests/$<TARGET_FILE_NAME:StationSim>"
-                COMMENT "Copying StationSim.dll to examples directory")
-
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:cxxplot>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/tests/$<TARGET_FILE_NAME:cxxplot>"
-                COMMENT "Copying cxxplot.dll to examples directory")
-
-        add_custom_command(TARGET StationSim POST_BUILD
-                COMMAND "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:Chronos>"
-                "${CMAKE_CURRENT_BINARY_DIR}/bin/tests/$<TARGET_FILE_NAME:Chronos>"
-                COMMENT "Copying Chronos.dll to examples directory")
-    endif ()
-endif ()
