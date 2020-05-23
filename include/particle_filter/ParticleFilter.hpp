@@ -113,7 +113,7 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        particle_filter_statistics.calculate_statistics(*particle_filter_data_feed, particles,
+                        particle_filter_statistics.calculate_statistics(particle_filter_data_feed, particles,
                                                                         particles_weights);
 
                         if (do_resample) {
@@ -142,7 +142,7 @@ namespace station_sim {
         /// \param number_of_steps The number of iterations to step (usually either 1, or the  resample window)
         void predict(int number_of_steps = 1) {
             for (int i = 0; i < number_of_steps; i++) {
-                particle_filter_data_feed->run_model();
+                particle_filter_data_feed->progress_feed();
             }
 
 #pragma omp parallel for shared(particles)
@@ -229,6 +229,9 @@ namespace station_sim {
                         i++;
                     } else {
                         j++;
+                        if (j >= number_of_particles) {
+                            std::cout << "Problem!" << std::endl;
+                        }
                     }
                 }
             }

@@ -9,12 +9,10 @@
 #ifndef STATIONSIM_PARTICLE_HPP
 #define STATIONSIM_PARTICLE_HPP
 
-#include <memory>
 #include <vector>
 
 namespace station_sim {
     class Particle {
-      private:
       public:
         Particle() = default;
         virtual ~Particle() = default;
