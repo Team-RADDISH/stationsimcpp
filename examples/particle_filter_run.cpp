@@ -128,7 +128,7 @@ int main() {
     cxxplot::Plot<float> plot(y_int);
     plot.set_xlabel("Output index");
     plot.set_ylabel("weighted_mean_errors");
-    //plot.show();
+    plot.show();
 
     return 0;
 }
