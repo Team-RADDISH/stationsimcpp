@@ -37,7 +37,7 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<std::vector<float>> {
         model_parameters.set_do_print(false);
         base_model = station_sim::Model(0, model_parameters);
     }
-    ~SyntheticDataFeed() = default;
+    ~SyntheticDataFeed() override = default;
 
     void progress_feed() override { base_model.step(); }
 
@@ -128,7 +128,7 @@ int main() {
     cxxplot::Plot<float> plot(y_int);
     plot.set_xlabel("Output index");
     plot.set_ylabel("weighted_mean_errors");
-    plot.show();
+    //plot.show();
 
     return 0;
 }
