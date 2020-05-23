@@ -88,14 +88,13 @@ class InitialiseModelParticles : public ParticlesInitialiser<Model> {
         base_model = std::make_shared<Model>(Model(0, model_parameters));
     }
 
-    [[nodiscard]] std::vector<Model> initialise_particles(int number_of_particles) const override {
-        std::vector<Model> particles(number_of_particles);
+    [[nodiscard]] std::shared_ptr<std::vector<Model>> initialise_particles(int number_of_particles) const override {
+        std::shared_ptr<std::vector<Model>> particles =
+            std::make_shared<std::vector<Model>>(std::vector<Model>(number_of_particles));
 #pragma omp parallel for shared(particles)
         for (int i = 0; i < number_of_particles; i++) {
-            Model particle_model = Model(i, model_parameters);
-            particle_model.set_state(base_model->get_state());
-
-            particles[i] = particle_model;
+            (*particles)[i] = Model(i, model_parameters);
+            (*particles)[i].set_state(base_model->get_state());
         }
         return particles;
     }

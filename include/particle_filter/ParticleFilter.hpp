@@ -41,7 +41,7 @@ namespace station_sim {
         std::shared_ptr<std::mt19937> generator;
         std::normal_distribution<float> float_normal_distribution;
 
-        std::vector<ParticleType> particles;
+        std::shared_ptr<std::vector<ParticleType>> particles;
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
@@ -105,7 +105,7 @@ namespace station_sim {
                     steps_run++;
                 }
 
-                if (std::any_of(particles.cbegin(), particles.cend(),
+                if (std::any_of((*particles).cbegin(), (*particles).cend(),
                                 [](const ParticleType &particle) { return particle.is_active(); })) {
 
                     predict(number_of_steps);
@@ -113,7 +113,7 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        particle_filter_statistics.calculate_statistics(particle_filter_data_feed, particles,
+                        particle_filter_statistics.calculate_statistics(particle_filter_data_feed, *particles,
                                                                         particles_weights);
 
                         if (do_resample) {
@@ -146,13 +146,13 @@ namespace station_sim {
             }
 
 #pragma omp parallel for shared(particles)
-            for (int i = 0; i < particles.size(); i++) {
-                step_particle(particles[i], number_of_steps * number_of_particles);
+            for (int i = 0; i < (*particles).size(); i++) {
+                step_particle((*particles)[i], number_of_steps * number_of_particles);
             }
 
 #pragma omp parallel for shared(particles_states, particles)
             for (unsigned long i = 0; i < particles_states.size(); i++) {
-                particles_states[i] = particles[i].get_state();
+                particles_states[i] = (*particles)[i].get_state();
             }
         }
 
@@ -180,8 +180,8 @@ namespace station_sim {
             StateType measured_state = particle_filter_data_feed->get_state();
 
             std::vector<float> distance;
-            for (int i = 0; i < particles.size(); i++) {
-                distance.push_back(calculate_particle_fit(particles[i], measured_state));
+            for (int i = 0; i < (*particles).size(); i++) {
+                distance.push_back(calculate_particle_fit((*particles)[i], measured_state));
             }
 
             std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
@@ -254,7 +254,7 @@ namespace station_sim {
             }
 
             for (int i = 0; i < indexes.size(); i++) {
-                update_agents_locations_of_model(particles_states[i], particles[i]);
+                update_agents_locations_of_model(particles_states[i], (*particles)[i]);
             }
         }
 
