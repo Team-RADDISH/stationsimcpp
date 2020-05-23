@@ -12,6 +12,7 @@ endif ()
 
 option(OPTIMIZE_FOR_NATIVE "Build with -march=native" ON)
 if (OPTIMIZE_FOR_NATIVE AND NOT(CMAKE_CXX_COMPILER_ID STREQUAL "PGI"))
+    message(STATUS "Optimise for native architecture.")
     include(CheckCXXCompilerFlag)
     CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
     if (COMPILER_SUPPORTS_MARCH_NATIVE)
