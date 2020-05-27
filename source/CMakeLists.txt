@@ -14,10 +14,8 @@ target_sources(StationSim PRIVATE
         model/MultipleModelsRun.cpp
         model/Agent.cpp
         model/ModelPlotting.cpp
-        HelpFunctions.cpp
+        model/Point2D.cpp)
         model/Point2D.cpp
-        particle_filter/ParticleFilterParameters.cpp
-        particle_filter/ParticleFilterModelParameters.cpp)
 target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
