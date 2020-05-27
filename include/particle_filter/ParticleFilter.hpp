@@ -11,7 +11,6 @@
 
 #include "HelpFunctions.hpp"
 #include "ParticleFilterDataFeed.hpp"
-#include "ParticleFilterParameters.hpp"
 #include "ParticleFilterStatistics.hpp"
 #include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
