@@ -15,7 +15,6 @@ target_sources(StationSim PRIVATE
         model/Agent.cpp
         model/ModelPlotting.cpp
         model/Point2D.cpp)
-        model/Point2D.cpp
 target_include_directories(StationSim PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR})
