@@ -12,13 +12,14 @@
 #include <vector>
 
 namespace station_sim {
+    template<class StateType>
     class Particle {
       public:
         Particle() = default;
         virtual ~Particle() = default;
 
         [[nodiscard]] virtual bool is_active() const = 0;
-        [[nodiscard]] virtual const std::vector<float> get_state() const = 0;
+        [[nodiscard]] virtual const std::vector<StateType> get_state() const = 0;
     };
 } // namespace station_sim
 

@@ -26,7 +26,7 @@ namespace station_sim {
 
     enum class STATIONSIM_EXPORT ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Model : public Particle {
+    class STATIONSIM_EXPORT Model : public Particle<float> {
       private:
         int model_id;
         ModelStatus status;
