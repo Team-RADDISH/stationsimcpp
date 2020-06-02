@@ -11,6 +11,7 @@
 
 #include "HelpFunctions.hpp"
 #include "ParticleFilterDataFeed.hpp"
+#include "ParticleFilterFileOutput.hpp"
 #include "ParticleFilterStatistics.hpp"
 #include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
@@ -46,6 +47,8 @@ namespace station_sim {
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
         ParticleFilterStatistics<ParticleType, StateType> particle_filter_statistics;
 
+        ParticleFilterFileOutput<StateType> particle_filter_file_output;
+
       public:
         ParticleFilter() = delete;
 
@@ -77,6 +80,8 @@ namespace station_sim {
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
             particles = particles_initialiser->initialise_particles(number_of_particles);
+
+            particle_filter_file_output = ParticleFilterFileOutput<StateType>();
         }
 
         ~ParticleFilter() = default;
@@ -128,6 +133,8 @@ namespace station_sim {
                     window_timer.start();
                 }
             }
+
+            particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
 
         /// \brief Step the base model
