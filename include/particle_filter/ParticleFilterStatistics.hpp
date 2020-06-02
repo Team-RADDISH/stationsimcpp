@@ -42,7 +42,7 @@ namespace station_sim {
             this->particle_filter_data_feed = particle_filter_data_feed;
 
             std::vector<std::vector<float>> particles_states;
-            for (const Particle &particle : particles) {
+            for (const auto &particle : particles) {
                 particles_states.push_back(particle.get_state());
             }
 
