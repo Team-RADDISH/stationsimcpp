@@ -26,7 +26,7 @@ namespace station_sim {
 
     enum class STATIONSIM_EXPORT ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Model : public Particle {
+    class STATIONSIM_EXPORT Model : public Particle<float> {
       private:
         int model_id;
         ModelStatus status;
@@ -39,7 +39,7 @@ namespace station_sim {
         std::vector<Point2D> history_collision_locations;
         int wiggle_collisions_number;
         std::vector<Point2D> history_wiggle_locations;
-        std::mt19937 *generator;
+        std::shared_ptr<std::mt19937> generator;
 
         ModelParameters model_parameters;
 
@@ -51,14 +51,14 @@ namespace station_sim {
         std::vector<Point2D> gates_in_locations;
         std::vector<Point2D> gates_out_locations;
         std::vector<Agent> agents;
-        [[nodiscard]] std::mt19937 *get_generator() const;
+        [[nodiscard]] std::shared_ptr<std::mt19937> get_generator() const;
         std::vector<float> steps_expected;
         std::vector<float> steps_taken;
         std::vector<float> steps_delay;
 
         Model() = default;
         Model(int unique_id, ModelParameters model_parameters);
-        ~Model();
+        ~Model() override;
 
         [[nodiscard]] int get_unique_id() const;
         [[nodiscard]] const std::vector<Point2D> &get_gates_in_locations() const;
@@ -81,7 +81,7 @@ namespace station_sim {
         [[nodiscard]] const std::vector<float> get_state() const override;
         void set_state(const std::vector<float> &new_state);
         [[nodiscard]] std::vector<float> get_active_agents_state() const;
-        [[nodiscard]] bool is_active() const override ;
+        [[nodiscard]] bool is_active() const override;
 
       private:
         void initialize_model(int unique_id);

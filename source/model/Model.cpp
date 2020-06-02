@@ -29,7 +29,7 @@ namespace station_sim {
     }
 
     void Model::initialize_model(int unique_id) {
-        generator = new std::mt19937(model_parameters.get_random_seed());
+        generator = std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
 
         model_id = unique_id;
         status = ModelStatus::active;
@@ -144,7 +144,7 @@ namespace station_sim {
 
     float Model::get_speed_step() const { return speed_step; }
 
-    std::mt19937 *Model::get_generator() const { return generator; }
+    std::shared_ptr<std::mt19937> Model::get_generator() const { return generator; }
 
     std::vector<Point2D> Model::get_agents_location() {
         std::vector<Point2D> agents_locations;
@@ -277,7 +277,7 @@ namespace station_sim {
 
     void Model::reseed_random_number_generator() {
         std::random_device r;
-        generator = new std::mt19937(r());
+        generator = std::make_shared<std::mt19937>(std::mt19937(r()));
     }
 
     const std::vector<float> Model::get_state() const {

@@ -14,6 +14,7 @@
 #include "stationsim_export.h"
 
 #include <array>
+#include <memory>
 #include <random>
 #include <vector>
 
@@ -25,7 +26,7 @@ namespace station_sim {
 
     class STATIONSIM_EXPORT Agent {
       private:
-        std::mt19937 *generator;
+        std::shared_ptr<std::mt19937> generator;
         std::uniform_real_distribution<float> float_distribution;
         std::uniform_int_distribution<int> gates_in_int_distribution;
         std::uniform_int_distribution<int> gates_out_int_distribution;
