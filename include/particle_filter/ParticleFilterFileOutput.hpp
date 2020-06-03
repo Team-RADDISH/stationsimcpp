@@ -9,6 +9,7 @@
 #ifndef STATIONSIM_PARTICLEFILTERFILEOUTPUT_HPP
 #define STATIONSIM_PARTICLEFILTERFILEOUTPUT_HPP
 
+#include "H5Cpp.h"
 #include "ParticleFilter.hpp"
 #include "stationsim_export.h"
 #include <memory>
