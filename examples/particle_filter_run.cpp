@@ -13,6 +13,7 @@
 #include "model/ModelPlotting.hpp"
 #include "particle_filter/ParticleFilter.hpp"
 #include "particle_filter/ParticleFilterDataFeed.hpp"
+#include "particle_filter/ParticleFit.hpp"
 #include "particle_filter/ParticlesInitialiser.hpp"
 #include <memory>
 
@@ -100,6 +101,21 @@ class InitialiseModelParticles : public ParticlesInitialiser<Model> {
     }
 };
 
+class StationSimParticleFit : public ParticleFit<Model, std::vector<float>> {
+  public:
+    [[nodiscard]] float calculate_particle_fit(const Model &particle,
+                                               const std::vector<float> &measured_state) const override {
+        float distance = 0;
+
+        std::vector<float> particle_state = particle.get_state();
+        for (int i = 0; i < particle_state.size(); i++) {
+            distance += powf(particle_state[i] - measured_state[i], 2);
+        }
+
+        return std::sqrt(distance);
+    }
+};
+
 int main() {
     Chronos::Timer timer("timer1");
     timer.start();
@@ -109,9 +125,12 @@ int main() {
     std::shared_ptr<InitialiseModelParticles> initialise_model_particles =
         std::make_shared<InitialiseModelParticles>(InitialiseModelParticles());
 
+    std::shared_ptr<StationSimParticleFit> station_sim_particle_fit =
+        std::make_shared<StationSimParticleFit>(StationSimParticleFit());
+
     // Setup and run particle filter
-    ParticleFilter<Model, std::vector<float>> particle_filter(synthetic_data_feed, initialise_model_particles, 1000,
-                                                              100);
+    ParticleFilter<Model, std::vector<float>> particle_filter(synthetic_data_feed, initialise_model_particles,
+                                                              station_sim_particle_fit, 1000, 100);
     particle_filter.step();
 
     timer.stop_timer(true);

@@ -13,6 +13,7 @@
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterFileOutput.hpp"
 #include "ParticleFilterStatistics.hpp"
+#include "ParticleFit.hpp"
 #include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
 #include "model/MultipleModelsRun.hpp"
@@ -49,11 +50,14 @@ namespace station_sim {
 
         ParticleFilterFileOutput<StateType> particle_filter_file_output;
 
+        std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit;
+
       public:
         ParticleFilter() = delete;
 
         explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
                                 std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
+                                std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
                                 int number_of_particles, int resample_window) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
@@ -82,6 +86,8 @@ namespace station_sim {
             particles = particles_initialiser->initialise_particles(number_of_particles);
 
             particle_filter_file_output = ParticleFilterFileOutput<StateType>();
+
+            this->particle_fit = particle_fit;
         }
 
         ~ParticleFilter() = default;
@@ -187,7 +193,7 @@ namespace station_sim {
 
             std::vector<float> distance;
             for (int i = 0; i < (*particles).size(); i++) {
-                distance.push_back(calculate_particle_fit((*particles)[i], measured_state));
+                distance.push_back(particle_fit->calculate_particle_fit((*particles)[i], measured_state));
             }
 
             std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
@@ -197,17 +203,6 @@ namespace station_sim {
             double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
             std::for_each(particles_weights.begin(), particles_weights.end(),
                           [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
-        }
-
-        float calculate_particle_fit(const ParticleType &particle, const StateType &measured_state) {
-            float distance = 0;
-
-            StateType particle_state = particle.get_state();
-            for (int i = 0; i < particle_state.size(); i++) {
-                distance += powf(particle_state[i] - measured_state[i], 2);
-            }
-
-            return std::sqrt(distance);
         }
 
         void resample() {
