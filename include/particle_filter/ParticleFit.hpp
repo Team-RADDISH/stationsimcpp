@@ -8,15 +8,17 @@
 #ifndef STATIONSIM_PARTICLEFIT_HPP
 #define STATIONSIM_PARTICLEFIT_HPP
 
+#include "stationsim_export.h"
+
 namespace station_sim {
     template <class ParticleType, class StateType>
-    class ParticleFit {
+    class STATIONSIM_EXPORT ParticleFit {
       public:
         ParticleFit() = default;
         virtual ~ParticleFit() = default;
 
         [[nodiscard]] virtual float calculate_particle_fit(const ParticleType &particle,
-                                                                 const StateType &measured_state) const = 0;
+                                                           const StateType &measured_state) const = 0;
     };
 } // namespace station_sim
 
