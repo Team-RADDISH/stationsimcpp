@@ -11,6 +11,8 @@
 #include "model/Model.hpp"
 #include "model/ModelParameters.hpp"
 #include "model/ModelPlotting.hpp"
+#include "model/ModelState.hpp"
+#include "model/ModelStatistics.hpp"
 #include "particle_filter/ParticleFilter.hpp"
 #include "particle_filter/ParticleFilterDataFeed.hpp"
 #include "particle_filter/ParticleFit.hpp"
@@ -19,7 +21,7 @@
 
 using namespace station_sim;
 
-class SyntheticDataFeed : public ParticleFilterDataFeed<std::vector<float>> {
+class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
   private:
     station_sim::ModelParameters model_parameters;
     station_sim::Model base_model;
@@ -42,16 +44,28 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<std::vector<float>> {
 
     void progress_feed() override { base_model.step(); }
 
-    [[nodiscard]] std::vector<float> get_state() override {
-        // Add noise to the synthetic target data
+    [[nodiscard]] ModelState get_state() override {
+        ModelState model_state;
+
         std::vector<Point2D> measured_state(base_model.agents.size());
+        std::vector<AgentActiveStatus> agent_active_status(base_model.agents.size());
+
+        // Add noise to the synthetic target data
         for (unsigned long i = 0; i < base_model.agents.size(); i++) {
             Point2D agent_location = base_model.agents[i].get_agent_location();
-            measured_state.at(i).x = agent_location.x + float_normal_distribution(*generator);
-            measured_state.at(i).y = agent_location.y + float_normal_distribution(*generator);
-        }
+            measured_state[i].x = agent_location.x + float_normal_distribution(*generator);
+            measured_state[i].y = agent_location.y + float_normal_distribution(*generator);
 
-        return base_model.get_state();
+            if (base_model.agents[i].getStatus() == AgentStatus::active) {
+                agent_active_status[i] = AgentActiveStatus::active;
+            } else {
+                agent_active_status[i] = AgentActiveStatus::not_active;
+            }
+        }
+        model_state.agents_location = measured_state;
+        model_state.agent_active_status = agent_active_status;
+
+        return model_state;
     }
 
     void print_statistics() override {
@@ -101,15 +115,17 @@ class InitialiseModelParticles : public ParticlesInitialiser<Model> {
     }
 };
 
-class StationSimParticleFit : public ParticleFit<Model, std::vector<float>> {
+class StationSimParticleFit : public ParticleFit<Model, ModelState> {
   public:
-    [[nodiscard]] float calculate_particle_fit(const Model &particle,
-                                               const std::vector<float> &measured_state) const override {
+    [[nodiscard]] float calculate_particle_fit(const Model &particle, const ModelState &measured_state) const override {
         float distance = 0;
 
-        std::vector<float> particle_state = particle.get_state();
-        for (int i = 0; i < particle_state.size(); i++) {
-            distance += powf(particle_state[i] - measured_state[i], 2);
+        ModelState particle_state = particle.get_state();
+        for (int i = 0; i < particle_state.agents_location.size(); i++) {
+            if (measured_state.agent_active_status[i] == AgentActiveStatus::active) {
+                distance += powf(particle_state.agents_location[i].x - measured_state.agents_location[i].x, 2);
+                distance += powf(particle_state.agents_location[i].y - measured_state.agents_location[i].y, 2);
+            }
         }
 
         return std::sqrt(distance);
@@ -128,16 +144,17 @@ int main() {
     std::shared_ptr<StationSimParticleFit> station_sim_particle_fit =
         std::make_shared<StationSimParticleFit>(StationSimParticleFit());
 
+    std::shared_ptr<ParticleFilterStatistics<Model, ModelState>> particle_filter_statistics =
+        std::make_shared<ModelStatistics>(ModelStatistics());
+
     // Setup and run particle filter
-    ParticleFilter<Model, std::vector<float>> particle_filter(synthetic_data_feed, initialise_model_particles,
-                                                              station_sim_particle_fit, 1000, 100);
+    ParticleFilter<Model, ModelState> particle_filter(synthetic_data_feed, initialise_model_particles,
+                                                      station_sim_particle_fit, particle_filter_statistics, 5000, 100);
     particle_filter.step();
 
     timer.stop_timer(true);
 
-    ParticleFilterStatistics particle_filter_statistics = particle_filter.get_particle_filter_statistics();
-
-    auto weighted_mean_errors = particle_filter_statistics.get_weighted_mean_errors();
+    auto weighted_mean_errors = particle_filter_statistics->get_weighted_mean_errors();
 
     std::vector<float> y_int;
     for (const auto &mean : weighted_mean_errors) {

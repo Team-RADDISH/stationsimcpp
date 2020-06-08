@@ -46,19 +46,21 @@ namespace station_sim {
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
-        ParticleFilterStatistics<ParticleType, StateType> particle_filter_statistics;
+        std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics;
 
-        ParticleFilterFileOutput<StateType> particle_filter_file_output;
+        //ParticleFilterFileOutput<StateType> particle_filter_file_output;
 
         std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit;
 
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
-                                std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
-                                std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
-                                int number_of_particles, int resample_window) {
+        explicit ParticleFilter(
+            std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
+            std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
+            std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
+            std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics,
+            int number_of_particles, int resample_window) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
@@ -85,9 +87,10 @@ namespace station_sim {
 
             particles = particles_initialiser->initialise_particles(number_of_particles);
 
-            particle_filter_file_output = ParticleFilterFileOutput<StateType>();
+            //particle_filter_file_output = ParticleFilterFileOutput<StateType>();
 
             this->particle_fit = particle_fit;
+            this->particle_filter_statistics = particle_filter_statistics;
         }
 
         ~ParticleFilter() = default;
@@ -123,7 +126,7 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        particle_filter_statistics.calculate_statistics(particle_filter_data_feed, *particles,
+                        particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
                                                                         particles_weights);
 
                         if (do_resample) {
@@ -140,7 +143,7 @@ namespace station_sim {
                 }
             }
 
-            particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
+            //particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
 
         /// \brief Step the base model
@@ -183,9 +186,9 @@ namespace station_sim {
                 particle.step();
             }
 
-            std::vector<float> state = particle.get_state();
-            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
-            particle.set_state(state);
+//            std::vector<float> state = particle.get_state();
+//            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
+//            particle.set_state(state);
         }
 
         void reweight() {
@@ -263,9 +266,9 @@ namespace station_sim {
             particle.set_state(particle_state);
         }
 
-        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
-            return particle_filter_statistics;
-        }
+//        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
+//            return particle_filter_statistics;
+//        }
     };
 } // namespace station_sim
 
