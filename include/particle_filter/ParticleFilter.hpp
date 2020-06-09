@@ -209,13 +209,6 @@ namespace station_sim {
         }
 
         void resample() {
-            std::vector<float> offset_partition =
-                HelpFunctions::evenly_spaced_values_within_interval(0, number_of_particles, 1);
-
-            std::uniform_real_distribution<float> dis(0.0, 1.0);
-            std::for_each(offset_partition.begin(), offset_partition.end(),
-                          [&](float &value) { value = (value + dis(*generator)) / number_of_particles; });
-
             std::vector<float> cumsum(particles_weights.size());
             cumsum[0] = particles_weights[0];
             for (size_t i = 1; i < particles_weights.size(); i++) {
@@ -224,20 +217,15 @@ namespace station_sim {
 
             std::vector<int> indexes(number_of_particles);
 
-            {
-                int i = 0;
-                int j = 0;
-                while (i < number_of_particles) {
-                    if (offset_partition[i] < cumsum[j]) {
-                        indexes[i] = j;
-                        i++;
-                    } else {
-                        j++;
-                        if (j >= number_of_particles) {
-                            std::cout << "Problem!" << std::endl;
-                        }
-                    }
+            std::uniform_real_distribution<float> dis(0.0, 1.0 / number_of_particles);
+            float u1 = dis(*generator);
+            int i = 0;
+            for (int j = 0; j < number_of_particles; j++) {
+                while (u1 > cumsum[i]) {
+                    i++;
                 }
+                indexes[j] = i;
+                u1 += 1.0 / number_of_particles;
             }
 
             std::vector<float> weights_temp(particles_weights);
@@ -266,9 +254,10 @@ namespace station_sim {
             particle.set_state(particle_state);
         }
 
-//        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
-//            return particle_filter_statistics;
-//        }
+        //        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType>
+        //        &get_particle_filter_statistics() const {
+        //            return particle_filter_statistics;
+        //        }
     };
 } // namespace station_sim
 
