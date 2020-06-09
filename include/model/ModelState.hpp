@@ -12,7 +12,8 @@
 #include "array"
 #include "model/Point2D.hpp"
 #include "stationsim_export.h"
-#include "vector"
+#include <algorithm>
+#include <vector>
 
 namespace station_sim {
 
