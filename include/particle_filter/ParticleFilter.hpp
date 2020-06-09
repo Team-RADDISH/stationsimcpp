@@ -162,7 +162,7 @@ namespace station_sim {
 
 #pragma omp parallel for shared(particles)
             for (int i = 0; i < (*particles).size(); i++) {
-                step_particle((*particles)[i], number_of_steps * number_of_particles);
+                step_particle((*particles)[i], number_of_steps);
             }
 
 #pragma omp parallel for shared(particles_states, particles)
