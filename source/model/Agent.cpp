@@ -211,4 +211,5 @@ namespace station_sim {
     void Agent::set_agent_location(const Point2D &agent_location) { this->agent_location = agent_location; }
 
     AgentStatus Agent::getStatus() const { return status; }
+    void Agent::set_status(AgentStatus status) { Agent::status = status; }
 } // namespace station_sim

@@ -11,6 +11,7 @@
 
 #include "Point2D.hpp"
 #include "model/Agent.hpp"
+#include "model/ModelState.hpp"
 #include "particle_filter/Particle.hpp"
 #include "stationsim_export.h"
 
@@ -26,7 +27,7 @@ namespace station_sim {
 
     enum class STATIONSIM_EXPORT ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Model : public Particle<float> {
+    class STATIONSIM_EXPORT Model : public Particle<ModelState> {
       private:
         int model_id;
         ModelStatus status;
@@ -78,8 +79,8 @@ namespace station_sim {
         [[nodiscard]] ModelStatus get_status() const;
         void reseed_random_number_generator();
         [[nodiscard]] std::vector<Point2D> get_agents_location();
-        [[nodiscard]] const std::vector<float> get_state() const override;
-        void set_state(const std::vector<float> &new_state);
+        [[nodiscard]] const ModelState get_state() const override;
+        void set_state(const ModelState &new_state);
         [[nodiscard]] std::vector<float> get_active_agents_state() const;
         [[nodiscard]] bool is_active() const override;
 

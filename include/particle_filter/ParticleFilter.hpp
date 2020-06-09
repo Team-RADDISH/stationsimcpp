@@ -11,7 +11,9 @@
 
 #include "HelpFunctions.hpp"
 #include "ParticleFilterDataFeed.hpp"
+#include "ParticleFilterFileOutput.hpp"
 #include "ParticleFilterStatistics.hpp"
+#include "ParticleFit.hpp"
 #include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
 #include "model/MultipleModelsRun.hpp"
@@ -44,14 +46,21 @@ namespace station_sim {
         std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
-        ParticleFilterStatistics<ParticleType, StateType> particle_filter_statistics;
+        std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics;
+
+        //ParticleFilterFileOutput<StateType> particle_filter_file_output;
+
+        std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit;
 
       public:
         ParticleFilter() = delete;
 
-        explicit ParticleFilter(std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
-                                std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
-                                int number_of_particles, int resample_window) {
+        explicit ParticleFilter(
+            std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed,
+            std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
+            std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
+            std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics,
+            int number_of_particles, int resample_window) {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
@@ -77,6 +86,11 @@ namespace station_sim {
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
             particles = particles_initialiser->initialise_particles(number_of_particles);
+
+            //particle_filter_file_output = ParticleFilterFileOutput<StateType>();
+
+            this->particle_fit = particle_fit;
+            this->particle_filter_statistics = particle_filter_statistics;
         }
 
         ~ParticleFilter() = default;
@@ -112,7 +126,7 @@ namespace station_sim {
                     if (steps_run % resample_window == 0) {
                         window_counter++;
 
-                        particle_filter_statistics.calculate_statistics(particle_filter_data_feed, *particles,
+                        particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
                                                                         particles_weights);
 
                         if (do_resample) {
@@ -128,6 +142,8 @@ namespace station_sim {
                     window_timer.start();
                 }
             }
+
+            //particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
 
         /// \brief Step the base model
@@ -146,7 +162,7 @@ namespace station_sim {
 
 #pragma omp parallel for shared(particles)
             for (int i = 0; i < (*particles).size(); i++) {
-                step_particle((*particles)[i], number_of_steps * number_of_particles);
+                step_particle((*particles)[i], number_of_steps);
             }
 
 #pragma omp parallel for shared(particles_states, particles)
@@ -170,9 +186,9 @@ namespace station_sim {
                 particle.step();
             }
 
-            std::vector<float> state = particle.get_state();
-            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
-            particle.set_state(state);
+//            std::vector<float> state = particle.get_state();
+//            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
+//            particle.set_state(state);
         }
 
         void reweight() {
@@ -180,7 +196,7 @@ namespace station_sim {
 
             std::vector<float> distance;
             for (int i = 0; i < (*particles).size(); i++) {
-                distance.push_back(calculate_particle_fit((*particles)[i], measured_state));
+                distance.push_back(particle_fit->calculate_particle_fit((*particles)[i], measured_state));
             }
 
             std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
@@ -192,25 +208,7 @@ namespace station_sim {
                           [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
         }
 
-        float calculate_particle_fit(const ParticleType &particle, const StateType &measured_state) {
-            float distance = 0;
-
-            StateType particle_state = particle.get_state();
-            for (int i = 0; i < particle_state.size(); i++) {
-                distance += powf(particle_state[i] - measured_state[i], 2);
-            }
-
-            return std::sqrt(distance);
-        }
-
         void resample() {
-            std::vector<float> offset_partition =
-                HelpFunctions::evenly_spaced_values_within_interval(0, number_of_particles, 1);
-
-            std::uniform_real_distribution<float> dis(0.0, 1.0);
-            std::for_each(offset_partition.begin(), offset_partition.end(),
-                          [&](float &value) { value = (value + dis(*generator)) / number_of_particles; });
-
             std::vector<float> cumsum(particles_weights.size());
             cumsum[0] = particles_weights[0];
             for (size_t i = 1; i < particles_weights.size(); i++) {
@@ -219,20 +217,15 @@ namespace station_sim {
 
             std::vector<int> indexes(number_of_particles);
 
-            {
-                int i = 0;
-                int j = 0;
-                while (i < number_of_particles) {
-                    if (offset_partition[i] < cumsum[j]) {
-                        indexes[i] = j;
-                        i++;
-                    } else {
-                        j++;
-                        if (j >= number_of_particles) {
-                            std::cout << "Problem!" << std::endl;
-                        }
-                    }
+            std::uniform_real_distribution<float> dis(0.0, 1.0 / number_of_particles);
+            float u1 = dis(*generator);
+            int i = 0;
+            for (int j = 0; j < number_of_particles; j++) {
+                while (u1 > cumsum[i]) {
+                    i++;
                 }
+                indexes[j] = i;
+                u1 += 1.0 / number_of_particles;
             }
 
             std::vector<float> weights_temp(particles_weights);
@@ -261,9 +254,10 @@ namespace station_sim {
             particle.set_state(particle_state);
         }
 
-        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType> &get_particle_filter_statistics() const {
-            return particle_filter_statistics;
-        }
+        //        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType>
+        //        &get_particle_filter_statistics() const {
+        //            return particle_filter_statistics;
+        //        }
     };
 } // namespace station_sim
 
