@@ -280,20 +280,24 @@ namespace station_sim {
         generator = std::make_shared<std::mt19937>(std::mt19937(r()));
     }
 
-    const std::vector<float> Model::get_state() const {
-        std::vector<float> state;
+    const ModelState Model::get_state() const {
+        ModelState model_state;
+
         for (const Agent &agent : agents) {
-            state.push_back(agent.get_agent_location().x);
-            state.push_back(agent.get_agent_location().y);
+            model_state.agents_location.push_back(agent.get_agent_location());
+            if (agent.getStatus() == AgentStatus::active) {
+                model_state.agent_active_status.push_back(AgentActiveStatus::active);
+            } else {
+                model_state.agent_active_status.push_back(AgentActiveStatus::not_active);
+            }
         }
-        return state;
+
+        return model_state;
     }
 
-    void Model::set_state(const std::vector<float> &new_state) {
-        int j = 0;
-        for (unsigned long i = 0; i < new_state.size() - 1; i += 2) {
-            agents[j].set_agent_location(Point2D(new_state[i], new_state[i + 1]));
-            j++;
+    void Model::set_state(const ModelState &new_state) {
+        for (unsigned long i = 0; i < new_state.agents_location.size(); i++) {
+            agents[i].set_agent_location(new_state.agents_location[i]);
         }
     }
 

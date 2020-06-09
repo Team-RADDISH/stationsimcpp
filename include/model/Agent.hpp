@@ -54,6 +54,9 @@ namespace station_sim {
         int step_start{};
         AgentStatus status;
 
+      public:
+        void set_status(AgentStatus status);
+
       private:
         int steps_taken;
 
