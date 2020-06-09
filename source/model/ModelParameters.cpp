@@ -16,10 +16,10 @@
 namespace station_sim {
 
     ModelParameters::ModelParameters() {
-        this->population_total = 100;
+        this->population_total = 40;
 
-        this->space_width = 400;
-        this->space_height = 200;
+        this->space_width = 200;
+        this->space_height = 100;
 
         this->gates_in_count = 3;
         this->gates_out_count = 2;
@@ -31,7 +31,7 @@ namespace station_sim {
         this->speed_std = 1;
         this->speed_steps = 3;
 
-        this->separation = 5;
+        this->separation = 2;
         this->max_wiggle = 1;
 
         this->step_limit = 3600;
