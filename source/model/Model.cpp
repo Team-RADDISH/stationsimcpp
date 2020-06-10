@@ -28,6 +28,37 @@ namespace station_sim {
             model_parameters.get_step_limit(), std::vector<Point2D>(model_parameters.get_population_total()));
     }
 
+    Model::Model(const Model &model) {
+        model_id = model.model_id;
+        status = model.status;
+        speed_step = model.speed_step;
+
+        history_collisions_number = model.history_collisions_number;
+        history_collision_locations = model.history_collision_locations;
+        wiggle_collisions_number = model.wiggle_collisions_number;
+        history_wiggle_locations = model.history_wiggle_locations;
+
+        model_parameters = model.model_parameters;
+
+        std::shared_ptr<std::mt19937> generator =
+            std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
+
+        step_id = model.step_id;
+        pop_active = model.pop_active;
+        pop_finished = model.pop_finished;
+        boundaries = model.boundaries;
+        gates_in_locations = model.gates_in_locations;
+        gates_out_locations = model.gates_out_locations;
+        agents = model.agents;
+
+        steps_expected = model.steps_expected;
+        steps_taken = model.steps_taken;
+        steps_delay = model.steps_delay;
+
+        print_per_steps = model.print_per_steps;
+        history_state = model.history_state;
+    }
+
     void Model::initialize_model(int unique_id) {
         generator = std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
 
