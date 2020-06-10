@@ -31,8 +31,6 @@ namespace station_sim {
       private:
         int model_id;
         ModelStatus status;
-
-      private:
         float speed_step;
 
         // History related variables
@@ -41,8 +39,10 @@ namespace station_sim {
         int wiggle_collisions_number;
         std::vector<Point2D> history_wiggle_locations;
         std::shared_ptr<std::mt19937> generator;
-
         ModelParameters model_parameters;
+
+        int print_per_steps;
+        std::vector<std::vector<Point2D>> history_state;
 
       public:
         int step_id = 0;
@@ -59,6 +59,7 @@ namespace station_sim {
 
         Model() = default;
         Model(int unique_id, ModelParameters model_parameters);
+        Model(const Model &model);
         ~Model() override;
 
         [[nodiscard]] int get_unique_id() const;
@@ -91,8 +92,6 @@ namespace station_sim {
         static void create_gates(std::vector<Point2D> &gates, float x, float y, int gates_number);
         void generate_agents();
         void move_agents();
-        int print_per_steps;
-        std::vector<std::vector<Point2D>> history_state;
 
         void write_agent_locations_to_hdf_5(H5::Group &history_group);
 
