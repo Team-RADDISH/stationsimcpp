@@ -30,6 +30,40 @@ namespace station_sim {
         wiggle = std::fmin(model_parameters.get_max_wiggle(), agent_max_speed);
     }
 
+    Agent::Agent(const Agent &agent) {
+        generator = agent.generator;
+        float_distribution = agent.float_distribution;
+        gates_in_int_distribution = agent.gates_in_int_distribution;
+        gates_out_int_distribution = agent.gates_out_int_distribution;
+        gates_speed_exponential_distribution = agent.gates_speed_exponential_distribution;
+        speed_normal_distribution = agent.speed_normal_distribution;
+        wiggle_int_distribution = agent.wiggle_int_distribution;
+
+        agent_id = agent.agent_id;
+
+        steps_activate = agent.steps_activate;
+        wiggle = agent.wiggle;
+        agent_max_speed = agent.agent_max_speed;
+        agent_available_speeds = agent.agent_available_speeds;
+        agent_speed = agent.agent_speed;
+        history_locations = agent.history_locations;
+
+        history_speeds = agent.history_speeds;
+        history_wiggles = agent.history_wiggles;
+        history_collisions = agent.history_collisions;
+        step_start = agent.step_start;
+        status = agent.status;
+
+        steps_taken = agent.steps_taken;
+        gate_in = agent.gate_in;
+        gate_out = agent.gate_out;
+        start_location = agent.start_location;
+
+        desired_location = agent.desired_location;
+        agent_location = agent.agent_location;
+        steps_delay = agent.steps_delay;
+    }
+
     void Agent::initialize_random_distributions(const ModelParameters &model_parameters) {
         float_distribution = std::uniform_real_distribution<float>(-1, 1);
         gates_in_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_in() - 1);
@@ -212,4 +246,5 @@ namespace station_sim {
 
     AgentStatus Agent::getStatus() const { return status; }
     void Agent::set_status(AgentStatus status) { Agent::status = status; }
+
 } // namespace station_sim
