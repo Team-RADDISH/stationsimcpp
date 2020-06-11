@@ -121,10 +121,10 @@ class StationSimParticleFit : public ParticleFit<Model, ModelState> {
         float distance = 0;
 
         ModelState particle_state = particle.get_state();
-        for (int i = 0; i < particle_state.agents_location.size(); i++) {
-            if (measured_state.agent_active_status[i] == AgentActiveStatus::active) {
-                distance += powf(particle_state.agents_location[i].x - measured_state.agents_location[i].x, 2);
-                distance += powf(particle_state.agents_location[i].y - measured_state.agents_location[i].y, 2);
+        for (unsigned long i = 0; i < particle_state.agents_location.size(); i++) {
+            if (measured_state.agent_active_status.at(i) == AgentActiveStatus::active) {
+                distance += powf(particle_state.agents_location.at(i).x - measured_state.agents_location.at(i).x, 2);
+                distance += powf(particle_state.agents_location.at(i).y - measured_state.agents_location.at(i).y, 2);
             }
         }
 
