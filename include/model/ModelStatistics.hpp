@@ -72,7 +72,7 @@ namespace station_sim {
             }
 
             for (unsigned long i = 0; i < unweighted_mean.size(); i++) {
-                unweighted_mean[i] = sum[i] / static_cast<float>(number_of_active_agents_in_datafeed * 2);
+                unweighted_mean[i] = sum[i] / static_cast<float>(sum.size());
             }
 
             return unweighted_mean;
