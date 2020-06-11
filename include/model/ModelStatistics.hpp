@@ -60,7 +60,7 @@ namespace station_sim {
             std::fill(sum.begin(), sum.end(), 0);
 
             for (const ModelState &particle_state : particles_states) {
-                int active_agent_index = 0;
+                unsigned long active_agent_index = 0;
                 for (unsigned long j = 0; j < particle_state.agents_location.size(); j++) {
                     if (data_feed_state.agent_active_status[j] == AgentActiveStatus::active) {
                         sum[active_agent_index] += particle_state.agents_location[j].x;
