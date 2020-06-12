@@ -16,9 +16,6 @@
 
 namespace station_sim {
     class STATIONSIM_EXPORT ModelStatistics : public ParticleFilterStatistics<Model, ModelState> {
-      private:
-        std::vector<float> active_agents;
-
       public:
         ModelStatistics() = default;
         ~ModelStatistics() override = default;
@@ -42,6 +39,8 @@ namespace station_sim {
             this->weighted_means_states.push_back(weighted_mean);
 
             this->weighted_mean_errors.push_back(calculate_weighted_mean_error(weighted_mean));
+
+            this->active_agents.push_back(calculate_number_of_active_agents(particle_filter_data_feed));
         }
 
         // For each active agent state (i.e. x and y) calculate the unweighted average from all particles
@@ -154,7 +153,13 @@ namespace station_sim {
         //            return variance;
         //        }
 
-        [[nodiscard]] const std::vector<float> &get_active_agents() const { return active_agents; }
+        [[nodiscard]] long calculate_number_of_active_agents(
+            const std::shared_ptr<ParticleFilterDataFeed<ModelState>> particle_filter_data_feed) const {
+
+            ModelState data_feed_state = particle_filter_data_feed->get_state();
+            return std::count_if(data_feed_state.agent_active_status.begin(), data_feed_state.agent_active_status.end(),
+                                 [](auto i) { return i == AgentActiveStatus::active; });
+        }
     };
 } // namespace station_sim
 

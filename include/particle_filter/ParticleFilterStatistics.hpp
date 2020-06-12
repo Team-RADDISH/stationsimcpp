@@ -26,6 +26,7 @@ namespace station_sim {
         std::vector<std::vector<float>> weighted_means_states;
         std::vector<float> weighted_mean_errors;
         std::vector<float> absolute_mean_errors;
+        std::vector<long> active_agents;
 
       public:
         ParticleFilterStatistics() = default;
@@ -53,6 +54,7 @@ namespace station_sim {
         [[nodiscard]] const std::vector<std::vector<float>> &get_weighted_means_states() const { return weighted_means_states; }
         [[nodiscard]] const std::vector<float> &get_weighted_mean_errors() const { return weighted_mean_errors; }
         [[nodiscard]] const std::vector<float> &get_absolute_mean_errors() const { return absolute_mean_errors; }
+        [[nodiscard]] const std::vector<long> &get_active_agents() const { return active_agents; }
     };
 } // namespace station_sim
 #endif // STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
