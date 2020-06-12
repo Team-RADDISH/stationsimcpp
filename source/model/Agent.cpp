@@ -20,7 +20,12 @@ namespace station_sim {
         status = AgentStatus::not_started; // 0 Not Started, 1 Active, 2 Finished
         agent_id = unique_id;
 
-        generator = model.get_generator();
+        std::random_device rd;
+        std::array<int, std::mt19937::state_size> seed_data;
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+        generator = std::make_shared<std::mt19937>(std::mt19937(seq));
+
         initialize_random_distributions(model_parameters);
 
         initialize_location(model, model_parameters);
