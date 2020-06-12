@@ -105,7 +105,7 @@ namespace station_sim {
                 }
             }
 
-            float sum_weights = static_cast<float>(std::accumulate(weights.begin(), weights.end(), 0.0));
+            float sum_weights = static_cast<float>(std::reduce(weights.begin(), weights.end(), 0.0));
 
             for (unsigned long i = 0; i < weighted_mean.size(); i++) {
                 weighted_mean.at(i) = sum.at(i) * weights.at(i) / sum_weights;
