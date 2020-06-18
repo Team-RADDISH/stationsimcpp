@@ -258,11 +258,6 @@ namespace station_sim {
         void update_agents_locations_of_model(StateType particle_state, ParticleType &particle) {
             particle.set_state(particle_state);
         }
-
-        //        [[nodiscard]] const ParticleFilterStatistics<ParticleType, StateType>
-        //        &get_particle_filter_statistics() const {
-        //            return particle_filter_statistics;
-        //        }
     };
 } // namespace station_sim
 
