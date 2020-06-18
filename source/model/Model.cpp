@@ -324,7 +324,7 @@ namespace station_sim {
         for (const Agent &agent : agents) {
             model_state.agents_location.push_back(agent.get_agent_location());
             if (agent.getStatus() == AgentStatus::active) {
-                model_state.agent_active_status.push_back(AgentActiveStatus::active);
+            model_state.agents_desired_location.push_back(agent.get_desired_location());
             } else {
                 model_state.agent_active_status.push_back(AgentActiveStatus::not_active);
             }
@@ -336,6 +336,7 @@ namespace station_sim {
     void Model::set_state(const ModelState &new_state) {
         for (unsigned long i = 0; i < new_state.agents_location.size(); i++) {
             agents[i].set_agent_location(new_state.agents_location[i]);
+            agents.at(i).set_desired_location(new_state.agents_desired_location.at(i));
         }
     }
 

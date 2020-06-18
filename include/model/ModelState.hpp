@@ -23,6 +23,7 @@ namespace station_sim {
       public:
         std::vector<Point2D> agents_location;
         std::vector<AgentActiveStatus> agent_active_status;
+        std::vector<Point2D> agents_desired_location;
 
         ModelState() = default;
         ~ModelState() = default;

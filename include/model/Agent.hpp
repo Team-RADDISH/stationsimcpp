@@ -58,6 +58,13 @@ namespace station_sim {
         Point2D start_location;
         int gate_out;
         Point2D desired_location;
+
+      public:
+        const Point2D &get_desired_location() const;
+
+      public:
+        void set_desired_location(const Point2D &desired_location);
+      private:
         Point2D agent_location;
         float steps_delay;
 
