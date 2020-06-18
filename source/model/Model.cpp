@@ -334,7 +334,7 @@ namespace station_sim {
 
     void Model::set_state(const ModelState &new_state) {
         for (unsigned long i = 0; i < new_state.agents_location.size(); i++) {
-            agents[i].set_agent_location(new_state.agents_location[i]);
+            agents.at(i).set_agent_location(new_state.agents_location.at(i));
             agents.at(i).set_desired_location(new_state.agents_desired_location.at(i));
         }
     }

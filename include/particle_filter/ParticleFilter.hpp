@@ -186,7 +186,7 @@ namespace station_sim {
 
             std::vector<float> distance;
             for (int i = 0; i < (*particles).size(); i++) {
-                distance.push_back(particle_fit->calculate_particle_fit((*particles)[i], measured_state));
+                distance.push_back(particle_fit->calculate_particle_fit((*particles).at(i), measured_state));
             }
 
             std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
@@ -203,9 +203,9 @@ namespace station_sim {
 
         void resample() {
             std::vector<float> cumsum(particles_weights.size());
-            cumsum[0] = particles_weights[0];
+            cumsum.at(0) = particles_weights.at(0);
             for (size_t i = 1; i < particles_weights.size(); i++) {
-                cumsum[i] = cumsum[i - 1] + particles_weights[i];
+                cumsum.at(i) = cumsum.at(i - 1) + particles_weights.at(i);
             }
 
             std::vector<int> indexes(number_of_particles);
@@ -214,20 +214,22 @@ namespace station_sim {
             float u1 = dis(*generator);
             int i = 0;
             for (int j = 0; j < number_of_particles; j++) {
-                while (u1 > cumsum[i]) {
+                while (u1 > cumsum.at(i)) {
                     i++;
                 }
-                indexes[j] = i;
+                indexes.at(j) = i;
                 u1 += 1.0 / number_of_particles;
             }
 
             std::vector<float> weights_temp(particles_weights);
             for (int i = 0; i < indexes.size(); i++) {
-                weights_temp[i] = particles_weights[i];
+                weights_temp.at(i) = particles_weights.at(i);
             }
 
             for (int i = 0; i < indexes.size(); i++) {
-                particles_weights[i] = weights_temp[indexes[i]];
+                particles_weights.at(i) = weights_temp[indexes.at(i)];
+            }
+
             std::vector<StateType> particles_states(number_of_particles);
 #pragma omp parallel for shared(particles_states, particles)
             for (unsigned long i = 0; i < particles_states.size(); i++) {
