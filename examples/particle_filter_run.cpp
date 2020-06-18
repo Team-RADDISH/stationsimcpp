@@ -108,8 +108,7 @@ class InitialiseModelParticles : public ParticlesInitialiser<Model> {
             std::make_shared<std::vector<Model>>(std::vector<Model>(number_of_particles));
 #pragma omp parallel for shared(particles)
         for (int i = 0; i < number_of_particles; i++) {
-            (*particles)[i] = Model(i, model_parameters);
-            (*particles)[i].set_state(base_model->get_state());
+            (*particles).at(i) = Model(*base_model);
         }
         return particles;
     }
@@ -122,7 +121,7 @@ class StationSimParticleFit : public ParticleFit<Model, ModelState> {
 
         ModelState particle_state = particle.get_state();
         for (unsigned long i = 0; i < particle_state.agents_location.size(); i++) {
-            if (measured_state.agent_active_status.at(i) == AgentActiveStatus::active) {
+            if (measured_state.agent_active_status.at(i) == AgentStatus::active) {
                 distance += powf(particle_state.agents_location.at(i).x - measured_state.agents_location.at(i).x, 2);
                 distance += powf(particle_state.agents_location.at(i).y - measured_state.agents_location.at(i).y, 2);
             }

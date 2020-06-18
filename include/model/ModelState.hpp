@@ -17,12 +17,10 @@
 
 namespace station_sim {
 
-    enum class STATIONSIM_EXPORT AgentActiveStatus : int { not_active = 0, active = 1 };
-
     class STATIONSIM_EXPORT ModelState {
       public:
         std::vector<Point2D> agents_location;
-        std::vector<AgentActiveStatus> agent_active_status;
+        std::vector<AgentStatus> agent_active_status;
         std::vector<Point2D> agents_desired_location;
 
         ModelState() = default;
