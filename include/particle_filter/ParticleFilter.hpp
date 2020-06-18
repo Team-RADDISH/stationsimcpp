@@ -190,7 +190,7 @@ namespace station_sim {
             }
 
             std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
-                return static_cast<float>(1.0 / (pow((static_cast<double>(distance) + 1e-9), 2)));
+                return static_cast<float>(powf(1.0 / (distance + 1e-9), 2));
             });
 
             double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
