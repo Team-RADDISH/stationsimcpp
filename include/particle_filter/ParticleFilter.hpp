@@ -176,7 +176,6 @@ namespace station_sim {
         /// \param model Μodel object associated with the particle that needs to be stepped
         /// \param num_iter The number of iterations to step
         void step_particle(ParticleType &particle, int num_iter) {
-            particle.reseed_random_number_generator();
             for (int i = 0; i < num_iter; i++) {
                 particle.step();
             }
