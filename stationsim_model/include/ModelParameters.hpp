@@ -9,13 +9,15 @@
 #ifndef STATIONSIM_MODELPARAMETERS_HPP
 #define STATIONSIM_MODELPARAMETERS_HPP
 
+#include "Point2D.hpp"
+#include <vector>
+
 namespace station_sim {
     class ModelParameters {
       private:
         int population_total;
 
-        float space_width;
-        float space_height;
+        std::vector<Point2D> boundaries;
 
         int gates_in_count;
         int gates_out_count;
@@ -44,10 +46,8 @@ namespace station_sim {
 
         [[nodiscard]] int get_population_total() const;
         void set_population_total(int value);
-        [[nodiscard]] float get_space_width() const;
-        void set_space_width(float value);
-        [[nodiscard]] float get_space_height() const;
-        void set_space_height(float value);
+        [[nodiscard]] std::vector<Point2D> get_boundaries() const;
+        void set_boundaries(std::vector<Point2D> boundaries);
         [[nodiscard]] int get_gates_in() const;
         void set_gates_in(int value);
         [[nodiscard]] int get_gates_out() const;

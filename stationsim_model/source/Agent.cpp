@@ -162,19 +162,20 @@ namespace station_sim {
         agent_speed = new_speed;
     }
 
-    void Agent::clip_vector_values_to_boundaries(Point2D &location, std::array<Point2D, 2> boundaries) {
+    void Agent::clip_vector_values_to_boundaries(Point2D &location, std::vector<Point2D> boundaries) {
+        // FIXME: this needs to be adapted for the arbitrary shape
         if (location.x < boundaries[0].x) {
             location.x = boundaries[0].x;
         }
-        if (location.x > boundaries[1].x) {
-            location.x = boundaries[1].x;
+        if (location.x > boundaries[2].x) {
+            location.x = boundaries[2].x;
         }
 
         if (location.y < boundaries[0].y) {
             location.y = boundaries[0].y;
         }
-        if (location.y > boundaries[1].y) {
-            location.y = boundaries[1].y;
+        if (location.y > boundaries[2].y) {
+            location.y = boundaries[2].y;
         }
     }
 
@@ -192,9 +193,19 @@ namespace station_sim {
         return std::sqrt(sum);
     }
 
-    bool Agent::is_outside_boundaries(const std::array<Point2D, 2> boundaries, const Point2D &location) {
-        return location.x < boundaries[0].x || location.x > boundaries[1].x || location.y < boundaries[0].y ||
-               location.y > boundaries[1].y;
+    // Based on the even-odd rule: https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule#Implementation
+    bool Agent::is_outside_boundaries(const std::vector<Point2D> boundaries, const Point2D &location) {
+        int len = boundaries.size();
+        int j = len - 1;
+        bool inside = false;
+        for (int i = 0; i < len; i++) {
+            if (((boundaries[i].y > location.y) != (boundaries[j].y > location.y)) &&
+                (location.x < boundaries[i].x + (boundaries[j].x - boundaries[i].x) * (location.y - boundaries[i].y) /
+                 (boundaries[j].y - boundaries[i].y)))
+                inside = !inside;
+            j = i;
+        }
+        return !inside;
     }
 
     bool Agent::collides_other_agent(const Model &model, const ModelParameters &model_parameters,

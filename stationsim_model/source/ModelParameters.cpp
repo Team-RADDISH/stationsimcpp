@@ -17,8 +17,7 @@ namespace station_sim {
     ModelParameters::ModelParameters() {
         this->population_total = 40;
 
-        this->space_width = 200;
-        this->space_height = 100;
+        this->boundaries = { {Point2D(0, 0), Point2D(0, 100), Point2D(200, 100), Point2D(200, 0)} };
 
         this->gates_in_count = 3;
         this->gates_out_count = 2;
@@ -54,24 +53,10 @@ namespace station_sim {
         this->population_total = value;
     }
 
-    float ModelParameters::get_space_width() const { return space_width; }
+    std::vector<Point2D> ModelParameters::get_boundaries() const { return boundaries; };
 
-    void ModelParameters::set_space_width(float value) {
-        if (value <= 0) {
-            throw std::invalid_argument("space_width must be positive!");
-        }
-
-        this->space_width = value;
-    }
-
-    float ModelParameters::get_space_height() const { return space_height; }
-
-    void ModelParameters::set_space_height(float value) {
-        if (value <= 0) {
-            throw std::invalid_argument("space_height must be positive!");
-        }
-
-        this->space_height = value;
+    void ModelParameters::set_boundaries(std::vector<Point2D> boundaries) {
+        this->boundaries = boundaries;
     }
 
     int ModelParameters::get_gates_in() const { return gates_in_count; }
