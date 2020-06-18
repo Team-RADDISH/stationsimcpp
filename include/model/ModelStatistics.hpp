@@ -51,7 +51,7 @@ namespace station_sim {
             // calculate the number of active agents in the data feed
             long number_of_active_agents_in_datafeed =
                 std::count_if(data_feed_state.agent_active_status.begin(), data_feed_state.agent_active_status.end(),
-                              [](auto i) { return i == AgentActiveStatus::active; });
+                              [](auto i) { return i == AgentStatus::active; });
 
             // size of vectors is the number of active agent * the number of space dimensions (i.e. x and y)
             std::vector<float> unweighted_mean(static_cast<unsigned long>(number_of_active_agents_in_datafeed * 2));
@@ -61,7 +61,7 @@ namespace station_sim {
             for (const ModelState &particle_state : particles_states) {
                 unsigned long active_agent_index = 0;
                 for (unsigned long j = 0; j < particle_state.agents_location.size(); j++) {
-                    if (data_feed_state.agent_active_status[j] == AgentActiveStatus::active) {
+                    if (data_feed_state.agent_active_status[j] == AgentStatus::active) {
                         sum[active_agent_index] += particle_state.agents_location[j].x;
                         active_agent_index++;
                         sum[active_agent_index] += particle_state.agents_location[j].y;
@@ -85,7 +85,7 @@ namespace station_sim {
             // calculate the number of active agents in the data feed
             long number_of_active_agents_in_datafeed =
                 std::count_if(data_feed_state.agent_active_status.begin(), data_feed_state.agent_active_status.end(),
-                              [](auto i) { return i == AgentActiveStatus::active; });
+                              [](auto i) { return i == AgentStatus::active; });
 
             // size of vectors is the number of active agent * the number of space dimensions (i.e. x and y)
             std::vector<float> weighted_mean(static_cast<unsigned long>(number_of_active_agents_in_datafeed * 2));
@@ -95,7 +95,7 @@ namespace station_sim {
             for (const ModelState &particle_state : particles_states) {
                 unsigned long active_agent_index = 0;
                 for (unsigned long j = 0; j < particle_state.agents_location.size(); j++) {
-                    if (data_feed_state.agent_active_status.at(j) == AgentActiveStatus::active) {
+                    if (data_feed_state.agent_active_status.at(j) == AgentStatus::active) {
                         sum.at(active_agent_index) += particle_state.agents_location.at(j).x;
                         active_agent_index++;
                         sum.at(active_agent_index) += particle_state.agents_location.at(j).y;
@@ -119,7 +119,7 @@ namespace station_sim {
             ModelState data_feed_state = particle_filter_data_feed->get_state();
             unsigned long weighted_mean_index = 0;
             for (unsigned int i = 0; i < data_feed_state.agent_active_status.size(); i++) {
-                if (data_feed_state.agent_active_status.at(i) == AgentActiveStatus::active) {
+                if (data_feed_state.agent_active_status.at(i) == AgentStatus::active) {
                     sum += powf(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).x, 2);
                     weighted_mean_index++;
                     sum += powf(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).y, 2);
@@ -158,7 +158,7 @@ namespace station_sim {
 
             ModelState data_feed_state = particle_filter_data_feed->get_state();
             return std::count_if(data_feed_state.agent_active_status.begin(), data_feed_state.agent_active_status.end(),
-                                 [](auto i) { return i == AgentActiveStatus::active; });
+                                 [](auto i) { return i == AgentStatus::active; });
         }
     };
 } // namespace station_sim

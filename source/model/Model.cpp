@@ -325,12 +325,9 @@ namespace station_sim {
 
         for (const Agent &agent : agents) {
             model_state.agents_location.push_back(agent.get_agent_location());
-            if (agent.getStatus() == AgentStatus::active) {
+            model_state.agent_active_status.push_back(agent.getStatus());
             model_state.agents_desired_location.push_back(agent.get_desired_location());
-            } else {
-                model_state.agent_active_status.push_back(AgentActiveStatus::not_active);
             }
-        }
 
         return model_state;
     }
