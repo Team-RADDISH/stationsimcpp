@@ -43,7 +43,6 @@ namespace station_sim {
         std::lognormal_distribution<float> float_normal_distribution;
 
         std::shared_ptr<std::vector<ParticleType>> particles;
-        std::vector<StateType> particles_states;
         std::vector<float> particles_weights;
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
         std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics;
@@ -82,8 +81,6 @@ namespace station_sim {
             generator = std::make_shared<std::mt19937>(std::mt19937(seq));
 
             float_normal_distribution = std::lognormal_distribution<float>(0.0, particle_std);
-
-            particles_states.resize(number_of_particles);
 
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
@@ -167,12 +164,7 @@ namespace station_sim {
             for (int i = 0; i < (*particles).size(); i++) {
                 step_particle((*particles)[i], number_of_steps);
             }
-
-#pragma omp parallel for shared(particles_states, particles)
-            for (unsigned long i = 0; i < particles_states.size(); i++) {
-                particles_states[i] = (*particles)[i].get_state();
             }
-        }
 
         /// \brief Step a particle
         ///
@@ -241,18 +233,26 @@ namespace station_sim {
 
             for (int i = 0; i < indexes.size(); i++) {
                 particles_weights[i] = weights_temp[indexes[i]];
+            std::vector<StateType> particles_states(number_of_particles);
+#pragma omp parallel for shared(particles_states, particles)
+            for (unsigned long i = 0; i < particles_states.size(); i++) {
+                particles_states[i] = (*particles)[i].get_state();
             }
 
             std::vector<StateType> particle_states_temp(particles_states);
+#pragma omp parallel for shared(particle_states_temp, particles_states)
             for (int i = 0; i < indexes.size(); i++) {
-                particle_states_temp[i] = particles_states[i];
-            }
-            for (int i = 0; i < indexes.size(); i++) {
-                particles_states[i] = particle_states_temp[indexes[i]];
+                particle_states_temp.at(i) = particles_states.at(i);
             }
 
+#pragma omp parallel for shared(particles_states, particle_states_temp)
             for (int i = 0; i < indexes.size(); i++) {
-                update_agents_locations_of_model(particles_states[i], (*particles)[i]);
+                particles_states.at(i) = particle_states_temp.at(indexes.at(i));
+            }
+
+#pragma omp parallel for shared(particles_states, particles)
+            for (int i = 0; i < indexes.size(); i++) {
+                update_agents_locations_of_model(particles_states.at(i), (*particles).at(i));
             }
         }
 
