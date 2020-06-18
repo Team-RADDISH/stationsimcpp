@@ -53,6 +53,8 @@ namespace station_sim {
         gates_in_locations = model.gates_in_locations;
         gates_out_locations = model.gates_out_locations;
         agents = model.agents;
+        std::for_each(agents.begin(), agents.end(),
+                      [&](Agent &agent) { agent.set_random_number_generator(random_number_generator); });
 
         steps_expected = model.steps_expected;
         steps_taken = model.steps_taken;
