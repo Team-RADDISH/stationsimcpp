@@ -29,6 +29,12 @@ namespace station_sim {
     }
 
     Model::Model(const Model &model) {
+        std::random_device rd;
+        std::array<int, std::mt19937::state_size> seed_data;
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+        random_number_generator = std::make_shared<std::mt19937>(std::mt19937(seq));
+
         model_id = model.model_id;
         status = model.status;
         speed_step = model.speed_step;
@@ -39,9 +45,6 @@ namespace station_sim {
         history_wiggle_locations = model.history_wiggle_locations;
 
         model_parameters = model.model_parameters;
-
-        std::shared_ptr<std::mt19937> generator =
-            std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
 
         step_id = model.step_id;
         pop_active = model.pop_active;
@@ -112,7 +115,7 @@ namespace station_sim {
 
     void Model::generate_agents() {
         for (int i = 0; i < model_parameters.get_population_total(); i++) {
-            agents.emplace_back(Agent(i, *this, model_parameters));
+            agents.emplace_back(Agent(i, *this, model_parameters, random_number_generator));
         }
     }
 

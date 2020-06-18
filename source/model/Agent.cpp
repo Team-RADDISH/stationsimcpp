@@ -16,15 +16,12 @@
 
 namespace station_sim {
 
-    Agent::Agent(int unique_id, const Model &model, const ModelParameters &model_parameters) {
+    Agent::Agent(int unique_id, const Model &model, const ModelParameters &model_parameters,
+                 std::shared_ptr<std::mt19937> generator) {
         status = AgentStatus::not_started; // 0 Not Started, 1 Active, 2 Finished
         agent_id = unique_id;
 
-        std::random_device rd;
-        std::array<int, std::mt19937::state_size> seed_data;
-        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
-        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
-        generator = std::make_shared<std::mt19937>(std::mt19937(seq));
+        this->random_number_generator = generator;
 
         initialize_random_distributions(model_parameters);
 
@@ -36,7 +33,8 @@ namespace station_sim {
     }
 
     Agent::Agent(const Agent &agent) {
-        generator = agent.generator;
+        random_number_generator = agent.random_number_generator;
+
         float_distribution = agent.float_distribution;
         gates_in_int_distribution = agent.gates_in_int_distribution;
         gates_out_int_distribution = agent.gates_out_int_distribution;
@@ -80,14 +78,14 @@ namespace station_sim {
     }
 
     void Agent::initialize_location(const Model &model, const ModelParameters &model_parameters) {
-        float perturb = float_distribution(*generator) * model_parameters.get_gates_space();
+        float perturb = float_distribution(*random_number_generator) * model_parameters.get_gates_space();
 
-        gate_in = gates_in_int_distribution(*generator);
+        gate_in = gates_in_int_distribution(*random_number_generator);
         start_location.x = model.get_gates_in_locations()[gate_in].x;
         start_location.y = model.get_gates_in_locations()[gate_in].y;
         start_location.y += perturb;
 
-        gate_out = gates_out_int_distribution(*generator);
+        gate_out = gates_out_int_distribution(*random_number_generator);
         desired_location.x = model.get_gates_out_locations()[gate_out].x;
         desired_location.y = model.get_gates_out_locations()[gate_out].y;
 
@@ -99,7 +97,7 @@ namespace station_sim {
         agent_max_speed = 0;
 
         while (agent_max_speed <= model_parameters.get_speed_min()) {
-            agent_max_speed = speed_normal_distribution(*generator);
+            agent_max_speed = speed_normal_distribution(*random_number_generator);
         }
 
         agent_available_speeds = HelpFunctions::evenly_spaced_values_within_interval(
@@ -150,7 +148,7 @@ namespace station_sim {
             // If even the slowest speed results in a collision, then wiggle.
             if (speed == agent_available_speeds.back()) {
                 new_agent_location.x = agent_location.x;
-                new_agent_location.y = agent_location.y + wiggle * wiggle_int_distribution(*generator);
+                new_agent_location.y = agent_location.y + wiggle * wiggle_int_distribution(*random_number_generator);
 
                 if (model_parameters.is_do_history()) {
                     history_wiggles += 1;
@@ -250,6 +248,15 @@ namespace station_sim {
     void Agent::set_agent_location(const Point2D &agent_location) { this->agent_location = agent_location; }
 
     AgentStatus Agent::getStatus() const { return status; }
+
     void Agent::set_status(AgentStatus status) { Agent::status = status; }
+
+    void Agent::set_random_number_generator(const std::shared_ptr<std::mt19937> &random_number_generator) {
+        Agent::random_number_generator = random_number_generator;
+    }
+
+    void Agent::set_desired_location(const Point2D &desired_location) { Agent::desired_location = desired_location; }
+
+    const Point2D &Agent::get_desired_location() const { return desired_location; }
 
 } // namespace station_sim

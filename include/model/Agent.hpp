@@ -26,7 +26,11 @@ namespace station_sim {
 
     class STATIONSIM_EXPORT Agent {
       private:
-        std::shared_ptr<std::mt19937> generator;
+        std::shared_ptr<std::mt19937> random_number_generator;
+
+      public:
+        void set_random_number_generator(const std::shared_ptr<std::mt19937> &random_number_generator);
+      private:
         std::uniform_real_distribution<float> float_distribution;
         std::uniform_int_distribution<int> gates_in_int_distribution;
         std::uniform_int_distribution<int> gates_out_int_distribution;
@@ -59,7 +63,7 @@ namespace station_sim {
 
       public:
         Agent() = delete;
-        Agent(int unique_id, const Model &model, const ModelParameters &model_parameters);
+        Agent(int unique_id, const Model &model, const ModelParameters &model_parameters, std::shared_ptr<std::mt19937> generator);
         Agent(const Agent &agent);
         ~Agent() = default;
 
