@@ -40,7 +40,7 @@ namespace station_sim {
         int window_counter;
 
         std::shared_ptr<std::mt19937> generator;
-        std::normal_distribution<float> float_normal_distribution;
+        std::lognormal_distribution<float> float_normal_distribution;
 
         std::shared_ptr<std::vector<ParticleType>> particles;
         std::vector<StateType> particles_states;
@@ -75,10 +75,13 @@ namespace station_sim {
             total_number_of_particle_steps_to_run = 1000;
             window_counter = 0;
 
-            std::random_device r;
-            generator = std::make_shared<std::mt19937>(std::mt19937(r()));
+            std::random_device rd;
+            std::array<int, std::mt19937::state_size> seed_data;
+            std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+            std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+            generator = std::make_shared<std::mt19937>(std::mt19937(seq));
 
-            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std * number_of_particles);
+            float_normal_distribution = std::lognormal_distribution<float>(0.0, particle_std);
 
             particles_states.resize(number_of_particles);
 
@@ -206,6 +209,9 @@ namespace station_sim {
             double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
             std::for_each(particles_weights.begin(), particles_weights.end(),
                           [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
+
+            std::for_each(particles_weights.begin(), particles_weights.end(),
+                          [&](float &weight) { weight += float_normal_distribution(*generator); });
         }
 
         void resample() {
