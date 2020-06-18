@@ -56,7 +56,7 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
             measured_state[i].x = agent_location.x + float_normal_distribution(*generator);
             measured_state[i].y = agent_location.y + float_normal_distribution(*generator);
             agent_active_status[i] = base_model.agents[i].getStatus();
-            }
+        }
         model_state.agents_location = measured_state;
         model_state.agent_active_status = agent_active_status;
 
@@ -126,6 +126,38 @@ class StationSimParticleFit : public ParticleFit<Model, ModelState> {
     }
 };
 
+void print_weighted_mean_errors(
+    std::shared_ptr<ParticleFilterStatistics<Model, ModelState>> particle_filter_statistics) {
+
+    auto weighted_mean_errors = particle_filter_statistics->get_weighted_mean_errors();
+
+    std::vector<float> y_int;
+    for (const auto &mean : weighted_mean_errors) {
+        y_int.emplace_back(mean);
+    }
+
+    cxxplot::Plot<float> plot(y_int);
+    plot.set_xlabel("Output index");
+    plot.set_ylabel("Weighted mean error");
+    plot.show();
+}
+
+void print_synthetic_data_active_agents(
+    std::shared_ptr<ParticleFilterStatistics<Model, ModelState>> particle_filter_statistics) {
+
+    auto synthetic_data_active_agents = particle_filter_statistics->get_active_agents();
+
+    std::vector<float> y_int;
+    for (const auto &item : synthetic_data_active_agents) {
+        y_int.emplace_back(item);
+    }
+
+    cxxplot::Plot<float> plot(y_int);
+    plot.set_xlabel("Output index");
+    plot.set_ylabel("Synthetic data active agents");
+    plot.show();
+}
+
 int main() {
     Chronos::Timer timer("timer1");
     timer.start();
@@ -148,17 +180,8 @@ int main() {
 
     timer.stop_timer(true);
 
-    auto weighted_mean_errors = particle_filter_statistics->get_weighted_mean_errors();
-
-    std::vector<float> y_int;
-    for (const auto &mean : weighted_mean_errors) {
-        y_int.emplace_back(mean);
-    }
-
-    cxxplot::Plot<float> plot(y_int);
-    plot.set_xlabel("Output index");
-    plot.set_ylabel("Weighted mean error");
-    plot.show();
+    print_synthetic_data_active_agents(particle_filter_statistics);
+    print_weighted_mean_errors(particle_filter_statistics);
 
     return 0;
 }
