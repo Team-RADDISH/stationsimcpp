@@ -180,10 +180,6 @@ namespace station_sim {
             for (int i = 0; i < num_iter; i++) {
                 particle.step();
             }
-
-//            std::vector<float> state = particle.get_state();
-//            std::for_each(state.begin(), state.end(), [&](float &x) { x += float_normal_distribution(*generator); });
-//            particle.set_state(state);
         }
 
         void reweight() {
