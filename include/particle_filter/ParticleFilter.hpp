@@ -210,8 +210,8 @@ namespace station_sim {
 
             std::vector<int> indexes(number_of_particles);
 
-            std::uniform_real_distribution<float> dis(0.0, 1.0 / number_of_particles);
-            float u1 = dis(*generator);
+            std::uniform_real_distribution<float> dis(0.0, 1.0);
+            float u1 = dis(*generator) / number_of_particles;
             int i = 0;
             for (int j = 0; j < number_of_particles; j++) {
                 while (u1 > cumsum.at(i)) {
