@@ -50,12 +50,15 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
         std::vector<Point2D> measured_state(base_model.agents.size());
         std::vector<AgentStatus> agent_active_status(base_model.agents.size());
 
+        model_state.agents_desired_location.resize(base_model.agents.size());
+
         // Add noise to the synthetic target data
         for (unsigned long i = 0; i < base_model.agents.size(); i++) {
             Point2D agent_location = base_model.agents.at(i).get_agent_location();
             measured_state.at(i).x = agent_location.x; // + float_normal_distribution(*generator);
             measured_state.at(i).y = agent_location.y; // + float_normal_distribution(*generator);
             agent_active_status.at(i) = base_model.agents[i].getStatus();
+            model_state.agents_desired_location.at(i) = base_model.agents.at(i).get_desired_location();
         }
         model_state.agents_location = measured_state;
         model_state.agent_active_status = agent_active_status;
