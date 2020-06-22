@@ -92,13 +92,13 @@ namespace station_sim {
             std::vector<float> sum(static_cast<unsigned long>(number_of_active_agents_in_datafeed * 2));
             std::fill(sum.begin(), sum.end(), 0);
 
-            for (const ModelState &particle_state : particles_states) {
+            for (unsigned long i = 0; i < particles_states.size(); i++) {
                 unsigned long active_agent_index = 0;
-                for (unsigned long j = 0; j < particle_state.agents_location.size(); j++) {
+                for (unsigned long j = 0; j < particles_states.at(i).agents_location.size(); j++) {
                     if (data_feed_state.agent_active_status.at(j) == AgentStatus::active) {
-                        sum.at(active_agent_index) += particle_state.agents_location.at(j).x;
+                        sum.at(active_agent_index) += particles_states.at(i).agents_location.at(j).x * weights.at(i);
                         active_agent_index++;
-                        sum.at(active_agent_index) += particle_state.agents_location.at(j).y;
+                        sum.at(active_agent_index) += particles_states.at(i).agents_location.at(j).y * weights.at(i);
                         active_agent_index++;
                     }
                 }
@@ -106,8 +106,8 @@ namespace station_sim {
 
             float sum_weights = static_cast<float>(std::reduce(weights.begin(), weights.end(), 0.0));
 
-            for (unsigned long i = 0; i < weighted_mean.size(); i++) {
-                weighted_mean.at(i) = sum.at(i) * weights.at(i) / sum_weights;
+            for (unsigned long i = 0; i < sum.size(); i++) {
+                weighted_mean.at(i) = sum.at(i) / sum_weights;
             }
 
             return weighted_mean;
@@ -116,17 +116,23 @@ namespace station_sim {
         [[nodiscard]] float calculate_weighted_mean_error(std::vector<float> weighted_mean) override {
             float sum = 0;
 
+            std::vector<float> temp;
+
             ModelState data_feed_state = particle_filter_data_feed->get_state();
+
             unsigned long weighted_mean_index = 0;
             for (unsigned int i = 0; i < data_feed_state.agent_active_status.size(); i++) {
                 if (data_feed_state.agent_active_status.at(i) == AgentStatus::active) {
                     sum += powf(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).x, 2);
+                    temp.push_back(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).x);
                     weighted_mean_index++;
                     sum += powf(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).y, 2);
+                    temp.push_back(weighted_mean.at(weighted_mean_index) - data_feed_state.agents_location.at(i).y);
                     weighted_mean_index++;
                 }
             }
 
+            auto temp2 = std::sqrt(sum);
             return std::sqrt(sum);
         }
 
