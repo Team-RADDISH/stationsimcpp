@@ -21,10 +21,11 @@
 
 using namespace station_sim;
 
+station_sim::Model base_model;
+
 class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
   private:
     station_sim::ModelParameters model_parameters;
-    station_sim::Model base_model;
     std::shared_ptr<std::mt19937> generator;
     std::normal_distribution<float> float_normal_distribution;
 
@@ -91,22 +92,14 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
 
 class InitialiseModelParticles : public ParticlesInitialiser<Model> {
   public:
-    ModelParameters model_parameters;
-    std::shared_ptr<Model> base_model;
-
-    InitialiseModelParticles() {
-        model_parameters.set_population_total(40);
-        model_parameters.set_do_print(false);
-
-        base_model = std::make_shared<Model>(Model(0, model_parameters));
-    }
+    InitialiseModelParticles() = default;
 
     [[nodiscard]] std::shared_ptr<std::vector<Model>> initialise_particles(int number_of_particles) const override {
         std::shared_ptr<std::vector<Model>> particles =
             std::make_shared<std::vector<Model>>(std::vector<Model>(number_of_particles));
 #pragma omp parallel for shared(particles)
-        for (int i = 0; i < number_of_particles; i++) {
-            (*particles).at(i) = Model(*base_model);
+        for (unsigned long i = 0; i < number_of_particles; i++) {
+            (*particles).at(i) = Model(base_model);
         }
         return particles;
     }
