@@ -248,13 +248,13 @@ namespace station_sim {
 
     AgentStatus Agent::getStatus() const { return status; }
 
-    void Agent::set_status(AgentStatus status) { Agent::status = status; }
+    void Agent::set_status(AgentStatus status) { this->status = status; }
 
     void Agent::set_random_number_generator(const std::shared_ptr<std::mt19937> &random_number_generator) {
         Agent::random_number_generator = random_number_generator;
     }
 
-    void Agent::set_desired_location(const Point2D &desired_location) { Agent::desired_location = desired_location; }
+    void Agent::set_desired_location(const Point2D &desired_location) { this->desired_location = desired_location; }
 
     const Point2D &Agent::get_desired_location() const { return desired_location; }
 
