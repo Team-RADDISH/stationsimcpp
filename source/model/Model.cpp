@@ -29,6 +29,12 @@ namespace station_sim {
     }
 
     Model::Model(const Model &model) {
+        std::random_device rd;
+        std::array<int, std::mt19937::state_size> seed_data;
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+        random_number_generator = std::make_shared<std::mt19937>(std::mt19937(seq));
+
         model_id = model.model_id;
         status = model.status;
         speed_step = model.speed_step;
@@ -40,9 +46,6 @@ namespace station_sim {
 
         model_parameters = model.model_parameters;
 
-        std::shared_ptr<std::mt19937> generator =
-            std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
-
         step_id = model.step_id;
         pop_active = model.pop_active;
         pop_finished = model.pop_finished;
@@ -50,6 +53,8 @@ namespace station_sim {
         gates_in_locations = model.gates_in_locations;
         gates_out_locations = model.gates_out_locations;
         agents = model.agents;
+        std::for_each(agents.begin(), agents.end(),
+                      [&](Agent &agent) { agent.set_random_number_generator(random_number_generator); });
 
         steps_expected = model.steps_expected;
         steps_taken = model.steps_taken;
@@ -60,7 +65,11 @@ namespace station_sim {
     }
 
     void Model::initialize_model(int unique_id) {
-        generator = std::make_shared<std::mt19937>(std::mt19937(model_parameters.get_random_seed()));
+        std::random_device rd;
+        std::array<int, std::mt19937::state_size> seed_data;
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+        random_number_generator = std::make_shared<std::mt19937>(std::mt19937(seq));
 
         model_id = unique_id;
         status = ModelStatus::active;
@@ -108,7 +117,7 @@ namespace station_sim {
 
     void Model::generate_agents() {
         for (int i = 0; i < model_parameters.get_population_total(); i++) {
-            agents.emplace_back(Agent(i, *this, model_parameters));
+            agents.emplace_back(Agent(i, *this, model_parameters, random_number_generator));
         }
     }
 
@@ -175,7 +184,7 @@ namespace station_sim {
 
     float Model::get_speed_step() const { return speed_step; }
 
-    std::shared_ptr<std::mt19937> Model::get_generator() const { return generator; }
+    std::shared_ptr<std::mt19937> Model::get_generator() const { return random_number_generator; }
 
     std::vector<Point2D> Model::get_agents_location() {
         std::vector<Point2D> agents_locations;
@@ -308,7 +317,7 @@ namespace station_sim {
 
     void Model::reseed_random_number_generator() {
         std::random_device r;
-        generator = std::make_shared<std::mt19937>(std::mt19937(r()));
+        random_number_generator = std::make_shared<std::mt19937>(std::mt19937(r()));
     }
 
     const ModelState Model::get_state() const {
@@ -316,11 +325,8 @@ namespace station_sim {
 
         for (const Agent &agent : agents) {
             model_state.agents_location.push_back(agent.get_agent_location());
-            if (agent.getStatus() == AgentStatus::active) {
-                model_state.agent_active_status.push_back(AgentActiveStatus::active);
-            } else {
-                model_state.agent_active_status.push_back(AgentActiveStatus::not_active);
-            }
+            model_state.agent_active_status.push_back(agent.getStatus());
+            model_state.agents_desired_location.push_back(agent.get_desired_location());
         }
 
         return model_state;
@@ -328,7 +334,8 @@ namespace station_sim {
 
     void Model::set_state(const ModelState &new_state) {
         for (unsigned long i = 0; i < new_state.agents_location.size(); i++) {
-            agents[i].set_agent_location(new_state.agents_location[i]);
+            agents.at(i).set_agent_location(new_state.agents_location.at(i));
+            agents.at(i).set_desired_location(new_state.agents_desired_location.at(i));
         }
     }
 
