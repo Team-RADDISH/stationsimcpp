@@ -38,7 +38,7 @@ namespace station_sim {
         std::vector<Point2D> history_collision_locations;
         int wiggle_collisions_number;
         std::vector<Point2D> history_wiggle_locations;
-        std::shared_ptr<std::mt19937> generator;
+        std::shared_ptr<std::mt19937> random_number_generator;
         ModelParameters model_parameters;
 
         int print_per_steps;

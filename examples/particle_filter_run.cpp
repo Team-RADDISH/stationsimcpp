@@ -21,10 +21,11 @@
 
 using namespace station_sim;
 
+station_sim::Model base_model;
+
 class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
   private:
     station_sim::ModelParameters model_parameters;
-    station_sim::Model base_model;
     std::shared_ptr<std::mt19937> generator;
     std::normal_distribution<float> float_normal_distribution;
 
@@ -48,19 +49,17 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
         ModelState model_state;
 
         std::vector<Point2D> measured_state(base_model.agents.size());
-        std::vector<AgentActiveStatus> agent_active_status(base_model.agents.size());
+        std::vector<AgentStatus> agent_active_status(base_model.agents.size());
+
+        model_state.agents_desired_location.resize(base_model.agents.size());
 
         // Add noise to the synthetic target data
         for (unsigned long i = 0; i < base_model.agents.size(); i++) {
-            Point2D agent_location = base_model.agents[i].get_agent_location();
-            measured_state[i].x = agent_location.x + float_normal_distribution(*generator);
-            measured_state[i].y = agent_location.y + float_normal_distribution(*generator);
-
-            if (base_model.agents[i].getStatus() == AgentStatus::active) {
-                agent_active_status[i] = AgentActiveStatus::active;
-            } else {
-                agent_active_status[i] = AgentActiveStatus::not_active;
-            }
+            Point2D agent_location = base_model.agents.at(i).get_agent_location();
+            measured_state.at(i).x = agent_location.x; // + float_normal_distribution(*generator);
+            measured_state.at(i).y = agent_location.y; // + float_normal_distribution(*generator);
+            agent_active_status.at(i) = base_model.agents[i].getStatus();
+            model_state.agents_desired_location.at(i) = base_model.agents.at(i).get_desired_location();
         }
         model_state.agents_location = measured_state;
         model_state.agent_active_status = agent_active_status;
@@ -93,23 +92,14 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
 
 class InitialiseModelParticles : public ParticlesInitialiser<Model> {
   public:
-    ModelParameters model_parameters;
-    std::shared_ptr<Model> base_model;
-
-    InitialiseModelParticles() {
-        model_parameters.set_population_total(40);
-        model_parameters.set_do_print(false);
-
-        base_model = std::make_shared<Model>(Model(0, model_parameters));
-    }
+    InitialiseModelParticles() = default;
 
     [[nodiscard]] std::shared_ptr<std::vector<Model>> initialise_particles(int number_of_particles) const override {
         std::shared_ptr<std::vector<Model>> particles =
             std::make_shared<std::vector<Model>>(std::vector<Model>(number_of_particles));
 #pragma omp parallel for shared(particles)
-        for (int i = 0; i < number_of_particles; i++) {
-            (*particles)[i] = Model(i, model_parameters);
-            (*particles)[i].set_state(base_model->get_state());
+        for (unsigned long i = 0; i < number_of_particles; i++) {
+            (*particles).at(i) = Model(base_model);
         }
         return particles;
     }
@@ -121,16 +111,48 @@ class StationSimParticleFit : public ParticleFit<Model, ModelState> {
         float distance = 0;
 
         ModelState particle_state = particle.get_state();
-        for (int i = 0; i < particle_state.agents_location.size(); i++) {
-            if (measured_state.agent_active_status[i] == AgentActiveStatus::active) {
-                distance += powf(particle_state.agents_location[i].x - measured_state.agents_location[i].x, 2);
-                distance += powf(particle_state.agents_location[i].y - measured_state.agents_location[i].y, 2);
+        for (unsigned long i = 0; i < particle_state.agents_location.size(); i++) {
+            if (measured_state.agent_active_status.at(i) == AgentStatus::active) {
+                distance += powf(particle_state.agents_location.at(i).x - measured_state.agents_location.at(i).x, 2);
+                distance += powf(particle_state.agents_location.at(i).y - measured_state.agents_location.at(i).y, 2);
             }
         }
 
         return std::sqrt(distance);
     }
 };
+
+void print_weighted_mean_errors(
+    std::shared_ptr<ParticleFilterStatistics<Model, ModelState>> particle_filter_statistics) {
+
+    auto weighted_mean_errors = particle_filter_statistics->get_weighted_mean_errors();
+
+    std::vector<float> y_int;
+    for (const auto &mean : weighted_mean_errors) {
+        y_int.emplace_back(mean);
+    }
+
+    cxxplot::Plot<float> plot(y_int);
+    plot.set_xlabel("Output index");
+    plot.set_ylabel("Weighted mean error");
+    plot.show();
+}
+
+void print_synthetic_data_active_agents(
+    std::shared_ptr<ParticleFilterStatistics<Model, ModelState>> particle_filter_statistics) {
+
+    auto synthetic_data_active_agents = particle_filter_statistics->get_active_agents();
+
+    std::vector<float> y_int;
+    for (const auto &item : synthetic_data_active_agents) {
+        y_int.emplace_back(item);
+    }
+
+    cxxplot::Plot<float> plot(y_int);
+    plot.set_xlabel("Output index");
+    plot.set_ylabel("Synthetic data active agents");
+    plot.show();
+}
 
 int main() {
     Chronos::Timer timer("timer1");
@@ -149,22 +171,13 @@ int main() {
 
     // Setup and run particle filter
     ParticleFilter<Model, ModelState> particle_filter(synthetic_data_feed, initialise_model_particles,
-                                                      station_sim_particle_fit, particle_filter_statistics, 100, 100);
+                                                      station_sim_particle_fit, particle_filter_statistics, 1000, 100);
     particle_filter.step();
 
     timer.stop_timer(true);
 
-    auto weighted_mean_errors = particle_filter_statistics->get_weighted_mean_errors();
-
-    std::vector<float> y_int;
-    for (const auto &mean : weighted_mean_errors) {
-        y_int.emplace_back(mean);
-    }
-
-    cxxplot::Plot<float> plot(y_int);
-    plot.set_xlabel("Output index");
-    plot.set_ylabel("weighted_mean_errors");
-    plot.show();
+    print_synthetic_data_active_agents(particle_filter_statistics);
+    print_weighted_mean_errors(particle_filter_statistics);
 
     return 0;
 }
