@@ -171,7 +171,7 @@ int main() {
 
     // Setup and run particle filter
     ParticleFilter<Model, ModelState> particle_filter(synthetic_data_feed, initialise_model_particles,
-                                                      station_sim_particle_fit, particle_filter_statistics, 100, 1);
+                                                      station_sim_particle_fit, particle_filter_statistics, 1000, 100);
     particle_filter.step();
 
     timer.stop_timer(true);
