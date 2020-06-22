@@ -107,6 +107,7 @@ namespace station_sim {
     void Agent::step(Model &model, const ModelParameters &model_parameters) {
         if (status == AgentStatus::not_started) {
             activate_agent(model);
+            move_agent(model, model_parameters);
         } else if (status == AgentStatus::active) {
             move_agent(model, model_parameters);
             deactivate_agent_if_reached_exit_gate(model, model_parameters);
@@ -118,11 +119,9 @@ namespace station_sim {
     }
 
     void Agent::activate_agent(Model &model) {
-        if (model.step_id > steps_activate) {
-            status = AgentStatus::active;
-            model.pop_active += 1;
-            step_start = model.step_id;
-        }
+        status = AgentStatus::active;
+        model.pop_active += 1;
+        step_start = model.step_id;
     }
 
     void Agent::move_agent(Model &model, const ModelParameters &model_parameters) {
