@@ -47,7 +47,7 @@ namespace station_sim {
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
         std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics;
 
-        //ParticleFilterFileOutput<StateType> particle_filter_file_output;
+        // ParticleFilterFileOutput<StateType> particle_filter_file_output;
 
         std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit;
 
@@ -87,7 +87,7 @@ namespace station_sim {
 
             particles = particles_initialiser->initialise_particles(number_of_particles);
 
-            //particle_filter_file_output = ParticleFilterFileOutput<StateType>();
+            // particle_filter_file_output = ParticleFilterFileOutput<StateType>();
 
             this->particle_fit = particle_fit;
             this->particle_filter_statistics = particle_filter_statistics;
@@ -127,7 +127,7 @@ namespace station_sim {
                         window_counter++;
 
                         particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
-                                                                        particles_weights);
+                                                                         particles_weights);
 
                         if (do_resample) {
                             reweight();
@@ -143,7 +143,7 @@ namespace station_sim {
                 }
             }
 
-            //particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
+            // particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
 
         /// \brief Step the base model
@@ -155,7 +155,7 @@ namespace station_sim {
         /// states. We extract the particles and states from the stepped
         /// particles variable.
         /// \param number_of_steps The number of iterations to step (usually either 1, or the  resample window)
-        void predict(int number_of_steps = 1) {
+        void predict(int number_of_steps) {
             for (int i = 0; i < number_of_steps; i++) {
                 particle_filter_data_feed->progress_feed();
             }
@@ -164,7 +164,7 @@ namespace station_sim {
             for (int i = 0; i < (*particles).size(); i++) {
                 step_particle((*particles)[i], number_of_steps);
             }
-            }
+        }
 
         /// \brief Step a particle
         ///

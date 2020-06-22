@@ -327,7 +327,7 @@ namespace station_sim {
             model_state.agents_location.push_back(agent.get_agent_location());
             model_state.agent_active_status.push_back(agent.getStatus());
             model_state.agents_desired_location.push_back(agent.get_desired_location());
-            }
+        }
 
         return model_state;
     }
