@@ -84,6 +84,7 @@ namespace station_sim {
         void set_state(const ModelState &new_state);
         [[nodiscard]] std::vector<float> get_active_agents_state() const;
         [[nodiscard]] bool is_active() const override;
+        void perturb_state(float standard_deviation) override;
 
       private:
         void initialize_model(int unique_id);

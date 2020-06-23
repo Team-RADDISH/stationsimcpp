@@ -20,6 +20,7 @@ namespace station_sim {
 
         [[nodiscard]] virtual bool is_active() const = 0;
         [[nodiscard]] virtual const StateType get_state() const = 0;
+        virtual void perturb_state(float standard_deviation) = 0;
     };
 } // namespace station_sim
 
