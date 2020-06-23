@@ -85,7 +85,12 @@ namespace station_sim {
             particles_weights = std::vector<float>(number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
+            Chronos::Timer particles_initialisation_timer("Particles initialisation timer");
+            particles_initialisation_timer.start();
             particles = particles_initialiser->initialise_particles(number_of_particles);
+            particles_initialisation_timer.stop_timer(false);
+            std::cout << "Finished particle initialisation " << std::endl;
+            particles_initialisation_timer.print_elapsed_time();
 
             // particle_filter_file_output = ParticleFilterFileOutput<StateType>();
 
