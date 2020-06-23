@@ -352,4 +352,15 @@ namespace station_sim {
 
     bool Model::is_active() const { return get_status() == ModelStatus::active; }
 
+    void Model::perturb_state(float standard_deviation) {
+        std::uniform_real_distribution<float> dis(0.0, standard_deviation);
+
+        for (Agent &agent : agents) {
+            Point2D agent_location = agent.get_agent_location();
+//            agent_location.x += dis(random_number_generator);
+//            agent_location.y += dis(random_number_generator);
+            agent.set_agent_location(agent_location);
+        }
+    }
+
 } // namespace station_sim
