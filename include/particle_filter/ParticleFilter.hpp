@@ -227,17 +227,6 @@ namespace station_sim {
                 u1 += 1.0 / number_of_particles;
             }
 
-            std::vector<float> weights_temp(particles_weights);
-#pragma omp parallel for shared(weights_temp, particles_weights)
-            for (int i = 0; i < indexes.size(); i++) {
-                weights_temp.at(i) = particles_weights.at(i);
-            }
-
-#pragma omp parallel for shared(particles_weights, weights_temp)
-            for (int i = 0; i < indexes.size(); i++) {
-                particles_weights.at(i) = weights_temp[indexes.at(i)];
-            }
-
             std::vector<StateType> particles_states(number_of_particles);
 #pragma omp parallel for shared(particles_states, particles)
             for (unsigned long i = 0; i < particles_states.size(); i++) {
