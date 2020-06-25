@@ -18,6 +18,7 @@
 #include "particle_filter/ParticleFit.hpp"
 #include "particle_filter/ParticlesInitialiser.hpp"
 #include <memory>
+#include <mpi.h>
 
 using namespace station_sim;
 
@@ -155,6 +156,16 @@ void print_synthetic_data_active_agents(
 }
 
 int main() {
+    MPI_Init(NULL, NULL);
+
+    // Get the number of processes
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+    // Get the rank of the process
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
     Chronos::Timer timer("timer1");
     timer.start();
 
@@ -176,8 +187,11 @@ int main() {
 
     timer.stop_timer(true);
 
-    print_synthetic_data_active_agents(particle_filter_statistics);
-    print_weighted_mean_errors(particle_filter_statistics);
+//    if (world_rank == 0) {
+//        print_synthetic_data_active_agents(particle_filter_statistics);
+//        print_weighted_mean_errors(particle_filter_statistics);
+//    }
 
+    MPI_Finalize();
     return 0;
 }
