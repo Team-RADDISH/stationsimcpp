@@ -126,29 +126,30 @@ namespace station_sim {
     const std::vector<Point2D> &Model::get_gates_out_locations() const { return gates_out_locations; }
 
     void Model::step() {
-        if (pop_finished < model_parameters.get_population_total() && step_id < model_parameters.get_step_limit() &&
-            status == ModelStatus::active) {
-            if (model_parameters.is_do_print() && step_id % print_per_steps == 0) {
-                std::cout << "\tIteration: " << step_id << "/" << model_parameters.get_step_limit() << std::endl;
-            }
-
-            // get agents and move them
-            move_agents();
-
-            if (model_parameters.is_do_history()) {
-                history_state[step_id] = get_agents_location();
-            }
-
-            step_id += 1;
-        } else {
-            if (pop_finished < model_parameters.get_population_total()) {
-                status = ModelStatus::finished;
-
-                if (model_parameters.is_do_print() && status == ModelStatus::active) {
-                    std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
-                }
-            }
+        //        if (pop_finished < model_parameters.get_population_total() && step_id <
+        //        model_parameters.get_step_limit() &&
+        //            status == ModelStatus::active) {
+        if (model_parameters.is_do_print() && step_id % print_per_steps == 0) {
+            std::cout << "\tIteration: " << step_id << "/" << model_parameters.get_step_limit() << std::endl;
         }
+
+        // get agents and move them
+        move_agents();
+
+        if (model_parameters.is_do_history()) {
+            history_state[step_id] = get_agents_location();
+        }
+
+        step_id += 1;
+        //        } else {
+        //            if (pop_finished < model_parameters.get_population_total()) {
+        //                status = ModelStatus::finished;
+        //
+        //                if (model_parameters.is_do_print() && status == ModelStatus::active) {
+        //                    std::cout << "StationSim " << model_id << " - Everyone made it!" << std::endl;
+        //                }
+        //            }
+        //        }
     }
 
     int Model::get_history_collisions_number() const { return history_collisions_number; }
@@ -357,8 +358,8 @@ namespace station_sim {
 
         for (Agent &agent : agents) {
             Point2D agent_location = agent.get_agent_location();
-//            agent_location.x += dis(random_number_generator);
-//            agent_location.y += dis(random_number_generator);
+            //            agent_location.x += dis(random_number_generator);
+            //            agent_location.y += dis(random_number_generator);
             agent.set_agent_location(agent_location);
         }
     }
