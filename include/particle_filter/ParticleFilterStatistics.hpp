@@ -23,6 +23,7 @@ namespace station_sim {
     class STATIONSIM_EXPORT ParticleFilterStatistics {
       protected:
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
+        std::vector<std::vector<float>> absolute_means_states;
         std::vector<std::vector<float>> weighted_means_states;
         std::vector<float> weighted_mean_errors;
         std::vector<float> absolute_mean_errors;
@@ -37,9 +38,10 @@ namespace station_sim {
                              const std::vector<ParticleType> &particles,
                              const std::vector<float> &particles_weights) = 0;
 
+        virtual float calculate_absolute_mean_error(std::vector<float> weighted_mean) = 0;
         virtual float calculate_weighted_mean_error(std::vector<float> weighted_mean) = 0;
 
-        virtual std::vector<float> calculate_unweighted_average(const std::vector<StateType> &particles_states) = 0;
+        virtual std::vector<float> calculate_absolute_average(const std::vector<StateType> &particles_states) = 0;
 
         virtual std::vector<float> calculate_weighted_average(const std::vector<StateType> &particles_states,
                                                               const std::vector<float> &weights) = 0;

@@ -10,7 +10,7 @@ branch | Ubuntu | macOS
 | develop | [![pipeline status](https://gitlab.com/avramidis/stationsimcpp/badges/develop/pipeline.svg)](https://gitlab.com/avramidis/stationsimcpp/commits/develop) | [![Build Status](https://travis-ci.org/avramidis/stationsimcpp.svg?branch=develop)](https://travis-ci.org/avramidis/stationsimcpp/branches)
 
 ### Introduction
-stationsimcpp is a C++ plotting library for the study of moving agents. Currently, stationsimcpp is under development and it is not suited for production.  
+stationsimcpp is a simulator with a particle filter for the study of moving agents. Currently, stationsimcpp is under development and it is not suited for production.  
 
 #### More information
 * See [doc/INSTALL.md](doc/INSTALL.md) for installation instructions.

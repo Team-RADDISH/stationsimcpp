@@ -29,6 +29,10 @@ include(cmake/StandardProjectSettings.cmake)
 add_library(stationsim_project_options INTERFACE)
 target_compile_features(stationsim_project_options INTERFACE cxx_std_17)
 
+if (MPI_CXX_FOUND)
+    target_link_libraries(stationsim_project_options INTERFACE MPI::MPI_CXX)
+endif ()
+
 # Standard compiler warnings
 add_library(stationsim_project_warnings INTERFACE)
 include(cmake/CompilerWarnings.cmake)
