@@ -16,12 +16,11 @@
 #include "ParticleFit.hpp"
 #include "ParticlesInitialiser.hpp"
 #include "model/Model.hpp"
-#include "model/MultipleModelsRun.hpp"
+#include "mpi.h"
 #include "stationsim_export.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <mpi.h>
 #include <numeric>
 #include <vector>
 
@@ -64,7 +63,21 @@ namespace station_sim {
 
             this->particle_filter_data_feed = particle_filter_data_feed;
 
-            this->number_of_particles = number_of_particles;
+            int world_size;
+            MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+            if (world_size > number_of_particles) {
+                std::cout << "Number of particles are less that the MPI processes!" << std::endl;
+                MPI_Abort(MPI_COMM_WORLD, 1);
+            }
+
+            if (number_of_particles % world_size != 0) {
+                std::cout << "Remainder of particle numbers is not zero by MPI processes!" << std::endl;
+                MPI_Abort(MPI_COMM_WORLD, 1);
+            }
+
+            this->number_of_particles = number_of_particles / world_size;
+
             this->resample_window = resample_window;
             this->multi_step = true;
             this->particle_std = 0.5;
@@ -83,12 +96,12 @@ namespace station_sim {
 
             float_normal_distribution = std::lognormal_distribution<float>(0.0, particle_std);
 
-            particles_weights = std::vector<float>(number_of_particles);
+            particles_weights = std::vector<float>(this->number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
 
             Chronos::Timer particles_initialisation_timer("Particles initialisation timer");
             particles_initialisation_timer.start();
-            particles = particles_initialiser->initialise_particles(number_of_particles);
+            particles = particles_initialiser->initialise_particles(this->number_of_particles);
             particles_initialisation_timer.stop_timer(false);
             std::cout << "Finished particle initialisation " << std::endl;
             particles_initialisation_timer.print_elapsed_time();
@@ -124,17 +137,14 @@ namespace station_sim {
                     steps_run++;
                 }
 
-                //                if (std::any_of((*particles).cbegin(), (*particles).cend(),
-                //                                [](const ParticleType &particle) { return particle.is_active(); })) {
-
+                particle_filter_data_feed->get_state();
                 predict(number_of_steps);
 
                 if (steps_run % resample_window == 0) {
                     window_counter++;
 
-                    //                            particle_filter_statistics->calculate_statistics(particle_filter_data_feed,
-                    //                            *particles,
-                    //                                                                             particles_weights);
+                    particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
+                                                                     particles_weights);
 
                     if (do_resample) {
                         reweight();
@@ -148,7 +158,6 @@ namespace station_sim {
                 window_timer.reset();
                 window_timer.start();
             }
-            //            }
 
             // particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
@@ -210,24 +219,25 @@ namespace station_sim {
         }
 
         void resample() {
-            // Get the rank of the process
             int world_rank;
             MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-            // Get the number of processes
             int world_size;
             MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+            std::vector<int> indexes(number_of_particles * world_size);
 
             if (world_rank == 0) {
                 // Get weights from all processes
                 std::vector<std::vector<float>> global_particle_weights(world_size,
                                                                         std::vector<float>(number_of_particles));
+
                 for (int i = 1; i < world_size; i++) {
                     std::vector<float> particles_weights_temp(number_of_particles);
 
                     MPI_Recv(particles_weights_temp.data(), number_of_particles, MPI_FLOAT, i, 0, MPI_COMM_WORLD,
                              MPI_STATUS_IGNORE);
 
-                    for (int j = 0; j < number_of_particles; j++) {
+                    for (int j = 0; j < particles_weights_temp.size(); j++) {
                         global_particle_weights.at(i).at(j) = particles_weights_temp.at(j);
                     }
                 }
@@ -246,8 +256,6 @@ namespace station_sim {
                     }
                 }
 
-                std::vector<int> indexes(number_of_particles * world_size);
-
                 std::uniform_real_distribution<float> dis(0.0, 1.0);
                 float u1 = dis(*generator) / (number_of_particles * world_size);
                 int i = 0;
@@ -259,96 +267,52 @@ namespace station_sim {
                     u1 += 1.0 / (number_of_particles * world_size);
                 }
 
-                std::vector<float> weights_temp(particles_weights * world_size);
-#pragma omp parallel for shared(weights_temp, particles_weights)
-                for (int i = 0; i < indexes.size(); i++) {
-                    weights_temp.at(i) = particles_weights.at(i);
+                // send swap indexes vector to all process
+                for (int i = 1; i < world_size; i++) {
+                    MPI_Send(indexes.data(), number_of_particles * world_size, MPI_INT, i, 0, MPI_COMM_WORLD);
                 }
-
-#pragma omp parallel for shared(particles_weights, weights_temp)
-                for (int i = 0; i < indexes.size(); i++) {
-                    particles_weights.at(i) = weights_temp[indexes.at(i)];
-                }
-                //
-                //            std::vector<StateType> particles_states(number_of_particles);
-                //#pragma omp parallel for shared(particles_states, particles)
-                //            for (unsigned long i = 0; i < particles_states.size(); i++) {
-                //                particles_states[i] = (*particles)[i].get_state();
-                //            }
-                //
-                //            std::vector<StateType> particle_states_temp(particles_states);
-                //#pragma omp parallel for shared(particle_states_temp, particles_states)
-                //            for (int i = 0; i < indexes.size(); i++) {
-                //                particle_states_temp.at(i) = particles_states.at(i);
-                //            }
-                //
-                //#pragma omp parallel for shared(particles_states, particle_states_temp)
-                //            for (int i = 0; i < indexes.size(); i++) {
-                //                particles_states.at(i) = particle_states_temp.at(indexes.at(i));
-                //            }
-                //
-                //#pragma omp parallel for shared(particles_states, particles)
-                //            for (int i = 0; i < indexes.size(); i++) {
-                //                update_agents_locations_of_model(particles_states.at(i), (*particles).at(i));
-                //            }
-
             } else {
                 MPI_Send(particles_weights.data(), number_of_particles, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
+                MPI_Recv(indexes.data(), number_of_particles * world_size, MPI_INT, 0, 0, MPI_COMM_WORLD,
+                         MPI_STATUS_IGNORE);
             }
 
-            // MPI_Barrier(MPI_COMM_WORLD);
+            std::vector<StateType> particles_states(number_of_particles);
+#pragma omp parallel for shared(particles_states, particles)
+            for (unsigned long i = 0; i < particles_states.size(); i++) {
+                particles_states[i] = (*particles)[i].get_state();
+            }
 
-            //            std::vector<float> cumsum(particles_weights.size());
-            //            cumsum.at(0) = particles_weights.at(0);
-            //            for (size_t i = 1; i < particles_weights.size(); i++) {
-            //                cumsum.at(i) = cumsum.at(i - 1) + particles_weights.at(i);
-            //            }
-            //
-            //            std::vector<int> indexes(number_of_particles);
-            //
-            //            std::uniform_real_distribution<float> dis(0.0, 1.0);
-            //            float u1 = dis(*generator) / number_of_particles;
-            //            int i = 0;
-            //            for (int j = 0; j < number_of_particles; j++) {
-            //                while (u1 > cumsum.at(i)) {
-            //                    i++;
-            //                }
-            //                indexes.at(j) = i;
-            //                u1 += 1.0 / number_of_particles;
-            //            }
-            //
-            //            std::vector<float> weights_temp(particles_weights);
-            //#pragma omp parallel for shared(weights_temp, particles_weights)
-            //            for (int i = 0; i < indexes.size(); i++) {
-            //                weights_temp.at(i) = particles_weights.at(i);
-            //            }
-            //
-            //#pragma omp parallel for shared(particles_weights, weights_temp)
-            //            for (int i = 0; i < indexes.size(); i++) {
-            //                particles_weights.at(i) = weights_temp[indexes.at(i)];
-            //            }
-            //
-            //            std::vector<StateType> particles_states(number_of_particles);
-            //#pragma omp parallel for shared(particles_states, particles)
-            //            for (unsigned long i = 0; i < particles_states.size(); i++) {
-            //                particles_states[i] = (*particles)[i].get_state();
-            //            }
-            //
-            //            std::vector<StateType> particle_states_temp(particles_states);
-            //#pragma omp parallel for shared(particle_states_temp, particles_states)
-            //            for (int i = 0; i < indexes.size(); i++) {
-            //                particle_states_temp.at(i) = particles_states.at(i);
-            //            }
-            //
-            //#pragma omp parallel for shared(particles_states, particle_states_temp)
-            //            for (int i = 0; i < indexes.size(); i++) {
-            //                particles_states.at(i) = particle_states_temp.at(indexes.at(i));
-            //            }
-            //
-            //#pragma omp parallel for shared(particles_states, particles)
-            //            for (int i = 0; i < indexes.size(); i++) {
-            //                update_agents_locations_of_model(particles_states.at(i), (*particles).at(i));
-            //            }
+            std::vector<StateType> particle_states_temp(number_of_particles);
+
+            for (unsigned long i = 0; i < indexes.size(); i++) {
+
+                int rank_source = std::floor(i / number_of_particles);
+                int rank_destination = std::floor(indexes.at(i) / number_of_particles);
+
+                // Swap is in the current process
+                if (rank_source == world_rank && rank_destination == world_rank) {
+                    particle_states_temp.at(i - (world_rank * number_of_particles)) =
+                        particles_states.at(indexes.at(i));
+                }
+
+                // Target is in other process
+                if (rank_source == world_rank && rank_destination != world_rank) {
+                    // Send the particle state to another process
+                    particles_states.at(i - (world_rank * number_of_particles)).mpi_send_state(rank_destination);
+                }
+
+                // Source is in other process and target is in the current process
+                if (rank_source != world_rank && rank_destination == world_rank) {
+                    particle_states_temp.at(indexes.at(i) - (world_rank * number_of_particles))
+                        .mpi_receive_state(rank_source);
+                }
+            }
+
+#pragma omp parallel for shared(particles_states, particles)
+            for (int i = 0; i < particles_states.size(); i++) {
+                update_agents_locations_of_model(particles_states.at(i), (*particles).at(i));
+            }
         }
 
         void update_agents_locations_of_model(StateType particle_state, ParticleType &particle) {
