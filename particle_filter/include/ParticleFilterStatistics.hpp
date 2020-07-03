@@ -6,8 +6,8 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
-#define STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
+#ifndef PARTICLE_FILTER_PARTICLEFILTERSTATISTICS_HPP
+#define PARTICLE_FILTER_PARTICLEFILTERSTATISTICS_HPP
 
 #include "ParticleFilterStatistics.hpp"
 
@@ -16,9 +16,9 @@
 #include <iostream>
 #include <vector>
 
-namespace station_sim {
+namespace particle_filter {
     template <class ParticleType, class StateType>
-    class  ParticleFilterStatistics {
+    class ParticleFilterStatistics {
       protected:
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
         std::vector<std::vector<float>> absolute_means_states;
@@ -58,5 +58,5 @@ namespace station_sim {
         [[nodiscard]] const std::vector<float> &get_absolute_mean_errors() const { return absolute_mean_errors; }
         [[nodiscard]] const std::vector<long> &get_active_agents() const { return active_agents; }
     };
-} // namespace station_sim
-#endif // STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
+} // namespace particle_filter
+#endif // PARTICLE_FILTER_PARTICLEFILTERSTATISTICS_HPP

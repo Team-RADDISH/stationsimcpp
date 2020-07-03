@@ -6,13 +6,11 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLESTATE_HPP
-#define STATIONSIM_PARTICLESTATE_HPP
+#ifndef PARTICLE_FILTER_PARTICLESTATE_HPP
+#define PARTICLE_FILTER_PARTICLESTATE_HPP
 
-
-
-namespace station_sim {
-    class  ParticleState {
+namespace particle_filter {
+    class ParticleState {
       public:
         ParticleState() = default;
         virtual ~ParticleState() = default;
@@ -20,6 +18,6 @@ namespace station_sim {
         virtual void mpi_send_state(int rank_destination){};
         virtual void mpi_receive_state(int rank_source){};
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLESTATE_HPP
+#endif // PARTICLE_FILTER_PARTICLESTATE_HPP

@@ -5,14 +5,12 @@
 // Distributed under The MIT License (MIT)
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
-#ifndef STATIONSIM_PARTICLEFIT_HPP
-#define STATIONSIM_PARTICLEFIT_HPP
+#ifndef PARTICLE_FILTER_PARTICLEFIT_HPP
+#define PARTICLE_FILTER_PARTICLEFIT_HPP
 
-
-
-namespace station_sim {
+namespace particle_filter {
     template <class ParticleType, class StateType>
-    class  ParticleFit {
+    class ParticleFit {
       public:
         ParticleFit() = default;
         virtual ~ParticleFit() = default;
@@ -20,6 +18,6 @@ namespace station_sim {
         [[nodiscard]] virtual float calculate_particle_fit(const ParticleType &particle,
                                                            const StateType &measured_state) const = 0;
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLEFIT_HPP
+#endif // PARTICLE_FILTER_PARTICLEFIT_HPP

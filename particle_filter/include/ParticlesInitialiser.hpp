@@ -6,13 +6,13 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLESINITIALISER_HPP
-#define STATIONSIM_PARTICLESINITIALISER_HPP
+#ifndef PARTICLE_FILTER_PARTICLESINITIALISER_HPP
+#define PARTICLE_FILTER_PARTICLESINITIALISER_HPP
 
 #include <memory>
 #include <vector>
 
-namespace station_sim {
+namespace particle_filter {
     template <class ParticleType>
     class ParticlesInitialiser {
       private:
@@ -20,8 +20,9 @@ namespace station_sim {
         ParticlesInitialiser() = default;
         virtual ~ParticlesInitialiser() = default;
 
-        [[nodiscard]] virtual std::shared_ptr<std::vector<ParticleType>> initialise_particles(int number_of_particles) const = 0;
+        [[nodiscard]] virtual std::shared_ptr<std::vector<ParticleType>>
+        initialise_particles(int number_of_particles) const = 0;
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLESINITIALISER_HPP
+#endif // PARTICLE_FILTER_PARTICLESINITIALISER_HPP

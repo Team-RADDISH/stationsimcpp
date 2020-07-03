@@ -6,14 +6,12 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLEFILTERDATAFEED_HPP
-#define STATIONSIM_PARTICLEFILTERDATAFEED_HPP
+#ifndef PARTICLE_FILTER_PARTICLEFILTERDATAFEED_HPP
+#define PARTICLE_FILTER_PARTICLEFILTERDATAFEED_HPP
 
-
-
-namespace station_sim {
+namespace particle_filter {
     template <class StateType>
-    class  ParticleFilterDataFeed {
+    class ParticleFilterDataFeed {
       public:
         ParticleFilterDataFeed() = default;
         virtual ~ParticleFilterDataFeed() = default;
@@ -22,6 +20,6 @@ namespace station_sim {
         [[nodiscard]] virtual StateType get_state() = 0;
         virtual void print_statistics() = 0;
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLEFILTERDATAFEED_HPP
+#endif // PARTICLE_FILTER_PARTICLEFILTERDATAFEED_HPP

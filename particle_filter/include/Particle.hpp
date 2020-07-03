@@ -6,12 +6,12 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLE_HPP
-#define STATIONSIM_PARTICLE_HPP
+#ifndef PARTICLE_FILTER_PARTICLE_HPP
+#define PARTICLE_FILTER_PARTICLE_HPP
 
 #include <vector>
 
-namespace station_sim {
+namespace particle_filter {
     template <class StateType>
     class Particle {
       public:
@@ -22,6 +22,6 @@ namespace station_sim {
         [[nodiscard]] virtual const StateType get_state() const = 0;
         virtual void perturb_state(float standard_deviation) = 0;
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLE_HPP
+#endif // PARTICLE_FILTER_PARTICLE_HPP

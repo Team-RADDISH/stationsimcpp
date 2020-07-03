@@ -6,8 +6,8 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLEFILTERFILEOUTPUT_HPP
-#define STATIONSIM_PARTICLEFILTERFILEOUTPUT_HPP
+#ifndef PARTICLE_FILTER_PARTICLEFILTERFILEOUTPUT_HPP
+#define PARTICLE_FILTER_PARTICLEFILTERFILEOUTPUT_HPP
 
 #include "H5Cpp.h"
 #include "ParticleFilter.hpp"
@@ -15,9 +15,9 @@
 #include <memory>
 #include <vector>
 
-namespace station_sim {
+namespace particle_filter {
     template <class StateType>
-    class  ParticleFilterFileOutput {
+    class ParticleFilterFileOutput {
       public:
         ParticleFilterFileOutput() = default;
         ~ParticleFilterFileOutput() = default;
@@ -56,6 +56,6 @@ namespace station_sim {
             }
         }
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLEFILTERFILEOUTPUT_HPP
+#endif // PARTICLE_FILTER_PARTICLEFILTERFILEOUTPUT_HPP

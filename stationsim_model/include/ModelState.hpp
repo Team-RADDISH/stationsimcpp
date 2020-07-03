@@ -13,13 +13,13 @@
 #include "Point2D.hpp"
 #include "array"
 #include "mpi.h"
-
 #include <algorithm>
 #include <vector>
 
-namespace station_sim {
+using namespace particle_filter;
 
-    class  ModelState : public ParticleState {
+namespace station_sim {
+    class ModelState : public ParticleState {
       public:
         std::vector<Point2D> agents_location;
         std::vector<AgentStatus> agent_active_status;

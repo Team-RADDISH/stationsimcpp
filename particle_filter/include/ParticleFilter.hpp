@@ -6,8 +6,8 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#ifndef STATIONSIM_PARTICLEFILTER_HPP
-#define STATIONSIM_PARTICLEFILTER_HPP
+#ifndef PARTICLE_FILTER_PARTICLEFILTER_HPP
+#define PARTICLE_FILTER_PARTICLEFILTER_HPP
 
 #include "Chronos.hpp"
 #include "ParticleFilterDataFeed.hpp"
@@ -22,7 +22,7 @@
 #include <random>
 #include <vector>
 
-namespace station_sim {
+namespace particle_filter {
     template <class ParticleType, class StateType>
     class ParticleFilter {
       private:
@@ -314,6 +314,6 @@ namespace station_sim {
             particle.set_state(particle_state);
         }
     };
-} // namespace station_sim
+} // namespace particle_filter
 
-#endif // STATIONSIM_PARTICLEFILTER_HPP
+#endif // PARTICLE_FILTER_PARTICLEFILTER_HPP
