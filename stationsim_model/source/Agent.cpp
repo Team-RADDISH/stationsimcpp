@@ -14,7 +14,6 @@
 #include <random>
 
 namespace station_sim {
-
     Agent::Agent(int unique_id, const Model &model, const ModelParameters &model_parameters,
                  std::shared_ptr<std::mt19937> generator) {
         status = AgentStatus::not_started; // 0 Not Started, 1 Active, 2 Finished

@@ -80,8 +80,8 @@ class SyntheticDataFeed : public ParticleFilterDataFeed<ModelState> {
         // Add noise to the synthetic target data
         for (unsigned long i = 0; i < base_model.agents.size(); i++) {
             Point2D agent_location = base_model.agents.at(i).get_agent_location();
-            measured_state.at(i).x = agent_location.x; // + float_normal_distribution(*generator);
-            measured_state.at(i).y = agent_location.y; // + float_normal_distribution(*generator);
+            measured_state.at(i).x = agent_location.x + float_normal_distribution(*generator);
+            measured_state.at(i).y = agent_location.y + float_normal_distribution(*generator);
             agent_active_status.at(i) = base_model.agents.at(i).getStatus();
             model_state.agents_desired_location.at(i) = base_model.agents.at(i).get_desired_location();
         }

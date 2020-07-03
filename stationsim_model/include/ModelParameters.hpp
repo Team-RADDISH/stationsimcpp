@@ -11,7 +11,6 @@
 
 namespace station_sim {
     class ModelParameters {
-
       private:
         int population_total;
 

@@ -10,7 +10,6 @@
 #include <iostream>
 
 namespace station_sim {
-
     MultipleModelsRunMPI::MultipleModelsRunMPI(int number_of_models) {
         MPI_Init(NULL, NULL);
         MPI_Comm_size(MPI_COMM_WORLD, &mpi_world_size);

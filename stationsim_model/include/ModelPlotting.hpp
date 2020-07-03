@@ -10,15 +10,13 @@
 #define STATIONSIM_MODELPLOTTING_HPP
 
 #include "Point2D.hpp"
-
 #include <array>
 #include <vector>
 
 namespace station_sim {
-
     class Model;
 
-    class  ModelPlotting {
+    class ModelPlotting {
       public:
         ModelPlotting() = delete;
 

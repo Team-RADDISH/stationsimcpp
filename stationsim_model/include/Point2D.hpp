@@ -9,11 +9,8 @@
 #ifndef STATIONSIM_POINT2D_HPP
 #define STATIONSIM_POINT2D_HPP
 
-
-
 namespace station_sim {
-
-    class  Point2D {
+    class Point2D {
       public:
         float x, y;
 

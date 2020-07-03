@@ -189,7 +189,7 @@ namespace particle_filter {
         void step_particle(ParticleType &particle, int num_iter) {
             for (int i = 0; i < num_iter; i++) {
                 particle.step();
-                particle.perturb_state(powf(particle_std * number_of_particles, 2));
+                particle.perturb_state(powf(particle_std, 2));
             }
         }
 

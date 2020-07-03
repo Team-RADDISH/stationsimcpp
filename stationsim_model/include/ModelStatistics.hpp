@@ -12,11 +12,10 @@
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterStatistics.hpp"
 #include "mpi.h"
-
 #include <algorithm>
 
 namespace station_sim {
-    class  ModelStatistics : public ParticleFilterStatistics<Model, ModelState> {
+    class ModelStatistics : public ParticleFilterStatistics<Model, ModelState> {
       public:
         ModelStatistics() = default;
         ~ModelStatistics() override = default;

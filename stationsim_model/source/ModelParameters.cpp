@@ -14,7 +14,6 @@
 #include <stdexcept>
 
 namespace station_sim {
-
     ModelParameters::ModelParameters() {
         this->population_total = 40;
 
