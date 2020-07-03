@@ -11,7 +11,7 @@
 
 #include "ModelParameters.hpp"
 #include "Point2D.hpp"
-#include "stationsim_export.h"
+
 
 #include <array>
 #include <memory>
@@ -22,9 +22,9 @@ namespace station_sim {
 
     class Model;
 
-    enum class STATIONSIM_EXPORT AgentStatus : int { not_started = 0, active = 1, finished = 2 };
+    enum class  AgentStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Agent {
+    class  Agent {
       private:
         std::shared_ptr<std::mt19937> random_number_generator;
 

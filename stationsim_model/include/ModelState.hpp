@@ -9,17 +9,17 @@
 #ifndef STATIONSIM_MODELSTATE_HPP
 #define STATIONSIM_MODELSTATE_HPP
 
+#include "ParticleState.hpp"
+#include "Point2D.hpp"
 #include "array"
-#include "model/Point2D.hpp"
 #include "mpi.h"
-#include "particle_filter/ParticleState.hpp"
-#include "stationsim_export.h"
+
 #include <algorithm>
 #include <vector>
 
 namespace station_sim {
 
-    class STATIONSIM_EXPORT ModelState : public ParticleState {
+    class  ModelState : public ParticleState {
       public:
         std::vector<Point2D> agents_location;
         std::vector<AgentStatus> agent_active_status;

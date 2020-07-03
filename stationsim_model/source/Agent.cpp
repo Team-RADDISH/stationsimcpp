@@ -6,10 +6,9 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "model/Agent.hpp"
+#include "Agent.hpp"
 #include "HelpFunctions.hpp"
-#include "model/Model.hpp"
-
+#include "Model.hpp"
 #include <algorithm>
 #include <cmath>
 #include <random>

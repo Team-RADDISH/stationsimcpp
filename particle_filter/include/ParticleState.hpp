@@ -9,10 +9,10 @@
 #ifndef STATIONSIM_PARTICLESTATE_HPP
 #define STATIONSIM_PARTICLESTATE_HPP
 
-#include "stationsim_export.h"
+
 
 namespace station_sim {
-    class STATIONSIM_EXPORT ParticleState {
+    class  ParticleState {
       public:
         ParticleState() = default;
         virtual ~ParticleState() = default;

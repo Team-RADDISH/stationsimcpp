@@ -9,10 +9,8 @@
 #ifndef STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
 #define STATIONSIM_PARTICLEFILTERSTATISTICS_HPP
 
-#include "model/Agent.hpp"
-#include "model/Model.hpp"
-#include "particle_filter/ParticleFilterStatistics.hpp"
-#include "stationsim_export.h"
+#include "ParticleFilterStatistics.hpp"
+
 #include <algorithm>
 #include <array>
 #include <iostream>
@@ -20,7 +18,7 @@
 
 namespace station_sim {
     template <class ParticleType, class StateType>
-    class STATIONSIM_EXPORT ParticleFilterStatistics {
+    class  ParticleFilterStatistics {
       protected:
         std::shared_ptr<ParticleFilterDataFeed<StateType>> particle_filter_data_feed;
         std::vector<std::vector<float>> absolute_means_states;
@@ -53,7 +51,9 @@ namespace station_sim {
         //                                              const long base_model_active_agents,
         //                                              const std::vector<float> &unweighted_mean) = 0;
 
-        [[nodiscard]] const std::vector<std::vector<float>> &get_weighted_means_states() const { return weighted_means_states; }
+        [[nodiscard]] const std::vector<std::vector<float>> &get_weighted_means_states() const {
+            return weighted_means_states;
+        }
         [[nodiscard]] const std::vector<float> &get_weighted_mean_errors() const { return weighted_mean_errors; }
         [[nodiscard]] const std::vector<float> &get_absolute_mean_errors() const { return absolute_mean_errors; }
         [[nodiscard]] const std::vector<long> &get_active_agents() const { return active_agents; }

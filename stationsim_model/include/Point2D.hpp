@@ -9,11 +9,11 @@
 #ifndef STATIONSIM_POINT2D_HPP
 #define STATIONSIM_POINT2D_HPP
 
-#include "stationsim_export.h"
+
 
 namespace station_sim {
 
-    class STATIONSIM_EXPORT Point2D {
+    class  Point2D {
       public:
         float x, y;
 

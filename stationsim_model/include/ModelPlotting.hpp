@@ -9,8 +9,8 @@
 #ifndef STATIONSIM_MODELPLOTTING_HPP
 #define STATIONSIM_MODELPLOTTING_HPP
 
-#include "model/Point2D.hpp"
-#include "stationsim_export.h"
+#include "Point2D.hpp"
+
 #include <array>
 #include <vector>
 
@@ -18,7 +18,7 @@ namespace station_sim {
 
     class Model;
 
-    class STATIONSIM_EXPORT ModelPlotting {
+    class  ModelPlotting {
       public:
         ModelPlotting() = delete;
 

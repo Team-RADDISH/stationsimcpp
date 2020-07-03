@@ -9,24 +9,22 @@
 #ifndef STATIONSIM_PARTICLEFILTER_HPP
 #define STATIONSIM_PARTICLEFILTER_HPP
 
-#include "HelpFunctions.hpp"
+#include "Chronos.hpp"
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterFileOutput.hpp"
 #include "ParticleFilterStatistics.hpp"
 #include "ParticleFit.hpp"
 #include "ParticlesInitialiser.hpp"
-#include "model/Model.hpp"
-#include "mpi.h"
-#include "stationsim_export.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <numeric>
+#include <random>
 #include <vector>
 
 namespace station_sim {
     template <class ParticleType, class StateType>
-    class STATIONSIM_EXPORT ParticleFilter {
+    class ParticleFilter {
       private:
         int number_of_particles;
         int resample_window;
@@ -60,7 +58,6 @@ namespace station_sim {
             std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
             std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics,
             int number_of_particles, int resample_window) {
-
             this->particle_filter_data_feed = particle_filter_data_feed;
 
             int world_size;
@@ -158,8 +155,6 @@ namespace station_sim {
                 window_timer.reset();
                 window_timer.start();
             }
-
-            // particle_filter_file_output.write_particle_filter_data_to_hdf_5("particle_filter.h5", particles_states);
         }
 
         /// \brief Step the base model

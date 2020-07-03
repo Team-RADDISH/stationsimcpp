@@ -9,13 +9,12 @@
 #ifndef STATIONSIM_MODEL_HPP
 #define STATIONSIM_MODEL_HPP
 
-#include "Point2D.hpp"
-#include "model/Agent.hpp"
-#include "model/ModelState.hpp"
-#include "particle_filter/Particle.hpp"
-#include "stationsim_export.h"
-
+#include "Agent.hpp"
 #include "H5Cpp.h"
+#include "ModelState.hpp"
+#include "Particle.hpp"
+#include "Point2D.hpp"
+
 #include <array>
 #include <memory>
 #include <random>
@@ -25,9 +24,9 @@ namespace station_sim {
 
     class ModelParameters;
 
-    enum class STATIONSIM_EXPORT ModelStatus : int { not_started = 0, active = 1, finished = 2 };
+    enum class  ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    class STATIONSIM_EXPORT Model : public Particle<ModelState> {
+    class  Model : public Particle<ModelState> {
       private:
         int model_id;
         ModelStatus status;

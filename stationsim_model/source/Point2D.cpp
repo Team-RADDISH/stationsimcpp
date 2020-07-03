@@ -6,7 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "model/Point2D.hpp"
+#include "Point2D.hpp"
 
 namespace station_sim {
 

@@ -9,10 +9,8 @@
 #ifndef STATIONSIM_MODELPARAMETERS_HPP
 #define STATIONSIM_MODELPARAMETERS_HPP
 
-#include "stationsim_export.h"
-
 namespace station_sim {
-    class STATIONSIM_EXPORT ModelParameters {
+    class ModelParameters {
 
       private:
         int population_total;

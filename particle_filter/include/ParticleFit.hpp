@@ -8,11 +8,11 @@
 #ifndef STATIONSIM_PARTICLEFIT_HPP
 #define STATIONSIM_PARTICLEFIT_HPP
 
-#include "stationsim_export.h"
+
 
 namespace station_sim {
     template <class ParticleType, class StateType>
-    class STATIONSIM_EXPORT ParticleFit {
+    class  ParticleFit {
       public:
         ParticleFit() = default;
         virtual ~ParticleFit() = default;

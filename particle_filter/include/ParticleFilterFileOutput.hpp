@@ -11,12 +11,13 @@
 
 #include "H5Cpp.h"
 #include "ParticleFilter.hpp"
-#include "stationsim_export.h"
+
 #include <memory>
+#include <vector>
 
 namespace station_sim {
     template <class StateType>
-    class STATIONSIM_EXPORT ParticleFilterFileOutput {
+    class  ParticleFilterFileOutput {
       public:
         ParticleFilterFileOutput() = default;
         ~ParticleFilterFileOutput() = default;

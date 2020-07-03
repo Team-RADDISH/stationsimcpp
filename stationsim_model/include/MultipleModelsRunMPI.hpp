@@ -9,16 +9,16 @@
 #ifndef STATIONSIM_MULTIPLEMODELSRUNMPI_HPP
 #define STATIONSIM_MULTIPLEMODELSRUNMPI_HPP
 
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
-#include "model/MultipleModelsRun.hpp"
+#include "Model.hpp"
+#include "ModelParameters.hpp"
+#include "MultipleModelsRun.hpp"
 #include "mpi.h"
-#include "stationsim_export.h"
+
 #include <vector>
 
 namespace station_sim {
 
-    class STATIONSIM_EXPORT MultipleModelsRunMPI : public MultipleModelsRun {
+    class  MultipleModelsRunMPI : public MultipleModelsRun {
       private:
         int mpi_world_size;
         int mpi_world_rank;

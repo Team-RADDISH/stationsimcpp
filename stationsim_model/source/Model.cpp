@@ -6,14 +6,13 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include "Model.hpp"
+#include "Agent.hpp"
+#include "HelpFunctions.hpp"
+#include "ModelParameters.hpp"
 #include <algorithm>
 #include <iostream>
 #include <numeric>
-
-#include "HelpFunctions.hpp"
-#include "model/Agent.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
 
 namespace station_sim {
 

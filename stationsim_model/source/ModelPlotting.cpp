@@ -6,10 +6,10 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "model/ModelPlotting.hpp"
+#include "ModelPlotting.hpp"
+#include "Agent.hpp"
+#include "Model.hpp"
 #include "cxxplot.hpp"
-#include "model/Agent.hpp"
-#include "model/Model.hpp"
 
 namespace station_sim {
     void ModelPlotting::plot_agents_locations(const station_sim::Model &model) {

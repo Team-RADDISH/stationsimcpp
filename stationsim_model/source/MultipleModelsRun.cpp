@@ -6,7 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "model/MultipleModelsRun.hpp"
+#include "MultipleModelsRun.hpp"
 #include <algorithm>
 
 namespace station_sim {

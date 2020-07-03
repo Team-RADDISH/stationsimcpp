@@ -9,14 +9,14 @@
 #ifndef STATIONSIM_MODELSTATISTICS_HPP
 #define STATIONSIM_MODELSTATISTICS_HPP
 
+#include "ParticleFilterDataFeed.hpp"
+#include "ParticleFilterStatistics.hpp"
 #include "mpi.h"
-#include "particle_filter/ParticleFilterDataFeed.hpp"
-#include "particle_filter/ParticleFilterStatistics.hpp"
-#include "stationsim_export.h"
+
 #include <algorithm>
 
 namespace station_sim {
-    class STATIONSIM_EXPORT ModelStatistics : public ParticleFilterStatistics<Model, ModelState> {
+    class  ModelStatistics : public ParticleFilterStatistics<Model, ModelState> {
       public:
         ModelStatistics() = default;
         ~ModelStatistics() override = default;

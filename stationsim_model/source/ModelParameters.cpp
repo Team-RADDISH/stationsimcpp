@@ -9,7 +9,7 @@
 #ifndef STATIONSIM_MODELPARAMETERS_CPP
 #define STATIONSIM_MODELPARAMETERS_CPP
 
-#include "model/ModelParameters.hpp"
+#include "ModelParameters.hpp"
 #include <random>
 #include <stdexcept>
 

@@ -6,7 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
-#include "model/MultipleModelsRunMPI.hpp"
+#include "MultipleModelsRunMPI.hpp"
 #include <iostream>
 
 namespace station_sim {

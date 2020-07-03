@@ -6,17 +6,17 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include "Model.hpp"
+#include "ModelParameters.hpp"
+#include "ModelPlotting.hpp"
+#include "ModelState.hpp"
+#include "ModelStatistics.hpp"
+#include "ParticleFilter.hpp"
+#include "ParticleFilterDataFeed.hpp"
+#include "ParticleFit.hpp"
+#include "ParticlesInitialiser.hpp"
 #include "Timer.hpp"
 #include "cxxplot.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
-#include "model/ModelPlotting.hpp"
-#include "model/ModelState.hpp"
-#include "model/ModelStatistics.hpp"
-#include "particle_filter/ParticleFilter.hpp"
-#include "particle_filter/ParticleFilterDataFeed.hpp"
-#include "particle_filter/ParticleFit.hpp"
-#include "particle_filter/ParticlesInitialiser.hpp"
 #include <memory>
 #include <mpi.h>
 

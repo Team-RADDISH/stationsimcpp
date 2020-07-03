@@ -9,11 +9,11 @@
 #ifndef STATIONSIM_PARTICLEFILTERDATAFEED_HPP
 #define STATIONSIM_PARTICLEFILTERDATAFEED_HPP
 
-#include "stationsim_export.h"
+
 
 namespace station_sim {
     template <class StateType>
-    class STATIONSIM_EXPORT ParticleFilterDataFeed {
+    class  ParticleFilterDataFeed {
       public:
         ParticleFilterDataFeed() = default;
         virtual ~ParticleFilterDataFeed() = default;

@@ -9,11 +9,11 @@
 #ifndef STATIONSIM_HELPFUNCTIONS_HPP
 #define STATIONSIM_HELPFUNCTIONS_HPP
 
-#include "stationsim_export.h"
+
 #include <vector>
 
 namespace station_sim {
-    class STATIONSIM_EXPORT HelpFunctions {
+    class  HelpFunctions {
       public:
         static std::vector<float> evenly_spaced_values_within_interval(float start, float stop, float step) {
             std::vector<float> result;

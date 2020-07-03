@@ -9,15 +9,15 @@
 #ifndef STATIONSIM_MULTIPLEMODELSRUN_HPP
 #define STATIONSIM_MULTIPLEMODELSRUN_HPP
 
+#include "Agent.hpp"
 #include "Model.hpp"
 #include "ModelParameters.hpp"
-#include "model/Agent.hpp"
-#include "stationsim_export.h"
+
 #include <vector>
 
 namespace station_sim {
 
-    class STATIONSIM_EXPORT MultipleModelsRun {
+    class  MultipleModelsRun {
       private:
         std::vector<Model> models;
 
