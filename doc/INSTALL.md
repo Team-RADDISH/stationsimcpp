@@ -103,7 +103,7 @@ Then in the `CMake options` box, set two flags, `Python3_ROOT_DIR` and `HDF5_ROO
 ```
 
 The following figure illustrates this:
-<img src="./CLion_CMake.png" alt="Screenshot of above instructions"/>
+![Screenshot of above instructions](CLion_CMake.png)
 
 Click on `OK`.
 
