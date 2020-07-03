@@ -14,19 +14,16 @@
 #include "ModelState.hpp"
 #include "Particle.hpp"
 #include "Point2D.hpp"
-
 #include <array>
 #include <memory>
 #include <random>
 #include <vector>
 
 namespace station_sim {
-
     class ModelParameters;
+    enum class ModelStatus : int { not_started = 0, active = 1, finished = 2 };
 
-    enum class  ModelStatus : int { not_started = 0, active = 1, finished = 2 };
-
-    class  Model : public Particle<ModelState> {
+    class Model : public Particle<ModelState> {
       private:
         int model_id;
         ModelStatus status;

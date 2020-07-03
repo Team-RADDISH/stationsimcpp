@@ -9,7 +9,6 @@
 #include "Point2D.hpp"
 
 namespace station_sim {
-
     Point2D::Point2D() {
         x = 0;
         y = 0;
@@ -21,5 +20,4 @@ namespace station_sim {
     }
 
     Point2D Point2D::operator()(float x, float y) { return Point2D(x, y); }
-
 } // namespace station_sim

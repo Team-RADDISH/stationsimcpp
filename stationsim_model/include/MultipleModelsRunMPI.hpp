@@ -13,12 +13,10 @@
 #include "ModelParameters.hpp"
 #include "MultipleModelsRun.hpp"
 #include "mpi.h"
-
 #include <vector>
 
 namespace station_sim {
-
-    class  MultipleModelsRunMPI : public MultipleModelsRun {
+    class MultipleModelsRunMPI : public MultipleModelsRun {
       private:
         int mpi_world_size;
         int mpi_world_rank;

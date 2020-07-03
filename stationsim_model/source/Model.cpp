@@ -15,7 +15,6 @@
 #include <numeric>
 
 namespace station_sim {
-
     Model::~Model() = default;
 
     Model::Model(int unique_id, ModelParameters model_parameters) {

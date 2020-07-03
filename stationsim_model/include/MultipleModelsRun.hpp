@@ -12,12 +12,10 @@
 #include "Agent.hpp"
 #include "Model.hpp"
 #include "ModelParameters.hpp"
-
 #include <vector>
 
 namespace station_sim {
-
-    class  MultipleModelsRun {
+    class MultipleModelsRun {
       private:
         std::vector<Model> models;
 

@@ -10,9 +10,7 @@
 #include <algorithm>
 
 namespace station_sim {
-
     MultipleModelsRun::MultipleModelsRun() = default;
-
     MultipleModelsRun::~MultipleModelsRun() = default;
 
     void MultipleModelsRun::run_all_models() {
