@@ -33,6 +33,7 @@
 #endfunction()
 
 add_subdirectory(stationsim_model)
+add_subdirectory(optimisation_1)
 
 #add_example(single_model_run single_model_run.cpp)
 #add_example(multiple_models_run multiple_models_run.cpp)

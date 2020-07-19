@@ -21,6 +21,7 @@ namespace particle_filter {
         [[nodiscard]] virtual bool is_active() const = 0;
         [[nodiscard]] virtual const StateType get_state() const = 0;
         virtual void perturb_state(float standard_deviation) = 0;
+        virtual void step() = 0;
     };
 } // namespace particle_filter
 

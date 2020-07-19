@@ -157,7 +157,7 @@ class StationSimParticleFit : public ParticleFit<Model, ModelState> {
             }
         }
 
-        return std::sqrt(distance);
+        return std::sqrt(static_cast<float>(1.0 / (distance + 1e-9)));
     }
 };
 
@@ -243,7 +243,8 @@ int main() {
 
     // Setup and run particle filter
     ParticleFilter<Model, ModelState> particle_filter(synthetic_data_feed, initialise_model_particles,
-                                                      station_sim_particle_fit, particle_filter_statistics, 1000, 1);
+                                                      station_sim_particle_fit, particle_filter_statistics, 1000, 1,
+                                                      1000);
     particle_filter.step();
 
     timer.stop_timer(true);
