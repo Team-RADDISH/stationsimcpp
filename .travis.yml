@@ -11,4 +11,3 @@ script:
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release -DSTATIONSIM_ENABLE_OPENMP=OFF -DSTATIONSIM_ENABLE_MPI=OFF ..
   - make
-  - ctest
