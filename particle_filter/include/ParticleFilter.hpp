@@ -15,6 +15,7 @@
 #include "ParticleFilterStatistics.hpp"
 #include "ParticleFit.hpp"
 #include "ParticlesInitialiser.hpp"
+#include "mpi.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -38,7 +39,7 @@ namespace particle_filter {
         int window_counter;
 
         std::shared_ptr<std::mt19937> generator;
-        std::lognormal_distribution<float> float_normal_distribution;
+        std::normal_distribution<float> float_normal_distribution;
 
         std::shared_ptr<std::vector<ParticleType>> particles;
         std::vector<float> particles_weights;
@@ -57,7 +58,7 @@ namespace particle_filter {
             std::shared_ptr<ParticlesInitialiser<ParticleType>> particles_initialiser,
             std::shared_ptr<ParticleFit<ParticleType, StateType>> particle_fit,
             std::shared_ptr<ParticleFilterStatistics<ParticleType, StateType>> particle_filter_statistics,
-            int number_of_particles, int resample_window) {
+            int number_of_particles, int resample_window, int total_number_of_particle_steps_to_run) {
             this->particle_filter_data_feed = particle_filter_data_feed;
 
             int world_size;
@@ -77,12 +78,12 @@ namespace particle_filter {
 
             this->resample_window = resample_window;
             this->multi_step = true;
-            this->particle_std = 0.5;
+            this->particle_std = 0.25;
             this->do_save = true;
             this->do_resample = true;
 
             steps_run = 0;
-            total_number_of_particle_steps_to_run = 1000;
+            this->total_number_of_particle_steps_to_run = total_number_of_particle_steps_to_run;
             window_counter = 0;
 
             std::random_device rd;
@@ -91,7 +92,7 @@ namespace particle_filter {
             std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
             generator = std::make_shared<std::mt19937>(std::mt19937(seq));
 
-            float_normal_distribution = std::lognormal_distribution<float>(0.0, particle_std);
+            float_normal_distribution = std::normal_distribution<float>(0.0, particle_std);
 
             particles_weights = std::vector<float>(this->number_of_particles);
             std::fill(particles_weights.begin(), particles_weights.end(), 1.0);
@@ -140,12 +141,15 @@ namespace particle_filter {
                 if (steps_run % resample_window == 0) {
                     window_counter++;
 
-                    particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
-                                                                     particles_weights);
+                    if (particle_filter_statistics != nullptr) {
+                        particle_filter_statistics->calculate_statistics(particle_filter_data_feed, *particles,
+                                                                         particles_weights);
+                    }
 
                     if (do_resample) {
                         reweight();
                         resample();
+                        perturb_particles(number_of_steps);
                     }
                 }
 
@@ -173,7 +177,14 @@ namespace particle_filter {
 
 #pragma omp parallel for shared(particles)
             for (int i = 0; i < (*particles).size(); i++) {
-                step_particle((*particles)[i], number_of_steps);
+                step_particle((*particles).at(i), number_of_steps);
+            }
+        }
+
+        void perturb_particles(int number_of_steps) {
+#pragma omp parallel for shared(particles)
+            for (int i = 0; i < (*particles).size(); i++) {
+                perturb_particle((*particles).at(i), number_of_steps);
             }
         }
 
@@ -189,7 +200,12 @@ namespace particle_filter {
         void step_particle(ParticleType &particle, int num_iter) {
             for (int i = 0; i < num_iter; i++) {
                 particle.step();
-                particle.perturb_state(powf(particle_std, 2));
+            }
+        }
+
+        void perturb_particle(ParticleType &particle, int num_iter) {
+            for (int i = 0; i < num_iter; i++) {
+                particle.perturb_state(particle_std);
             }
         }
 
@@ -201,16 +217,10 @@ namespace particle_filter {
                 distance.push_back(particle_fit->calculate_particle_fit((*particles).at(i), measured_state));
             }
 
-            std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance) -> float {
-                return static_cast<float>(powf(1.0 / (distance + 1e-9), 2));
-            });
-
-            double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
-            std::for_each(particles_weights.begin(), particles_weights.end(),
-                          [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
-
-            std::for_each(particles_weights.begin(), particles_weights.end(),
-                          [&](float &weight) { weight += float_normal_distribution(*generator); });
+            //            std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance)
+            //            -> float {
+            //                return static_cast<float>(powf(1.0 / (distance + 1e-9), 2));
+            //            });
         }
 
         void resample() {
@@ -237,6 +247,28 @@ namespace particle_filter {
                     }
                 }
 
+                double sum = std::reduce(particles_weights.begin(), particles_weights.end(), 0.0);
+
+                for (int i = 1; i < world_size; i++) {
+                    for (size_t j = 0; j < global_particle_weights.at(i).size(); j++) {
+                        sum = std::reduce(global_particle_weights.at(i).begin(), global_particle_weights.at(i).end(),
+                                          sum);
+                    }
+                }
+
+                // Normalise particle_weights
+                std::for_each(particles_weights.begin(), particles_weights.end(),
+                              [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
+
+                for (int i = 1; i < world_size; i++) {
+                    for (size_t j = 0; j < global_particle_weights.at(i).size(); j++) {
+                        std::for_each(
+                            global_particle_weights.at(i).begin(), global_particle_weights.at(i).end(),
+                            [sum](float &weight) { weight = static_cast<float>(static_cast<double>(weight) / sum); });
+                    }
+                }
+
+                // Calculate cummulative sum
                 std::vector<float> cumsum(particles_weights.size() * world_size);
                 cumsum.at(0) = particles_weights.at(0);
 
@@ -251,15 +283,19 @@ namespace particle_filter {
                     }
                 }
 
-                std::uniform_real_distribution<float> dis(0.0, 1.0);
-                float u1 = dis(*generator) / (number_of_particles * world_size);
-                int i = 0;
+                float max_cumsum = *(std::max_element(cumsum.begin(), cumsum.end()));
+
+                // Sampling
+                std::uniform_real_distribution<float> dis(0.0, max_cumsum);
+
                 for (int j = 0; j < number_of_particles * world_size; j++) {
-                    while (u1 > cumsum.at(i)) {
-                        i++;
+                    float u1 = dis(*generator);
+                    for (int i = 0; i < number_of_particles * world_size; i++) {
+                        if (u1 <= cumsum.at(i)) {
+                            indexes.at(j) = i;
+                            break;
+                        }
                     }
-                    indexes.at(j) = i;
-                    u1 += 1.0 / (number_of_particles * world_size);
                 }
 
                 // send swap indexes vector to all process
@@ -275,7 +311,7 @@ namespace particle_filter {
             std::vector<StateType> particles_states(number_of_particles);
 #pragma omp parallel for shared(particles_states, particles)
             for (unsigned long i = 0; i < particles_states.size(); i++) {
-                particles_states[i] = (*particles)[i].get_state();
+                particles_states.at(i) = (*particles).at(i).get_state();
             }
 
             std::vector<StateType> particle_states_temp(number_of_particles);
@@ -305,13 +341,26 @@ namespace particle_filter {
             }
 
 #pragma omp parallel for shared(particles_states, particles)
-            for (int i = 0; i < particles_states.size(); i++) {
-                update_agents_locations_of_model(particles_states.at(i), (*particles).at(i));
+            for (int i = 0; i < particle_states_temp.size(); i++) {
+                update_agents_locations_of_model(particle_states_temp.at(i), (*particles).at(i));
             }
         }
 
         void update_agents_locations_of_model(StateType particle_state, ParticleType &particle) {
             particle.set_state(particle_state);
+        }
+
+        [[nodiscard]] float get_best_particle() {
+
+            StateType measured_state = particle_filter_data_feed->get_state();
+
+            std::vector<float> distance;
+            for (int i = 0; i < (*particles).size(); i++) {
+                distance.push_back(particle_fit->calculate_particle_fit((*particles).at(i), measured_state));
+            }
+
+            std::vector<float>::iterator result = std::max_element(distance.begin(), distance.end());
+            return *result;
         }
     };
 } // namespace particle_filter

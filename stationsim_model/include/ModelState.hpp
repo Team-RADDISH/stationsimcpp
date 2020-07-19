@@ -9,6 +9,7 @@
 #ifndef STATIONSIM_MODELSTATE_HPP
 #define STATIONSIM_MODELSTATE_HPP
 
+#include "Agent.hpp"
 #include "ParticleState.hpp"
 #include "Point2D.hpp"
 #include "array"

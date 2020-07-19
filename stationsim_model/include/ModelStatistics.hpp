@@ -9,6 +9,7 @@
 #ifndef STATIONSIM_MODELSTATISTICS_HPP
 #define STATIONSIM_MODELSTATISTICS_HPP
 
+#include "Model.hpp"
 #include "ParticleFilterDataFeed.hpp"
 #include "ParticleFilterStatistics.hpp"
 #include "mpi.h"
