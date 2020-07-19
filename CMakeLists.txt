@@ -33,6 +33,7 @@ set_project_warnings(stationsim_project_warnings)
 #add_subdirectory(external)
 add_subdirectory(particle_filter)
 add_subdirectory(stationsim_model)
+add_subdirectory(sphere_function)
 include(GenerateExportHeader)
 
 add_subdirectory(examples)
