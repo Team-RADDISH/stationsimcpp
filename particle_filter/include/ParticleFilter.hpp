@@ -147,8 +147,8 @@ namespace particle_filter {
                     }
 
                     if (do_resample) {
-                        reweight();
-                        resample();
+                        calculate_and_update_particles_weights();
+                        update_sample_with_particles();
                         perturb_particles(number_of_steps);
                     }
                 }
@@ -209,21 +209,16 @@ namespace particle_filter {
             }
         }
 
-        void reweight() {
+        void calculate_and_update_particles_weights() {
             StateType measured_state = particle_filter_data_feed->get_state();
 
             std::vector<float> distance;
             for (int i = 0; i < (*particles).size(); i++) {
                 distance.push_back(particle_fit->calculate_particle_fit((*particles).at(i), measured_state));
             }
-
-            //            std::transform(distance.begin(), distance.end(), particles_weights.begin(), [](float distance)
-            //            -> float {
-            //                return static_cast<float>(powf(1.0 / (distance + 1e-9), 2));
-            //            });
         }
 
-        void resample() {
+        void update_sample_with_particles() {
             int world_rank;
             MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
             int world_size;
