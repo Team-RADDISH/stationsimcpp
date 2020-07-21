@@ -16,6 +16,7 @@ int main() {
     station_sim::ModelParameters model_parameters;
     model_parameters.set_population_total(40);
     model_parameters.set_gates_out(1);
+    model_parameters.set_separation(20);
     station_sim::Model model(0, model_parameters);
 
     station_sim::ModelPlotting::plot_gates_locations(model.gates_in_locations);
