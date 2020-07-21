@@ -78,11 +78,19 @@ namespace station_sim {
     void Agent::initialize_location(const Model &model, const ModelParameters &model_parameters) {
         float perturb = float_distribution(*random_number_generator) * model_parameters.get_gates_space();
 
-        gate_in = gates_in_int_distribution(*random_number_generator);
-        start_location.x = model.get_gates_in_locations()[gate_in].x;
-        start_location.y = model.get_gates_in_locations()[gate_in].y;
-        start_location.y += perturb;
+        std::random_device rd;
+        std::array<int, std::mt19937::state_size> seed_data;
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+        auto generator = std::mt19937(seq);
 
+        auto x_distribution = std::uniform_real_distribution<float>(0.0, 200);
+        auto y_distribution = std::uniform_real_distribution<float>(0.0, 100);
+
+        start_location.x = x_distribution(generator);
+        start_location.y = y_distribution(generator);
+
+        // This is fine
         gate_out = gates_out_int_distribution(*random_number_generator);
         desired_location.x = model.get_gates_out_locations()[gate_out].x;
         desired_location.y = model.get_gates_out_locations()[gate_out].y;
