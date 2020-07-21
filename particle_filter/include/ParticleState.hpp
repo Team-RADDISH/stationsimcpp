@@ -15,8 +15,8 @@ namespace particle_filter {
         ParticleState() = default;
         virtual ~ParticleState() = default;
 
-        virtual void mpi_send_state(int rank_destination){};
-        virtual void mpi_receive_state(int rank_source){};
+        virtual void mpi_send_state(int rank_destination) = 0;
+        virtual void mpi_receive_state(int rank_source) = 0;
     };
 } // namespace particle_filter
 
