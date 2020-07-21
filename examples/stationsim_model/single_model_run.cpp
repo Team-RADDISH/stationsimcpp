@@ -6,11 +6,10 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include "Model.hpp"
+#include "ModelParameters.hpp"
+#include "ModelPlotting.hpp"
 #include "Timer.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
-#include "model/ModelPlotting.hpp"
-#include <memory>
 
 int main() {
     station_sim::ModelParameters model_parameters;

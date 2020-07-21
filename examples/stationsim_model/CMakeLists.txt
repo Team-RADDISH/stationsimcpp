@@ -19,3 +19,6 @@ function(ADD_EXAMPLE EXE_NAME SRC_NAME)
 endfunction()
 
 add_example(particle_filter_run particle_filter_run.cpp)
+add_example(single_model_run single_model_run.cpp)
+add_example(multiple_models_run multiple_models_run.cpp)
+add_example(multiple_models_run_mpi multiple_models_run_mpi.cpp)

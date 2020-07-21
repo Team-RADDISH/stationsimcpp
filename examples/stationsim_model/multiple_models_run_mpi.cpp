@@ -6,12 +6,11 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include "ModelPlotting.hpp"
+#include "MultipleModelsRunMPI.hpp"
 #include "Timer.hpp"
-#include "model/ModelPlotting.hpp"
-#include "model/MultipleModelsRunMPI.hpp"
 
-int main()
-{
+int main() {
     Chronos::Timer timer_models_initialisation("Models initialisation");
     Chronos::Timer timer_models_run("Models runs");
 
@@ -20,8 +19,7 @@ int main()
     timer_models_initialisation.start();
     station_sim::MultipleModelsRunMPI multiple_models_run(number_of_models);
 
-    for (int i = 0; i<number_of_models; i++) {
-
+    for (int i = 0; i < number_of_models; i++) {
         station_sim::ModelParameters model_parameters;
         model_parameters.set_population_total(100);
         model_parameters.set_do_print(false);
@@ -36,7 +34,7 @@ int main()
     multiple_models_run.run_all_models();
     timer_models_run.stop_timer(true);
 
-    if (multiple_models_run.get_mpi_world_rank()==0) {
+    if (multiple_models_run.get_mpi_world_rank() == 0) {
         multiple_models_run.get_model(2).calculate_print_model_run_analytics();
         station_sim::ModelPlotting::plot_agents_trails(multiple_models_run.get_model(2));
     }
