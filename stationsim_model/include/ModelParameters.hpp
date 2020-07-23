@@ -10,6 +10,7 @@
 #define STATIONSIM_MODELPARAMETERS_HPP
 
 #include "Point2D.hpp"
+#include "Gate.hpp"
 #include <vector>
 
 namespace station_sim {
@@ -19,6 +20,8 @@ namespace station_sim {
 
         std::vector<Point2D> boundary_vertices;
 
+        std::vector<Gate> gates_in;
+        std::vector<Gate> gates_out;
         int gates_in_count;
         int gates_out_count;
         float gates_space;
@@ -48,10 +51,12 @@ namespace station_sim {
         void set_population_total(int value);
         [[nodiscard]] std::vector<Point2D> get_boundaries() const;
         void set_boundaries(std::vector<Point2D> boundary_vertices);
-        [[nodiscard]] int get_gates_in() const;
-        void set_gates_in(int value);
-        [[nodiscard]] int get_gates_out() const;
-        void set_gates_out(int value);
+        [[nodiscard]] std::vector<Gate> get_gates_in() const;
+        [[nodiscard]] int get_gates_in_count() const;
+        void set_gates_in(std::vector<Gate> gates);
+        [[nodiscard]] std::vector<Gate> get_gates_out() const;
+        [[nodiscard]] int get_gates_out_count() const;
+        void set_gates_out(std::vector<Gate> gates);
         [[nodiscard]] float get_gates_space() const;
         void set_gates_space(float value);
         [[nodiscard]] float get_gates_speed() const;

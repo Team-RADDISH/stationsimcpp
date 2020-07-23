@@ -14,7 +14,8 @@ target_sources(StationSimModel PUBLIC
         source/ModelPlotting.cpp
         source/MultipleModelsRun.cpp
         source/MultipleModelsRunMPI.cpp
-        source/Point2D.cpp)
+        source/Point2D.cpp
+        source/Gate.cpp)
 
 target_include_directories(StationSimModel PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
