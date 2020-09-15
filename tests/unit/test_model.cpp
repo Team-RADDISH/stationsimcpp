@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "catch.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
+#include "Model.hpp"
+#include "ModelParameters.hpp"
 
 using namespace station_sim;
 

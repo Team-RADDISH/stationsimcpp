@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "Timer.hpp"
-#include "model/ModelPlotting.hpp"
-#include "model/MultipleModelsRun.hpp"
+#include "ModelPlotting.hpp"
+#include "MultipleModelsRun.hpp"
 
 int main()
 {

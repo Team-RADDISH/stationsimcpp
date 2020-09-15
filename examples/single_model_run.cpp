@@ -7,9 +7,9 @@
 //---------------------------------------------------------------------------//
 
 #include "Timer.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
-#include "model/ModelPlotting.hpp"
+#include "Model.hpp"
+#include "ModelParameters.hpp"
+#include "ModelPlotting.hpp"
 #include <memory>
 
 int main() {

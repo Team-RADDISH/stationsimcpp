@@ -13,8 +13,8 @@ project(StationSim
 
 # General options
 option(STATIONSIM_ENABLE_EXAMPLES "Enables examples" ON)
-option(STATIONSIM_ENABLE_TESTS "Enables tests" ON)
 option(STATIONSIM_ENABLE_OPENMP "Enables OpenMP" OFF)
+option(BUILD_TESTING "Build the tests." ON)
 
 # Project dependencies
 include(cmake/ProjectDependencies.cmake)
@@ -37,5 +37,10 @@ add_subdirectory(sphere_function)
 include(GenerateExportHeader)
 
 add_subdirectory(examples)
-#enable_testing()
-#add_subdirectory(tests)
+
+# Testing
+include(CTest)
+if(BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
+endif(BUILD_TESTING)
