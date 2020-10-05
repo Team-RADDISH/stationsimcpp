@@ -1,13 +1,22 @@
 language: cpp
-os: osx
+os:
+  - linux
+dist: focal
 python: "3.8"
 compiler: clang
 
-install:
-  - pip3 install numpy matplotlib
+addons:
+  apt:
+    packages:
+      - python3-numpy
+      - python3-matplotlib
+      - openmpi-bin
+      - libopenmpi-dev
+      - libhdf5-dev
 
 script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DSTATIONSIM_ENABLE_OPENMP=OFF -DSTATIONSIM_ENABLE_MPI=OFF ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DSTATIONSIM_ENABLE_OPENMP=OFF ..
   - make
+  - ctest

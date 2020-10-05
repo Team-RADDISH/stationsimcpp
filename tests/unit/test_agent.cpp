@@ -12,9 +12,9 @@
 #include <memory>
 
 #include "catch.hpp"
-#include "model/Agent.hpp"
-#include "model/Model.hpp"
-#include "model/ModelParameters.hpp"
+#include "Agent.hpp"
+#include "Model.hpp"
+#include "ModelParameters.hpp"
 
 using namespace station_sim;
 
