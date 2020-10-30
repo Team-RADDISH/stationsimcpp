@@ -7,11 +7,15 @@
 //---------------------------------------------------------------------------//
 
 #include "Agent.hpp"
+#include "Point2D.hpp"
 #include "HelpFunctions.hpp"
 #include "Model.hpp"
 #include <algorithm>
+#include <limits>
 #include <cmath>
 #include <random>
+#include <utility>
+#include <vector>
 
 namespace station_sim {
     Agent::Agent(int unique_id, const Model &model, const ModelParameters &model_parameters,
@@ -162,35 +166,38 @@ namespace station_sim {
         agent_speed = new_speed;
     }
 
+    // Assuming `location` is outside of `boundaries`, move it to the closest
+    // point of the region within boundaries
     void Agent::clip_vector_values_to_boundaries(Point2D &location, std::vector<Point2D> boundaries) {
-        // FIXME: this needs to be adapted for the arbitrary shape
-        if (location.x < boundaries[0].x) {
-            location.x = boundaries[0].x;
-        }
-        if (location.x > boundaries[2].x) {
-            location.x = boundaries[2].x;
+        float min_distance = std::numeric_limits<float>::max();
+        Point2D closest_point = location;
+
+        // Loop over all edges of the boundaries (i.e., all segments) and find
+        // the one closest to the point
+        for (std::vector<Point2D>::size_type index = 0; index < boundaries.size() - 1; ++index) {
+            // Extrema of the edge
+            Point2D s1 = boundaries.at(index);
+            Point2D s2 = boundaries.at(index + 1);
+            // Determine distance of location from the edge and its projection
+            // (_within_ the segment), update closest point if necessary
+            std::pair<float,Point2D> this_distance_projection = location.distance_projection(s1, s2);
+            float this_distance = this_distance_projection.first;
+            Point2D this_projection = this_distance_projection.second;
+            if (this_distance < min_distance) {
+                min_distance = this_distance;
+                closest_point = this_projection;
+            }
         }
 
-        if (location.y < boundaries[0].y) {
-            location.y = boundaries[0].y;
-        }
-        if (location.y > boundaries[2].y) {
-            location.y = boundaries[2].y;
-        }
+        // Move location to the closest point
+        location = closest_point;
     }
 
     Point2D Agent::calculate_agent_direction() {
-        float distance = calculate_distance(desired_location, agent_location);
+        float distance = desired_location.distance(agent_location);
 
         return Point2D((desired_location.x - agent_location.x) / distance,
                        (desired_location.y - agent_location.y) / distance);
-    }
-
-    float Agent::calculate_distance(Point2D location_0, Point2D location_1) {
-        float sum = powf(location_0.x - location_1.x, 2);
-        sum += powf(location_0.y - location_1.y, 2);
-
-        return std::sqrt(sum);
     }
 
     // Based on the even-odd rule: https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule#Implementation
@@ -212,7 +219,7 @@ namespace station_sim {
                                      const Point2D &location) const {
         for (const auto &agent : model.agents) {
             if (agent.agent_id != agent_id && agent.status == AgentStatus::active &&
-                calculate_distance(agent.get_agent_location(), location) <= model_parameters.get_separation() &&
+                location.distance(agent.get_agent_location()) <= model_parameters.get_separation() &&
                 location.x <= agent.get_agent_location().x) {
                 return true;
             }
@@ -221,14 +228,14 @@ namespace station_sim {
     }
 
     void Agent::deactivate_agent_if_reached_exit_gate(Model &model, const ModelParameters &model_parameters) {
-        if (calculate_distance(agent_location, desired_location) < model_parameters.get_gates_space()) {
+        if (agent_location.distance(desired_location) < model_parameters.get_gates_space()) {
             status = AgentStatus::finished;
             model.pop_active -= 1;
             model.pop_finished += 1;
 
             if (model_parameters.is_do_history()) {
                 float steps_expected =
-                    (calculate_distance(start_location, desired_location) - model_parameters.get_gates_space()) /
+                    (start_location.distance(desired_location) - model_parameters.get_gates_space()) /
                     agent_available_speeds[0];
                 model.steps_expected.push_back(steps_expected);
                 steps_taken = model.step_id - step_start;

@@ -82,7 +82,6 @@ namespace station_sim {
         void initialize_speed(const Model &model, const ModelParameters &model_parameters);
         void activate_agent(Model &model);
         void deactivate_agent_if_reached_exit_gate(Model &model, const ModelParameters &model_parameters);
-        [[nodiscard]] static float calculate_distance(Point2D location_0, Point2D location_1);
         [[nodiscard]] Point2D calculate_agent_direction();
         [[nodiscard]] bool collides_other_agent(const Model &model, const ModelParameters &model_parameters,
                                                 const Point2D &location) const;
