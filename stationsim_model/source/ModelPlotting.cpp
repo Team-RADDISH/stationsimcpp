@@ -37,7 +37,7 @@ namespace station_sim {
         float x_max=std::numeric_limits<float>::min();
         float y_min=std::numeric_limits<float>::max();
         float y_max=std::numeric_limits<float>::min();
-        for (const Point2D& vertex: model.boundaries){
+        for (const Point2D& vertex: model.boundary_vertices){
             x_min = std::min(vertex.x, x_min);
             x_max = std::max(vertex.x, x_max);
             y_min = std::min(vertex.y, y_min);

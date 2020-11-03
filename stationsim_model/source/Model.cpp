@@ -47,7 +47,7 @@ namespace station_sim {
         step_id = model.step_id;
         pop_active = model.pop_active;
         pop_finished = model.pop_finished;
-        boundaries = model.boundaries;
+        boundary_vertices = model.boundary_vertices;
         gates_in_locations = model.gates_in_locations;
         gates_out_locations = model.gates_out_locations;
         agents = model.agents;
@@ -87,7 +87,7 @@ namespace station_sim {
     }
 
     void Model::set_boundaries() {
-        boundaries = model_parameters.get_boundaries();
+        boundary_vertices = model_parameters.get_boundaries();
     }
 
     void Model::set_gates_locations() {

@@ -44,7 +44,7 @@ namespace station_sim {
         int step_id = 0;
         int pop_active = 0;
         int pop_finished = 0;
-        std::vector<Point2D> boundaries;
+        std::vector<Point2D> boundary_vertices;
         std::vector<Point2D> gates_in_locations;
         std::vector<Point2D> gates_out_locations;
         std::vector<Agent> agents;

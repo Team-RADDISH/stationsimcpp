@@ -17,7 +17,7 @@ namespace station_sim {
       private:
         int population_total;
 
-        std::vector<Point2D> boundaries;
+        std::vector<Point2D> boundary_vertices;
 
         int gates_in_count;
         int gates_out_count;
@@ -47,7 +47,7 @@ namespace station_sim {
         [[nodiscard]] int get_population_total() const;
         void set_population_total(int value);
         [[nodiscard]] std::vector<Point2D> get_boundaries() const;
-        void set_boundaries(std::vector<Point2D> boundaries);
+        void set_boundaries(std::vector<Point2D> boundary_vertices);
         [[nodiscard]] int get_gates_in() const;
         void set_gates_in(int value);
         [[nodiscard]] int get_gates_out() const;

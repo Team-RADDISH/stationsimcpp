@@ -136,7 +136,7 @@ namespace station_sim {
             new_agent_location.x = agent_location.x + speed * direction.x;
             new_agent_location.y = agent_location.y + speed * direction.y;
 
-            if (is_outside_boundaries(model.boundaries, new_agent_location) ||
+            if (is_outside_boundaries(model.boundary_vertices, new_agent_location) ||
                 collides_other_agent(model, model_parameters, new_agent_location)) {
                 if (model_parameters.is_do_history()) {
                     history_collisions += 1;
@@ -158,26 +158,26 @@ namespace station_sim {
             }
         }
 
-        if (is_outside_boundaries(model.boundaries, new_agent_location)) {
-            clip_vector_values_to_boundaries(new_agent_location, model.boundaries);
+        if (is_outside_boundaries(model.boundary_vertices, new_agent_location)) {
+            clip_vector_values_to_boundaries(new_agent_location, model.boundary_vertices);
         }
 
         agent_location = new_agent_location;
         agent_speed = new_speed;
     }
 
-    // Assuming `location` is outside of `boundaries`, move it to the closest
+    // Assuming `location` is outside of `boundary_vertices`, move it to the closest
     // point of the region within boundaries
-    void Agent::clip_vector_values_to_boundaries(Point2D &location, std::vector<Point2D> boundaries) {
+    void Agent::clip_vector_values_to_boundaries(Point2D &location, std::vector<Point2D> boundary_vertices) {
         float min_distance = std::numeric_limits<float>::max();
         Point2D closest_point = location;
 
         // Loop over all edges of the boundaries (i.e., all segments) and find
         // the one closest to the point
-        for (std::vector<Point2D>::size_type index = 0; index < boundaries.size() - 1; ++index) {
+        for (std::vector<Point2D>::size_type index = 0; index < boundary_vertices.size() - 1; ++index) {
             // Extrema of the edge
-            Point2D s1 = boundaries.at(index);
-            Point2D s2 = boundaries.at(index + 1);
+            Point2D s1 = boundary_vertices.at(index);
+            Point2D s2 = boundary_vertices.at(index + 1);
             // Determine distance of location from the edge and its projection
             // (_within_ the segment), update closest point if necessary
             std::pair<float,Point2D> this_distance_projection = location.distance_projection(s1, s2);
@@ -201,14 +201,14 @@ namespace station_sim {
     }
 
     // Based on the even-odd rule: https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule#Implementation
-    bool Agent::is_outside_boundaries(const std::vector<Point2D> boundaries, const Point2D &location) {
-        int len = boundaries.size();
+    bool Agent::is_outside_boundaries(const std::vector<Point2D> boundary_vertices, const Point2D &location) {
+        int len = boundary_vertices.size();
         int j = len - 1;
         bool inside = false;
         for (int i = 0; i < len; i++) {
-            if (((boundaries[i].y > location.y) != (boundaries[j].y > location.y)) &&
-                (location.x < boundaries[i].x + (boundaries[j].x - boundaries[i].x) * (location.y - boundaries[i].y) /
-                 (boundaries[j].y - boundaries[i].y)))
+            if (((boundary_vertices[i].y > location.y) != (boundary_vertices[j].y > location.y)) &&
+                (location.x < boundary_vertices[i].x + (boundary_vertices[j].x - boundary_vertices[i].x) * (location.y - boundary_vertices[i].y) /
+                 (boundary_vertices[j].y - boundary_vertices[i].y)))
                 inside = !inside;
             j = i;
         }

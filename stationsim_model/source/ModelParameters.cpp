@@ -17,7 +17,7 @@ namespace station_sim {
     ModelParameters::ModelParameters() {
         this->population_total = 40;
 
-        this->boundaries = { {Point2D(0, 0), Point2D(0, 100), Point2D(200, 100), Point2D(200, 0)} };
+        this->boundary_vertices = { {Point2D(0, 0), Point2D(0, 100), Point2D(200, 100), Point2D(200, 0)} };
 
         this->gates_in_count = 3;
         this->gates_out_count = 2;
@@ -53,10 +53,10 @@ namespace station_sim {
         this->population_total = value;
     }
 
-    std::vector<Point2D> ModelParameters::get_boundaries() const { return boundaries; };
+    std::vector<Point2D> ModelParameters::get_boundaries() const { return boundary_vertices; };
 
-    void ModelParameters::set_boundaries(std::vector<Point2D> boundaries) {
-        this->boundaries = boundaries;
+    void ModelParameters::set_boundaries(std::vector<Point2D> boundary_vertices) {
+        this->boundary_vertices = boundary_vertices;
     }
 
     int ModelParameters::get_gates_in() const { return gates_in_count; }
