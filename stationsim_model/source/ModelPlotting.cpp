@@ -6,10 +6,13 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include <limits>
+#include <algorithm>
 #include "ModelPlotting.hpp"
 #include "Agent.hpp"
 #include "Model.hpp"
 #include "cxxplot.hpp"
+#include "Point2D.hpp"
 
 namespace station_sim {
     void ModelPlotting::plot_agents_locations(const station_sim::Model &model) {
@@ -28,8 +31,21 @@ namespace station_sim {
         cxxplot::Scatter<float> scatter(x_int, y_int, args);
         scatter.set_xlabel("x label");
         scatter.set_ylabel("y label");
-        scatter.set_xlim(model.boundaries[0].x, model.boundaries[1].x);
-        scatter.set_ylim(model.boundaries[0].y, model.boundaries[1].y);
+
+        // Find extrema of the region
+        float x_min=std::numeric_limits<float>::max();
+        float x_max=std::numeric_limits<float>::min();
+        float y_min=std::numeric_limits<float>::max();
+        float y_max=std::numeric_limits<float>::min();
+        for (const Point2D& vertex: model.boundary_vertices){
+            x_min = std::min(vertex.x, x_min);
+            x_max = std::max(vertex.x, x_max);
+            y_min = std::min(vertex.y, y_min);
+            y_max = std::max(vertex.y, y_max);
+        }
+
+        scatter.set_xlim(x_min, x_max);
+        scatter.set_ylim(y_min, y_max);
         scatter.show();
     }
 

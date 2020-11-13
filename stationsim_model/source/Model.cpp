@@ -47,7 +47,7 @@ namespace station_sim {
         step_id = model.step_id;
         pop_active = model.pop_active;
         pop_finished = model.pop_finished;
-        boundaries = model.boundaries;
+        boundary_vertices = model.boundary_vertices;
         gates_in_locations = model.gates_in_locations;
         gates_out_locations = model.gates_out_locations;
         agents = model.agents;
@@ -87,18 +87,18 @@ namespace station_sim {
     }
 
     void Model::set_boundaries() {
-        boundaries[0].x = 0;                                   // x1
-        boundaries[0].y = 0;                                   // y1
-        boundaries[1].x = model_parameters.get_space_width();  // x2
-        boundaries[1].y = model_parameters.get_space_height(); // y2
+        boundary_vertices = model_parameters.get_boundaries();
     }
 
     void Model::set_gates_locations() {
         gates_in_locations.resize(model_parameters.get_gates_in());
         gates_out_locations.resize(model_parameters.get_gates_out());
 
-        create_gates(gates_in_locations, 0, model_parameters.get_space_height(), model_parameters.get_gates_in() + 2);
-        create_gates(gates_out_locations, model_parameters.get_space_width(), model_parameters.get_space_height(),
+        // TODO: for the time being I'm hardcoding 100 and 200 because I don't
+        // know what these numbers should be replaced with..  Probably we'll
+        // need to change how the gates are created, too.
+        create_gates(gates_in_locations, 0, 100, model_parameters.get_gates_in() + 2);
+        create_gates(gates_out_locations, 200, 100,
                      model_parameters.get_gates_out() + 2);
     }
 

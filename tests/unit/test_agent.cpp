@@ -24,10 +24,18 @@ TEST_CASE("Test Agent") {
     //Agent agent(0, model, model_parameters);
 
     SECTION("Test generated locations") {
-        //		std::cout << agent.get_agent_location()[0] << std::endl;
+        std::vector<Point2D> boundaries{ {Point2D(0, 0), Point2D(0, 4), Point2D(4, 4), Point2D(4, 0)} };
+        // Square, all points are inside
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(1, 2)));
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(2, 1)));
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(3, 2)));
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(2, 3)));
 
-        //		std::cout << agent.get_agent_speed() << std::endl;
-
-        REQUIRE(5 == 5);
+        // Hourglass, only the points with y = 2 are inside
+        boundaries = { {Point2D(0, 0), Point2D(4, 4), Point2D(0, 4), Point2D(4, 0)} };
+		REQUIRE(Agent::is_outside_boundaries(boundaries, Point2D(1, 2)));
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(2, 1)));
+		REQUIRE(Agent::is_outside_boundaries(boundaries, Point2D(3, 2)));
+		REQUIRE(!Agent::is_outside_boundaries(boundaries, Point2D(2, 3)));
     }
 }

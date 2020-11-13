@@ -1,5 +1,13 @@
 project(unit_tests)
 
+add_executable(test_point2d test_point2d.cpp)
+target_include_directories(test_point2d PRIVATE
+        ${CMAKE_SOURCE_DIR}/stationsim_model/include
+        ${CMAKE_SOURCE_DIR}/external/include
+        ${CMAKE_BINARY_DIR})
+target_link_libraries(test_point2d PRIVATE StationSimModel)
+add_test(NAME test_point2d COMMAND test_point2d)
+
 add_executable(test_agent test_agent.cpp)
 target_include_directories(test_agent PRIVATE
         ${CMAKE_SOURCE_DIR}/stationsim_model/include

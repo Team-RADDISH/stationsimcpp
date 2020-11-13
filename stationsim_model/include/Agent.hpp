@@ -74,18 +74,18 @@ namespace station_sim {
         void set_status(AgentStatus status);
         [[nodiscard]] int get_agent_id() const;
         void set_agent_location(const Point2D &agent_location);
+        [[nodiscard]] static bool is_outside_boundaries(std::vector<Point2D> boundary_vertices, const Point2D &location);
+
 
       private:
         void initialize_location(const Model &model, const ModelParameters &model_parameters);
         void initialize_speed(const Model &model, const ModelParameters &model_parameters);
         void activate_agent(Model &model);
         void deactivate_agent_if_reached_exit_gate(Model &model, const ModelParameters &model_parameters);
-        [[nodiscard]] static float calculate_distance(Point2D location_0, Point2D location_1);
         [[nodiscard]] Point2D calculate_agent_direction();
-        [[nodiscard]] static bool is_outside_boundaries(std::array<Point2D, 2> boundaries, const Point2D &location);
         [[nodiscard]] bool collides_other_agent(const Model &model, const ModelParameters &model_parameters,
                                                 const Point2D &location) const;
-        static void clip_vector_values_to_boundaries(Point2D &location, std::array<Point2D, 2> boundaries);
+        static void clip_vector_values_to_boundaries(Point2D &location, std::vector<Point2D> boundary_vertices);
         void initialize_random_distributions(const ModelParameters &model_parameters);
 
         void move_agent(Model &model, const ModelParameters &model_parameters);
