@@ -6,6 +6,7 @@
 // See accompanying file LICENSE
 //---------------------------------------------------------------------------//
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 #include "Point2D.hpp"
