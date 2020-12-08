@@ -13,30 +13,44 @@ env:
 
 jobs:
   build:
-    name: Test - ${{ matrix.cc }}
+    name: Test - ${{ matrix.os }} - ${{ matrix.cc }}
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - cc: gcc-9
+          - os: ubuntu-latest
+            cc: gcc-9
             cxx: g++-9
-          - cc: gcc-10
+          - os: ubuntu-latest
+            cc: gcc-10
             cxx: g++-10
-          - cc: clang
+          - os: ubuntu-latest
+            cc: clang
+            cxx: clang++
+          - os: macos-latest
+            cc: clang
             cxx: clang++
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install packages
+    - name: Install packages on Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: sudo apt-get install python3-numpy python3-matplotlib openmpi-bin libopenmpi-dev libhdf5-dev
+
+    - name: Install packages on macOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        pip3 install numpy matplotlib
+        brew install open-mpi hdf5
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
