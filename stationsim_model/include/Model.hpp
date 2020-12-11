@@ -45,8 +45,8 @@ namespace station_sim {
         int pop_active = 0;
         int pop_finished = 0;
         std::vector<Point2D> boundary_vertices;
-        std::vector<Point2D> gates_in_locations;
-        std::vector<Point2D> gates_out_locations;
+        std::vector<Gate> gates_in;
+        std::vector<Gate> gates_out;
         std::vector<Agent> agents;
         [[nodiscard]] std::shared_ptr<std::mt19937> get_generator() const;
         std::vector<float> steps_expected;
@@ -59,8 +59,8 @@ namespace station_sim {
         ~Model() override;
 
         [[nodiscard]] int get_unique_id() const;
-        [[nodiscard]] const std::vector<Point2D> &get_gates_in_locations() const;
-        [[nodiscard]] const std::vector<Point2D> &get_gates_out_locations() const;
+        [[nodiscard]] const std::vector<Gate> &get_gates_in() const;
+        [[nodiscard]] const std::vector<Gate> &get_gates_out() const;
         void step();
         [[nodiscard]] int get_history_collisions_number() const;
         void set_history_collisions_number(int history_collisions_number);
@@ -85,8 +85,8 @@ namespace station_sim {
       private:
         void initialize_model(int unique_id);
         void set_boundaries();
-        void set_gates_locations();
-        static void create_gates(std::vector<Point2D> &gates, float x, float y, int gates_number);
+        void set_gates_in(std::vector<Gate> gates);
+        void set_gates_out(std::vector<Gate> gates);
         void generate_agents();
         void move_agents();
 

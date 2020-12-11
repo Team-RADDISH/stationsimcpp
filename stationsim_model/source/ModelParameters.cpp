@@ -17,10 +17,18 @@ namespace station_sim {
     ModelParameters::ModelParameters() {
         this->population_total = 40;
 
+        // Some random default values for boundaries and gates, the user will
+        // need to take care of setting something sensible in their application
         this->boundary_vertices = { {Point2D(0, 0), Point2D(0, 100), Point2D(200, 100), Point2D(200, 0)} };
-
-        this->gates_in_count = 3;
-        this->gates_out_count = 2;
+        this->gates_in = { {
+                Gate(Point2D(0, 25)),
+                Gate(Point2D(0, 50)),
+                Gate(Point2D(0, 75))
+            } };
+        this->gates_out = { {
+                Gate(Point2D(200, 33.3)),
+                Gate(Point2D(200, 66.7))
+            } };
         this->gates_space = 1;
         this->gates_speed = 1;
 
@@ -59,24 +67,20 @@ namespace station_sim {
         this->boundary_vertices = boundary_vertices;
     }
 
-    int ModelParameters::get_gates_in() const { return gates_in_count; }
+    std::vector<Gate> ModelParameters::get_gates_in() const { return gates_in; }
 
-    void ModelParameters::set_gates_in(int value) {
-        if (value <= 0) {
-            throw std::invalid_argument("gates_in_count must be positive!");
-        }
+    int ModelParameters::get_gates_in_count() const { return gates_in.size(); }
 
-        this->gates_in_count = value;
+    void ModelParameters::set_gates_in(std::vector<Gate> gates) {
+        this->gates_in = gates;
     }
 
-    int ModelParameters::get_gates_out() const { return gates_out_count; }
+    std::vector<Gate> ModelParameters::get_gates_out() const { return gates_out; }
 
-    void ModelParameters::set_gates_out(int value) {
-        if (value <= 0) {
-            throw std::invalid_argument("gates_out_count must be positive!");
-        }
+    int ModelParameters::get_gates_out_count() const { return gates_out.size(); }
 
-        ModelParameters::gates_out_count = value;
+    void ModelParameters::set_gates_out(std::vector<Gate> gates) {
+        this->gates_out = gates;
     }
 
     float ModelParameters::get_gates_space() const { return gates_space; }

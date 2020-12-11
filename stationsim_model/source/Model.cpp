@@ -48,8 +48,8 @@ namespace station_sim {
         pop_active = model.pop_active;
         pop_finished = model.pop_finished;
         boundary_vertices = model.boundary_vertices;
-        gates_in_locations = model.gates_in_locations;
-        gates_out_locations = model.gates_out_locations;
+        gates_in = model.gates_in;
+        gates_out = model.gates_out;
         agents = model.agents;
         std::for_each(agents.begin(), agents.end(),
                       [&](Agent &agent) { agent.set_random_number_generator(random_number_generator); });
@@ -81,7 +81,8 @@ namespace station_sim {
             (model_parameters.get_speed_mean() - model_parameters.get_speed_min()) / model_parameters.get_speed_steps();
 
         set_boundaries();
-        set_gates_locations();
+        set_gates_in(model_parameters.get_gates_in());
+        set_gates_out(model_parameters.get_gates_out());
 
         generate_agents();
     }
@@ -90,27 +91,12 @@ namespace station_sim {
         boundary_vertices = model_parameters.get_boundaries();
     }
 
-    void Model::set_gates_locations() {
-        gates_in_locations.resize(model_parameters.get_gates_in());
-        gates_out_locations.resize(model_parameters.get_gates_out());
-
-        // TODO: for the time being I'm hardcoding 100 and 200 because I don't
-        // know what these numbers should be replaced with..  Probably we'll
-        // need to change how the gates are created, too.
-        create_gates(gates_in_locations, 0, 100, model_parameters.get_gates_in() + 2);
-        create_gates(gates_out_locations, 200, 100,
-                     model_parameters.get_gates_out() + 2);
+    void Model::set_gates_in(std::vector<Gate> gates) {
+        gates_in = gates;
     }
 
-    void Model::create_gates(std::vector<Point2D> &gates, float x, float y, int gates_number) {
-        std::vector<float> result = HelpFunctions::linear_spaced_vector(0, y, gates_number);
-        result.erase(result.begin());
-        result.pop_back();
-
-        for (unsigned long i = 0; i < result.size(); i++) {
-            gates[i].x = x;
-            gates[i].y = result[i];
-        }
+    void Model::set_gates_out(std::vector<Gate> gates) {
+        gates_out = gates;
     }
 
     void Model::generate_agents() {
@@ -119,9 +105,9 @@ namespace station_sim {
         }
     }
 
-    const std::vector<Point2D> &Model::get_gates_in_locations() const { return gates_in_locations; }
+    const std::vector<Gate> &Model::get_gates_in() const { return gates_in; }
 
-    const std::vector<Point2D> &Model::get_gates_out_locations() const { return gates_out_locations; }
+    const std::vector<Gate> &Model::get_gates_out() const { return gates_out; }
 
     void Model::step() {
         if (pop_finished < model_parameters.get_population_total() && step_id < model_parameters.get_step_limit() &&

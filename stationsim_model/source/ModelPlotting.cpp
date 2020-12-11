@@ -12,6 +12,7 @@
 #include "Agent.hpp"
 #include "Model.hpp"
 #include "cxxplot.hpp"
+#include "Gate.hpp"
 #include "Point2D.hpp"
 
 namespace station_sim {
@@ -49,12 +50,12 @@ namespace station_sim {
         scatter.show();
     }
 
-    void ModelPlotting::plot_gates_locations(const std::vector<Point2D> &gates) {
+    void ModelPlotting::plot_gates_locations(const std::vector<Gate> &gates) {
         std::vector<float> x_int;
         std::vector<float> y_int;
 
         for (const auto &gate : gates) {
-            const Point2D agent_location = (Point2D &&) gate;
+            const Point2D agent_location = (Point2D &&) gate.position;
             x_int.emplace_back(agent_location.x);
             y_int.emplace_back(agent_location.y);
         }

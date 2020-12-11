@@ -71,8 +71,8 @@ namespace station_sim {
 
     void Agent::initialize_random_distributions(const ModelParameters &model_parameters) {
         float_distribution = std::uniform_real_distribution<float>(-1, 1);
-        gates_in_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_in() - 1);
-        gates_out_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_out() - 1);
+        gates_in_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_in_count() - 1);
+        gates_out_int_distribution = std::uniform_int_distribution<int>(0, model_parameters.get_gates_out_count() - 1);
         gates_speed_exponential_distribution = std::exponential_distribution<float>(model_parameters.get_gates_speed());
         speed_normal_distribution =
             std::normal_distribution<float>(model_parameters.get_speed_mean(), model_parameters.get_speed_std());
@@ -83,13 +83,13 @@ namespace station_sim {
         float perturb = float_distribution(*random_number_generator) * model_parameters.get_gates_space();
 
         gate_in = gates_in_int_distribution(*random_number_generator);
-        start_location.x = model.get_gates_in_locations()[gate_in].x;
-        start_location.y = model.get_gates_in_locations()[gate_in].y;
+        start_location.x = model.get_gates_in()[gate_in].position.x;
+        start_location.y = model.get_gates_in()[gate_in].position.y;
         start_location.y += perturb;
 
         gate_out = gates_out_int_distribution(*random_number_generator);
-        desired_location.x = model.get_gates_out_locations()[gate_out].x;
-        desired_location.y = model.get_gates_out_locations()[gate_out].y;
+        desired_location.x = model.get_gates_out()[gate_out].position.x;
+        desired_location.y = model.get_gates_out()[gate_out].position.y;
 
         agent_location = start_location;
     }
