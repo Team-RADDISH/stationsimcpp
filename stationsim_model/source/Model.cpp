@@ -100,8 +100,17 @@ namespace station_sim {
     }
 
     void Model::generate_agents() {
-        for (int i = 0; i < model_parameters.get_population_total(); i++) {
-            agents.emplace_back(Agent(i, *this, model_parameters, random_number_generator));
+        if (model_parameters.get_agents_locations().size() > 0) {
+            // If initial agents locations are set, use them...
+            for (int i = 0; i < model_parameters.get_population_total(); i++) {
+                agents.emplace_back(Agent(i, model_parameters.get_agents_locations().at(i), *this, model_parameters, random_number_generator));
+            }
+        } else {
+            // ...otherwise call the `Agent` constructor which will generate
+            // them randomly
+            for (int i = 0; i < model_parameters.get_population_total(); i++) {
+                agents.emplace_back(Agent(i, *this, model_parameters, random_number_generator));
+            }
         }
     }
 

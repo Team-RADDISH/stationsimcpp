@@ -17,6 +17,7 @@ namespace station_sim {
     class ModelParameters {
       private:
         int population_total;
+        std::vector<Point2D> agents_locations;
 
         std::vector<Point2D> boundary_vertices;
 
@@ -49,6 +50,8 @@ namespace station_sim {
 
         [[nodiscard]] int get_population_total() const;
         void set_population_total(int value);
+        [[nodiscard]] std::vector<Point2D> get_agents_locations() const;
+        void set_agents_locations(std::vector<Point2D> locations);
         [[nodiscard]] std::vector<Point2D> get_boundaries() const;
         void set_boundaries(std::vector<Point2D> boundary_vertices);
         [[nodiscard]] std::vector<Gate> get_gates_in() const;
