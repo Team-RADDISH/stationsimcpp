@@ -27,7 +27,29 @@ namespace station_sim {
 
         initialize_random_distributions(model_parameters);
 
-        initialize_location(model, model_parameters);
+        initialize_start_location(model, model_parameters);
+        initialize_desired_location(model, model_parameters);
+        agent_location = start_location;
+        initialize_speed(model, model_parameters);
+
+        steps_activate = gates_speed_exponential_distribution(*generator);
+        wiggle = std::fmin(model_parameters.get_max_wiggle(), agent_max_speed);
+    }
+
+    // Same as above, but provide the initial location of the agent, instead of
+    // generating it randomly around the entrance gates.
+    Agent::Agent(int unique_id, const Point2D location, const Model &model,
+                 const ModelParameters &model_parameters, std::shared_ptr<std::mt19937> generator) {
+        status = AgentStatus::not_started; // 0 Not Started, 1 Active, 2 Finished
+        agent_id = unique_id;
+
+        this->random_number_generator = generator;
+
+        initialize_random_distributions(model_parameters);
+
+        initialize_desired_location(model, model_parameters);
+        start_location = location;
+        agent_location = start_location;
         initialize_speed(model, model_parameters);
 
         steps_activate = gates_speed_exponential_distribution(*generator);
@@ -79,19 +101,18 @@ namespace station_sim {
         wiggle_int_distribution = std::uniform_int_distribution<int>(-1, 1);
     }
 
-    void Agent::initialize_location(const Model &model, const ModelParameters &model_parameters) {
+    void Agent::initialize_start_location(const Model &model, const ModelParameters &model_parameters) {
         float perturb = float_distribution(*random_number_generator) * model_parameters.get_gates_space();
-
         gate_in = gates_in_int_distribution(*random_number_generator);
         start_location.x = model.get_gates_in()[gate_in].position.x;
         start_location.y = model.get_gates_in()[gate_in].position.y;
         start_location.y += perturb;
+    }
 
+    void Agent::initialize_desired_location(const Model &model, const ModelParameters &model_parameters) {
         gate_out = gates_out_int_distribution(*random_number_generator);
         desired_location.x = model.get_gates_out()[gate_out].position.x;
         desired_location.y = model.get_gates_out()[gate_out].position.y;
-
-        agent_location = start_location;
     }
 
     void Agent::initialize_speed(const Model &model, const ModelParameters &model_parameters) {

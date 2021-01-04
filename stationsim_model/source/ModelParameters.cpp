@@ -16,6 +16,7 @@
 namespace station_sim {
     ModelParameters::ModelParameters() {
         this->population_total = 40;
+        this->agents_locations = {};
 
         // Some random default values for boundaries and gates, the user will
         // need to take care of setting something sensible in their application
@@ -57,8 +58,20 @@ namespace station_sim {
         if (value <= 0) {
             throw std::invalid_argument("population_total must be positive!");
         }
+        // This method can be called only if the agents locations hadn't been set.
+        if (this->agents_locations.size() != 0) {
+            throw std::invalid_argument("cannot set population_total if agents locations are specified!");
+        }
 
         this->population_total = value;
+    }
+
+    std::vector<Point2D> ModelParameters::get_agents_locations() const { return agents_locations; }
+
+    void ModelParameters::set_agents_locations(std::vector<Point2D> locations) {
+        // Set the agents locations and update the population size, for consistency.
+        this->agents_locations = locations;
+        this->population_total = locations.size();
     }
 
     std::vector<Point2D> ModelParameters::get_boundaries() const { return boundary_vertices; };

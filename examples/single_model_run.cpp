@@ -17,7 +17,7 @@ int main() {
     model_parameters.set_boundaries({ station_sim::Point2D(0, 0), station_sim::Point2D(0, 300), station_sim::Point2D(150, 300), station_sim::Point2D(150, 0) });
     model_parameters.set_gates_in({ station_sim::Gate(station_sim::Point2D(0, 75)), station_sim::Gate(station_sim::Point2D(0, 150)), station_sim::Gate(station_sim::Point2D(0, 225)) });
     model_parameters.set_gates_out({ station_sim::Gate(station_sim::Point2D(150, 100)), station_sim::Gate(station_sim::Point2D(150, 200)) });
-    model_parameters.set_population_total(60);
+    model_parameters.set_agents_locations({ station_sim::Point2D(0, 0), station_sim::Point2D(0, 60), station_sim::Point2D(0, 120), station_sim::Point2D(0, 180), station_sim::Point2D(0, 240), station_sim::Point2D(0, 300) });
     station_sim::Model model(0, model_parameters);
 
     station_sim::ModelPlotting::plot_gates_locations(model.get_gates_in());

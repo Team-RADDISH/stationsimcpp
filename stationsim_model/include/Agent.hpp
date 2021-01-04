@@ -61,6 +61,8 @@ namespace station_sim {
         Agent() = delete;
         Agent(int unique_id, const Model &model, const ModelParameters &model_parameters,
               std::shared_ptr<std::mt19937> generator);
+        Agent(int unique_id, const Point2D location, const Model &model,
+              const ModelParameters &model_parameters, std::shared_ptr<std::mt19937> generator);
         Agent(const Agent &agent);
         ~Agent() = default;
 
@@ -78,7 +80,8 @@ namespace station_sim {
 
 
       private:
-        void initialize_location(const Model &model, const ModelParameters &model_parameters);
+        void initialize_start_location(const Model &model, const ModelParameters &model_parameters);
+        void initialize_desired_location(const Model &model, const ModelParameters &model_parameters);
         void initialize_speed(const Model &model, const ModelParameters &model_parameters);
         void activate_agent(Model &model);
         void deactivate_agent_if_reached_exit_gate(Model &model, const ModelParameters &model_parameters);
