@@ -67,7 +67,7 @@ jobs:
       shell: bash
       run: echo "CCACHE_DIR=${{runner.workspace}}/.ccache" >> "${GITHUB_ENV}"
     - name: Cache ccache files
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
         path: ${{runner.workspace}}/.ccache
         key: ${{ runner.os }}-test-${{ matrix.cc }}-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
